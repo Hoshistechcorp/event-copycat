@@ -1,38 +1,31 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { motion, useMotionValue, useTransform, useSpring } from "framer-motion";
+import { motion } from "framer-motion";
+import event1 from "@/assets/event-1.jpg";
+import event2 from "@/assets/event-2.jpg";
+import event3 from "@/assets/event-3.jpg";
+import event4 from "@/assets/event-4.jpg";
+import event5 from "@/assets/event-5.jpg";
 import eventHero from "@/assets/event-hero.jpg";
 
 const cities = ["Lagos", "Accra", "Nairobi", "London", "Dubai"];
+
+const heroEvents = [
+  { image: eventHero, title: "Afrobeat Night Out", venue: "Eko Hotel", date: "Dec 20, 2026", price: "₦15,000", vibing: "200+" },
+  { image: event1, title: "Vibes & Grills 3.0", venue: "Lekki Phase 1", date: "Oct 12, 2026", price: "₦5,000", vibing: "120+" },
+  { image: event2, title: "Tech Mixer Lagos", venue: "Civic Centre", date: "Oct 15, 2026", price: "Free", vibing: "85+" },
+  { image: event3, title: "Sip & Paint Night", venue: "Art Studio X", date: "Oct 18, 2026", price: "₦7,500", vibing: "45+" },
+  { image: event4, title: "Outdoor Cinema", venue: "Park View", date: "Oct 20, 2026", price: "₦3,000", vibing: "200+" },
+  { image: event5, title: "Comedy Roast Night", venue: "The Vault", date: "Oct 22, 2026", price: "₦10,000", vibing: "150+" },
+];
 
 const HeroSection = () => {
   const [cityIndex, setCityIndex] = useState(0);
   const [displayText, setDisplayText] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
-  const cardRef = useRef<HTMLDivElement>(null);
+  const [eventIndex, setEventIndex] = useState(0);
 
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-
-  const rotateX = useSpring(useTransform(mouseY, [-300, 300], [15, -15]), { stiffness: 150, damping: 20 });
-  const rotateY = useSpring(useTransform(mouseX, [-300, 300], [-15, 15]), { stiffness: 150, damping: 20 });
-  const glareX = useTransform(mouseX, [-300, 300], [0, 100]);
-  const glareY = useTransform(mouseY, [-300, 300], [0, 100]);
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!cardRef.current) return;
-    const rect = cardRef.current.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-    mouseX.set(e.clientX - centerX);
-    mouseY.set(e.clientY - centerY);
-  };
-
-  const handleMouseLeave = () => {
-    mouseX.set(0);
-    mouseY.set(0);
-  };
-
+  // Typewriter effect
   useEffect(() => {
     const currentCity = cities[cityIndex];
     let timeout: ReturnType<typeof setTimeout>;
@@ -56,6 +49,16 @@ const HeroSection = () => {
     }
     return () => clearTimeout(timeout);
   }, [displayText, isDeleting, cityIndex]);
+
+  // Cycle through events
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setEventIndex((prev) => (prev + 1) % heroEvents.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const currentEvent = heroEvents[eventIndex];
 
   return (
     <section className="hero-gradient relative overflow-hidden">
@@ -112,45 +115,60 @@ const HeroSection = () => {
             </div>
           </motion.div>
 
-          {/* Right - interactive 3D card */}
+          {/* Right - hover tilt card with dynamic events */}
           <motion.div
-            className="hidden lg:flex justify-center perspective-[1200px]"
+            className="hidden lg:flex justify-center"
             initial={{ opacity: 0, scale: 0.85 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
             <motion.div
-              ref={cardRef}
-              onMouseMove={handleMouseMove}
-              onMouseLeave={handleMouseLeave}
-              style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
-              className="relative w-[400px] rounded-3xl overflow-hidden shadow-2xl bg-card border border-border cursor-grab active:cursor-grabbing"
+              className="relative w-[400px] rounded-3xl overflow-hidden shadow-2xl bg-card border border-border cursor-pointer"
+              whileHover={{ rotateY: 8, rotateX: -5, scale: 1.03 }}
+              transition={{ type: "spring", stiffness: 200, damping: 15 }}
+              style={{ perspective: 1200, transformStyle: "preserve-3d" }}
             >
-              {/* Glare overlay */}
+              <div className="relative overflow-hidden h-[360px]">
+                {heroEvents.map((evt, i) => (
+                  <motion.img
+                    key={i}
+                    src={evt.image}
+                    alt={evt.title}
+                    className="absolute inset-0 w-full h-full object-cover"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: i === eventIndex ? 1 : 0 }}
+                    transition={{ duration: 0.8 }}
+                  />
+                ))}
+              </div>
               <motion.div
-                className="absolute inset-0 z-10 pointer-events-none rounded-3xl"
-                style={{
-                  background: useTransform(
-                    [glareX, glareY],
-                    ([x, y]) =>
-                      `radial-gradient(circle at ${x}% ${y}%, rgba(255,255,255,0.15) 0%, transparent 60%)`
-                  ),
-                }}
-              />
-              <img
-                src={eventHero}
-                alt="Afrobeat Night Out event"
-                className="w-full h-[360px] object-cover"
-              />
-              <div className="p-6">
-                <h3 className="text-xl font-bold text-card-foreground">Afrobeat Night Out</h3>
+                className="p-6"
+                key={eventIndex}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+              >
+                <h3 className="text-xl font-bold text-card-foreground">{currentEvent.title}</h3>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Eko Hotel • Dec 20, 2026
+                  {currentEvent.venue} • {currentEvent.date}
                 </p>
                 <div className="flex items-center justify-between mt-4">
-                  <span className="text-sm font-semibold text-primary">₦15,000</span>
-                  <span className="text-xs text-muted-foreground">200+ vibing</span>
+                  <span className="text-sm font-semibold text-primary">{currentEvent.price}</span>
+                  <span className="text-xs text-muted-foreground">{currentEvent.vibing} vibing</span>
                 </div>
+              </motion.div>
+
+              {/* Dots indicator */}
+              <div className="flex justify-center gap-1.5 pb-4">
+                {heroEvents.map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setEventIndex(i)}
+                    className={`w-1.5 h-1.5 rounded-full transition-all ${
+                      i === eventIndex ? "bg-primary w-4" : "bg-muted-foreground/30"
+                    }`}
+                  />
+                ))}
               </div>
             </motion.div>
           </motion.div>
