@@ -1,5 +1,6 @@
 import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import mainLogo from "@/assets/mainlogo.png";
 
 const Navbar = () => {
   return (
@@ -7,12 +8,7 @@ const Navbar = () => {
       <div className="container flex items-center justify-between h-16 px-4 md:px-8">
         <div className="flex items-center gap-8">
           <a href="/" className="flex items-center gap-2">
-            <span className="text-xl font-extrabold tracking-tight text-foreground">
-              i<span className="text-primary">BLOOV</span>
-            </span>
-            <span className="text-[10px] font-semibold bg-primary text-primary-foreground px-1.5 py-0.5 rounded-sm">
-              BETA
-            </span>
+            <img src={mainLogo} alt="iBLOOV logo" className="h-9 w-auto" />
           </a>
           <div className="hidden md:flex items-center gap-6">
             <a href="/" className="text-sm font-semibold text-foreground hover:text-primary transition-colors">
