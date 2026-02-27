@@ -11,7 +11,7 @@ const highlights = [
 
 const NeonPartySection = () => {
   return (
-    <section className="relative overflow-hidden bg-[hsl(224,30%,6%)] py-24 md:py-32">
+    <section id="nightlife" className="relative overflow-hidden bg-[hsl(224,30%,6%)] py-24 md:py-32">
       {/* Neon edge glow - top */}
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[hsl(280,100%,60%)] to-transparent" />
       <div className="absolute top-0 left-0 right-0 h-16 bg-gradient-to-b from-[hsl(280,100%,60%)]/10 to-transparent pointer-events-none" />
@@ -188,8 +188,9 @@ const NeonPartySection = () => {
           <Button
             size="lg"
             className="rounded-full px-10 font-semibold text-base bg-gradient-to-r from-[hsl(280,80%,60%)] to-[hsl(320,100%,65%)] hover:from-[hsl(280,80%,55%)] hover:to-[hsl(320,100%,60%)] text-white border-0 shadow-[0_0_40px_hsl(280,100%,60%,0.35)]"
+            asChild
           >
-            Explore Nightlife Events
+            <a href="#events">Explore Nightlife Events</a>
           </Button>
         </motion.div>
       </div>

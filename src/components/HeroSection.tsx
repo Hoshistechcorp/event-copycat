@@ -64,7 +64,7 @@ const HeroSection = () => {
   const nextEvent = heroEvents[(eventIndex + 1) % heroEvents.length];
 
   return (
-    <section className="hero-gradient relative overflow-hidden">
+    <section id="hero" className="hero-gradient relative overflow-hidden">
       <div className="container px-4 md:px-8 py-16 md:py-28">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Left */}
@@ -93,15 +93,16 @@ const HeroSection = () => {
             </p>
 
             <div className="flex flex-wrap gap-3 mb-10">
-              <Button size="lg" className="rounded-full px-6 sm:px-8 font-semibold text-base">
-                Create Your First Event
+              <Button size="lg" className="rounded-full px-6 sm:px-8 font-semibold text-base" asChild>
+                <a href="#events">Explore Events</a>
               </Button>
               <Button
                 size="lg"
                 variant="outline"
                 className="rounded-full px-6 sm:px-8 font-semibold text-base"
+                asChild
               >
-                Sign In
+                <a href="#features">Learn More</a>
               </Button>
             </div>
 

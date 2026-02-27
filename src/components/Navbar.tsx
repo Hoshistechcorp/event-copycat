@@ -12,11 +12,17 @@ const Navbar = () => {
             <img src={mainLogo} alt="iBLOOV logo" className="h-9 w-auto" />
           </a>
           <div className="hidden md:flex items-center gap-6">
-            <a href="/" className="text-sm font-semibold text-foreground hover:text-primary transition-colors">
+            <a href="#events" className="text-sm font-semibold text-foreground hover:text-primary transition-colors">
               Explore
             </a>
-            <a href="/dashboard" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-              Organize
+            <a href="#nightlife" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+              Nightlife
+            </a>
+            <a href="#features" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+              Features
+            </a>
+            <a href="#creators" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+              For Creators
             </a>
           </div>
         </div>
@@ -36,8 +42,8 @@ const Navbar = () => {
           <a href="/signin" className="hidden sm:inline-flex text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
             Sign In
           </a>
-          <Button size="sm" className="hidden sm:inline-flex rounded-full px-5 font-semibold">
-            Create Event
+          <Button size="sm" className="hidden sm:inline-flex rounded-full px-5 font-semibold" asChild>
+            <a href="#events">Create Event</a>
           </Button>
 
           {/* Mobile hamburger */}
@@ -65,19 +71,25 @@ const Navbar = () => {
                 </div>
 
                 <nav className="flex flex-col gap-4">
-                  <a href="/" className="text-base font-semibold text-foreground hover:text-primary transition-colors">
+                  <a href="#events" className="text-base font-semibold text-foreground hover:text-primary transition-colors">
                     Explore
                   </a>
-                  <a href="/dashboard" className="text-base font-medium text-muted-foreground hover:text-foreground transition-colors">
-                    Organize
+                  <a href="#nightlife" className="text-base font-medium text-muted-foreground hover:text-foreground transition-colors">
+                    Nightlife
                   </a>
-                  <a href="/signin" className="text-base font-medium text-muted-foreground hover:text-foreground transition-colors">
-                    Sign In
+                  <a href="#features" className="text-base font-medium text-muted-foreground hover:text-foreground transition-colors">
+                    Features
+                  </a>
+                  <a href="#creators" className="text-base font-medium text-muted-foreground hover:text-foreground transition-colors">
+                    For Creators
+                  </a>
+                  <a href="#testimonials" className="text-base font-medium text-muted-foreground hover:text-foreground transition-colors">
+                    Testimonials
                   </a>
                 </nav>
 
-                <Button className="rounded-full font-semibold mt-2 w-full">
-                  Create Event
+                <Button className="rounded-full font-semibold mt-2 w-full" asChild>
+                  <a href="#events">Create Event</a>
                 </Button>
               </div>
             </SheetContent>

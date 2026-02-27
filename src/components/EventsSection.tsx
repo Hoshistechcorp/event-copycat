@@ -39,7 +39,7 @@ const EventsSection = () => {
   const filtered = active === "All" ? events : events.filter((e) => e.category === active);
 
   return (
-    <section className="py-20 md:py-28 bg-secondary/30">
+    <section id="events" className="py-20 md:py-28 bg-secondary/30">
       <div className="container px-4 md:px-8">
         {/* Header row: title left, tabs right */}
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-10">
@@ -124,8 +124,8 @@ const EventsSection = () => {
         </AnimatePresence>
 
         <div className="text-center mt-10">
-          <Button variant="outline" className="rounded-full px-8 font-semibold">
-            View All Events
+          <Button variant="outline" className="rounded-full px-8 font-semibold" asChild>
+            <a href="#nightlife">View All Events</a>
           </Button>
         </div>
       </div>
