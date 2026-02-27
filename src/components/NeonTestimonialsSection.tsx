@@ -25,9 +25,21 @@ const testimonials = [
 const NeonTestimonialsSection = () => {
   return (
     <section className="relative overflow-hidden bg-[hsl(224,30%,5%)] py-24 md:py-32">
+      {/* Neon edge glow - top */}
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[hsl(180,100%,50%)] to-transparent" />
+      <div className="absolute top-0 left-0 right-0 h-20 bg-gradient-to-b from-[hsl(180,100%,50%)]/8 to-transparent pointer-events-none" />
+
+      {/* Neon edge glow - bottom */}
+      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[hsl(320,100%,60%)] to-transparent" />
+      <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-[hsl(320,100%,60%)]/8 to-transparent pointer-events-none" />
+
       {/* Neon orbs */}
-      <div className="absolute top-1/3 right-0 w-[350px] h-[350px] rounded-full bg-[hsl(180,100%,50%)] opacity-[0.06] blur-[100px] pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full bg-[hsl(320,100%,60%)] opacity-[0.05] blur-[120px] pointer-events-none" />
+      <div className="absolute top-1/3 right-0 w-[350px] h-[350px] rounded-full bg-[hsl(180,100%,50%)] opacity-[0.08] blur-[100px] pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full bg-[hsl(320,100%,60%)] opacity-[0.07] blur-[120px] pointer-events-none" />
+
+      {/* Side neon accents */}
+      <div className="absolute top-1/2 left-0 w-16 h-[200px] bg-gradient-to-r from-[hsl(180,100%,50%)]/12 to-transparent pointer-events-none blur-[30px]" />
+      <div className="absolute top-1/2 right-0 w-16 h-[200px] bg-gradient-to-l from-[hsl(320,100%,60%)]/12 to-transparent pointer-events-none blur-[30px]" />
 
       <div className="container px-4 md:px-8 relative z-10">
         <motion.div
@@ -39,7 +51,7 @@ const NeonTestimonialsSection = () => {
         >
           <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-3">
             Loved by the{" "}
-            <span className="bg-gradient-to-r from-[hsl(180,100%,60%)] to-[hsl(280,100%,70%)] bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-[hsl(180,100%,60%)] to-[hsl(280,100%,70%)] bg-clip-text text-transparent drop-shadow-[0_0_15px_hsl(180,100%,60%,0.4)]">
               culture
             </span>
           </h2>
@@ -52,7 +64,7 @@ const NeonTestimonialsSection = () => {
           {testimonials.map((t, i) => (
             <motion.div
               key={t.name}
-              className="p-6 rounded-2xl bg-white/[0.04] border border-white/[0.08] backdrop-blur-sm hover:border-[hsl(180,100%,50%)]/20 transition-all duration-500"
+              className="p-6 rounded-2xl bg-white/[0.04] border border-white/[0.08] backdrop-blur-sm hover:border-[hsl(180,100%,50%)]/30 hover:shadow-[0_0_25px_hsl(180,100%,50%,0.08)] transition-all duration-500"
               initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}

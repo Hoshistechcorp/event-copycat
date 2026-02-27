@@ -41,29 +41,32 @@ const EventsSection = () => {
   return (
     <section className="py-20 md:py-28 bg-secondary/30">
       <div className="container px-4 md:px-8">
-        <div className="text-center mb-10">
-          <h2 className="text-3xl md:text-4xl font-extrabold text-foreground mb-3">
-            Discover Experiences
-          </h2>
-          <p className="text-muted-foreground text-lg">
-            Handpicked events for you in Lagos & beyond.
-          </p>
-        </div>
+        {/* Header row: title left, tabs right */}
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-10">
+          <div>
+            <h2 className="text-3xl md:text-4xl font-extrabold text-foreground mb-2">
+              Discover Experiences
+            </h2>
+            <p className="text-muted-foreground text-lg">
+              Handpicked events for you in Lagos & beyond.
+            </p>
+          </div>
 
-        <div className="flex justify-center gap-2 mb-10">
-          {tabs.map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActive(tab)}
-              className={`px-5 py-2 rounded-full text-sm font-semibold transition-all ${
-                active === tab
-                  ? "bg-primary text-primary-foreground shadow-md"
-                  : "bg-secondary text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              {tab}
-            </button>
-          ))}
+          <div className="flex gap-1 border border-border rounded-full p-1 bg-card">
+            {tabs.map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActive(tab)}
+                className={`px-5 py-2 rounded-full text-sm font-semibold transition-all ${
+                  active === tab
+                    ? "bg-primary text-primary-foreground shadow-md"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
         </div>
 
         <AnimatePresence mode="wait">
@@ -78,34 +81,41 @@ const EventsSection = () => {
             {filtered.map((event) => (
               <div
                 key={event.id}
-                className="group bg-card rounded-2xl overflow-hidden border border-border hover:shadow-lg transition-shadow duration-300 cursor-pointer"
+                className="group bg-card rounded-2xl overflow-hidden border border-border hover:shadow-xl transition-shadow duration-300 cursor-pointer"
               >
                 <div className="relative overflow-hidden">
                   <img
                     src={event.image}
                     alt={event.title}
-                    className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-500"
+                    className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500"
                   />
-                  <div className="absolute top-3 left-3 bg-card/90 backdrop-blur-sm text-foreground text-xs font-bold px-3 py-1.5 rounded-lg">
+                  <div className="absolute top-3 left-3 bg-card/90 backdrop-blur-sm text-foreground text-xs font-bold px-3 py-1.5 rounded-lg border border-border">
                     {event.date}
                   </div>
                   <div className="absolute top-3 right-3 flex items-center gap-1.5">
                     {event.verified && (
-                      <span className="bg-primary/90 backdrop-blur-sm text-primary-foreground text-[10px] font-semibold px-2 py-1 rounded-md flex items-center gap-1">
+                      <span className="bg-primary/90 backdrop-blur-sm text-primary-foreground text-[10px] font-semibold px-2.5 py-1 rounded-full flex items-center gap-1">
                         <BadgeCheck className="w-3 h-3" /> Verified
                       </span>
                     )}
                   </div>
-                  <div className="absolute bottom-3 right-3 bg-card/90 backdrop-blur-sm text-foreground text-xs font-bold px-3 py-1.5 rounded-lg">
+                  <div className="absolute bottom-3 right-3 bg-card/90 backdrop-blur-sm text-foreground text-xs font-bold px-3 py-1.5 rounded-lg border border-border">
                     {event.price}
                   </div>
                 </div>
-                <div className="p-4">
-                  <h3 className="text-base font-bold text-card-foreground">{event.title}</h3>
-                  <p className="text-xs text-muted-foreground mt-1">by {event.organizer}</p>
-                  <div className="flex items-center gap-1 mt-3 text-xs text-muted-foreground">
-                    <Users className="w-3.5 h-3.5" />
-                    <span>{event.vibing} vibing</span>
+                <div className="p-5">
+                  <h3 className="text-lg font-bold text-card-foreground">{event.title}</h3>
+                  <p className="text-sm text-muted-foreground mt-1">by {event.organizer}</p>
+                  <div className="flex items-center justify-between mt-4">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <div className="flex -space-x-1.5">
+                        <div className="w-5 h-5 rounded-full bg-muted-foreground/30" />
+                        <div className="w-5 h-5 rounded-full bg-muted-foreground/20" />
+                        <div className="w-5 h-5 rounded-full bg-muted-foreground/15" />
+                      </div>
+                      <span>{event.vibing} vibing</span>
+                    </div>
+                    <div className="w-2 h-2 rounded-full bg-primary/50" />
                   </div>
                 </div>
               </div>
