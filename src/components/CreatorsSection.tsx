@@ -21,7 +21,7 @@ const perks = [
 
 const CreatorsSection = () => {
   return (
-    <section className="py-20 md:py-28">
+    <section id="creators" className="py-20 md:py-28">
       <div className="container px-4 md:px-8">
         <motion.div
           className="text-center mb-14"

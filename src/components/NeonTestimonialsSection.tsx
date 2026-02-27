@@ -24,7 +24,7 @@ const testimonials = [
 
 const NeonTestimonialsSection = () => {
   return (
-    <section className="relative overflow-hidden bg-[hsl(224,30%,5%)] py-24 md:py-32">
+    <section id="testimonials" className="relative overflow-hidden bg-[hsl(224,30%,5%)] py-24 md:py-32">
       {/* Neon edge glow - top */}
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[hsl(180,100%,50%)] to-transparent" />
       <div className="absolute top-0 left-0 right-0 h-20 bg-gradient-to-b from-[hsl(180,100%,50%)]/8 to-transparent pointer-events-none" />

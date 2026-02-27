@@ -14,17 +14,17 @@ const Footer = () => {
           <div>
             <h4 className="font-semibold mb-3">Platform</h4>
             <ul className="space-y-2 text-sm opacity-60">
-              <li><a href="/" className="hover:opacity-100 transition-opacity">Explore Events</a></li>
-              <li><a href="/dashboard" className="hover:opacity-100 transition-opacity">Organize</a></li>
-              <li><a href="/create" className="hover:opacity-100 transition-opacity">Create Event</a></li>
+              <li><a href="#events" className="hover:opacity-100 transition-opacity">Explore Events</a></li>
+              <li><a href="#nightlife" className="hover:opacity-100 transition-opacity">Nightlife</a></li>
+              <li><a href="#creators" className="hover:opacity-100 transition-opacity">For Creators</a></li>
             </ul>
           </div>
           <div>
             <h4 className="font-semibold mb-3">Company</h4>
             <ul className="space-y-2 text-sm opacity-60">
-              <li><a href="#" className="hover:opacity-100 transition-opacity">About</a></li>
-              <li><a href="#" className="hover:opacity-100 transition-opacity">Privacy Policy</a></li>
-              <li><a href="#" className="hover:opacity-100 transition-opacity">Terms of Service</a></li>
+              <li><a href="#features" className="hover:opacity-100 transition-opacity">Features</a></li>
+              <li><a href="#testimonials" className="hover:opacity-100 transition-opacity">Testimonials</a></li>
+              <li><a href="#hero" className="hover:opacity-100 transition-opacity">Back to Top</a></li>
             </ul>
           </div>
         </div>
