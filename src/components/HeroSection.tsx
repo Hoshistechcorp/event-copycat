@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import event1 from "@/assets/event-1.jpg";
 import event2 from "@/assets/event-2.jpg";
 import event3 from "@/assets/event-3.jpg";
@@ -124,51 +124,62 @@ const HeroSection = () => {
             style={{ perspective: 1200 }}
           >
             <div className="relative w-[340px] h-[460px]">
-              {/* Back card 2 */}
+              {/* Back card - tilted left */}
               <motion.div
-                className="absolute inset-0 rounded-3xl bg-[hsl(45,30%,92%)] border border-border shadow-lg -rotate-6 scale-[0.94] origin-bottom-center"
+                className="absolute inset-0 rounded-3xl bg-[hsl(45,30%,92%)] border border-border shadow-lg origin-bottom-center"
                 initial={{ opacity: 0, rotate: 0, scale: 0.8 }}
-                animate={{ opacity: 1, rotate: -6, scale: 0.94 }}
+                animate={{ opacity: 1, rotate: -8, scale: 0.92, x: -20 }}
                 transition={{ duration: 0.6, delay: 0.4, type: "spring", stiffness: 120 }}
               />
-              {/* Back card 1 */}
+              {/* Back card - tilted right */}
               <motion.div
-                className="absolute inset-0 rounded-3xl bg-[hsl(45,20%,96%)] border border-border shadow-lg rotate-3 scale-[0.97] origin-bottom-center"
+                className="absolute inset-0 rounded-3xl bg-[hsl(45,20%,96%)] border border-border shadow-lg origin-bottom-center"
                 initial={{ opacity: 0, rotate: 0, scale: 0.8 }}
-                animate={{ opacity: 1, rotate: 3, scale: 0.97 }}
+                animate={{ opacity: 1, rotate: 6, scale: 0.95, x: 20 }}
                 transition={{ duration: 0.6, delay: 0.6, type: "spring", stiffness: 120 }}
               />
               {/* Main card */}
               <motion.div
-                className="relative w-full h-full rounded-3xl overflow-hidden shadow-2xl bg-card border border-border cursor-pointer"
-                whileHover={{ rotate: 3, scale: 1.03 }}
-                transition={{ type: "spring", stiffness: 200, damping: 15 }}
+                className="relative w-full h-full rounded-3xl overflow-hidden shadow-2xl bg-card border border-border cursor-pointer z-10"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.6, delay: 0.8, type: "spring", stiffness: 120 }}
+                whileHover={{ rotate: 2, scale: 1.03 }}
               >
+                {/* Glow overlay */}
+                <div className="absolute inset-0 z-20 pointer-events-none rounded-3xl bg-gradient-to-br from-primary/20 via-transparent to-accent/15" />
+                <div className="absolute inset-0 z-20 pointer-events-none rounded-3xl shadow-[inset_0_0_60px_rgba(99,102,241,0.12)]" />
+
                 <div className="relative overflow-hidden h-[340px]">
-                  {heroEvents.map((evt, i) => (
+                  <AnimatePresence mode="popLayout">
                     <motion.img
-                      key={i}
-                      src={evt.image}
-                      alt={evt.title}
+                      key={eventIndex}
+                      src={currentEvent.image}
+                      alt={currentEvent.title}
                       className="absolute inset-0 w-full h-full object-cover"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: i === eventIndex ? 1 : 0 }}
-                      transition={{ duration: 0.8 }}
+                      initial={{ x: 300, rotate: 8, opacity: 0 }}
+                      animate={{ x: 0, rotate: 0, opacity: 1 }}
+                      exit={{ x: -300, rotate: -8, opacity: 0 }}
+                      transition={{ duration: 0.5, type: "spring", stiffness: 150, damping: 20 }}
                     />
-                  ))}
+                  </AnimatePresence>
                 </div>
-                <motion.div
-                  className="p-5 bg-card"
-                  key={eventIndex}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5 }}
-                >
-                  <h3 className="text-lg font-bold text-card-foreground">{currentEvent.title}</h3>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    {currentEvent.venue} • {currentEvent.date}
-                  </p>
-                </motion.div>
+
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    className="p-5 bg-card"
+                    key={eventIndex}
+                    initial={{ opacity: 0, x: 30 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -30 }}
+                    transition={{ duration: 0.4 }}
+                  >
+                    <h3 className="text-lg font-bold text-card-foreground">{currentEvent.title}</h3>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      {currentEvent.venue} • {currentEvent.date}
+                    </p>
+                  </motion.div>
+                </AnimatePresence>
 
                 {/* Dots indicator */}
                 <div className="flex justify-center gap-1.5 pb-4 bg-card">
