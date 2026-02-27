@@ -155,35 +155,50 @@ const HeroSection = () => {
                 />
               </motion.div>
 
-              {/* Main card */}
-              <motion.div
-                className="relative w-full h-full rounded-3xl overflow-hidden shadow-2xl bg-card cursor-pointer z-10"
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.6, delay: 0.8, type: "spring", stiffness: 120 }}
-                whileHover={{ rotate: 2, scale: 1.03 }}
-                onHoverStart={() => setIsHovered(true)}
-                onHoverEnd={() => setIsHovered(false)}
-                style={{
-                  border: "2px solid transparent",
-                  boxShadow: isHovered
-                    ? "0 0 20px hsl(228 65% 55% / 0.4), 0 0 40px hsl(228 65% 55% / 0.2), inset 0 0 20px hsl(228 65% 55% / 0.05)"
-                    : "0 25px 50px -12px rgb(0 0 0 / 0.25)",
-                  borderColor: isHovered ? "hsl(228 65% 55% / 0.6)" : "hsl(var(--border))",
-                  transition: "box-shadow 0.4s ease, border-color 0.4s ease",
-                }}
+              {/* Main card wrapper with animated border */}
+              <div
+                className="relative w-full h-full z-10"
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
               >
-                {/* Glow overlay */}
-                <div className="absolute inset-0 z-20 pointer-events-none rounded-3xl bg-gradient-to-br from-primary/20 via-transparent to-accent/15" />
+                {/* Animated color-shifting border */}
                 <motion.div
-                  className="absolute inset-0 z-20 pointer-events-none rounded-3xl"
-                  animate={{
-                    boxShadow: isHovered
-                      ? "inset 0 0 80px hsl(228 65% 55% / 0.15)"
-                      : "inset 0 0 60px rgba(99,102,241,0.08)",
+                  className="absolute -inset-[2px] rounded-3xl pointer-events-none"
+                  style={{
+                    background: isHovered
+                      ? "conic-gradient(from var(--border-angle, 0deg), hsl(228,65%,55%), hsl(280,100%,60%), hsl(38,95%,55%), hsl(180,100%,50%), hsl(320,100%,65%), hsl(228,65%,55%))"
+                      : "hsl(var(--border))",
+                    opacity: isHovered ? 1 : 1,
+                    transition: "opacity 0.4s ease",
                   }}
-                  transition={{ duration: 0.4 }}
+                  animate={isHovered ? { "--border-angle": ["0deg", "360deg"] } as any : {}}
+                  transition={isHovered ? { duration: 3, repeat: Infinity, ease: "linear" } : {}}
                 />
+
+                <motion.div
+                  className="relative w-full h-full rounded-3xl overflow-hidden shadow-2xl bg-card cursor-pointer"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.6, delay: 0.8, type: "spring", stiffness: 120 }}
+                  whileHover={{ rotate: 2, scale: 1.03 }}
+                  style={{
+                    boxShadow: isHovered
+                      ? "0 0 25px hsl(280 100% 60% / 0.3), 0 0 50px hsl(228 65% 55% / 0.15)"
+                      : "0 25px 50px -12px rgb(0 0 0 / 0.25)",
+                    transition: "box-shadow 0.5s ease",
+                  }}
+                >
+                  {/* Glow overlay */}
+                  <div className="absolute inset-0 z-20 pointer-events-none rounded-3xl bg-gradient-to-br from-primary/20 via-transparent to-accent/15" />
+                  <motion.div
+                    className="absolute inset-0 z-20 pointer-events-none rounded-3xl"
+                    animate={{
+                      boxShadow: isHovered
+                        ? "inset 0 0 80px hsl(280 100% 60% / 0.12)"
+                        : "inset 0 0 60px rgba(99,102,241,0.08)",
+                    }}
+                    transition={{ duration: 0.4 }}
+                  />
 
                 <div className="relative overflow-hidden h-[340px]">
                   <AnimatePresence mode="popLayout">
@@ -228,7 +243,8 @@ const HeroSection = () => {
                     />
                   ))}
                 </div>
-              </motion.div>
+                </motion.div>
+              </div>
             </div>
           </motion.div>
         </div>

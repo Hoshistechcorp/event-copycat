@@ -115,25 +115,67 @@ const NeonPartySection = () => {
         </motion.div>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-          {highlights.map((h, i) => (
-            <motion.div
-              key={h.label}
-              className="group relative p-6 rounded-2xl bg-white/[0.04] border border-white/[0.08] backdrop-blur-sm hover:border-[hsl(280,80%,60%)]/40 transition-all duration-500 hover:shadow-[0_0_30px_hsl(280,100%,60%,0.1)]"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: i * 0.1 }}
-            >
-              <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[hsl(280,100%,60%)]/0 to-[hsl(180,100%,50%)]/0 group-hover:from-[hsl(280,100%,60%)]/8 group-hover:to-[hsl(180,100%,50%)]/5 transition-all duration-500 pointer-events-none" />
-              <div className="relative z-10">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[hsl(280,80%,60%)]/20 to-[hsl(320,100%,65%)]/20 flex items-center justify-center mb-4 group-hover:shadow-[0_0_25px_hsl(280,100%,60%,0.3)] transition-shadow duration-500">
-                  <h.icon className="w-6 h-6 text-[hsl(280,80%,70%)]" />
+          {highlights.map((h, i) => {
+            // Each card gets a different neon accent color
+            const neonColors = [
+              { from: "hsl(280,100%,60%)", to: "hsl(320,100%,65%)", icon: "hsl(280,80%,70%)" },
+              { from: "hsl(180,100%,50%)", to: "hsl(200,100%,60%)", icon: "hsl(180,90%,65%)" },
+              { from: "hsl(38,95%,55%)", to: "hsl(25,100%,60%)", icon: "hsl(38,90%,65%)" },
+              { from: "hsl(140,80%,45%)", to: "hsl(160,90%,50%)", icon: "hsl(140,80%,60%)" },
+            ];
+            const color = neonColors[i % neonColors.length];
+
+            return (
+              <motion.div
+                key={h.label}
+                className="group relative p-6 rounded-2xl bg-white/[0.04] backdrop-blur-sm transition-all duration-500 overflow-hidden"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: i * 0.1 }}
+                style={{ border: `1px solid rgba(255,255,255,0.08)` }}
+                whileHover={{
+                  borderColor: `${color.from}66`,
+                  boxShadow: `0 0 30px ${color.from}1a, inset 0 0 30px ${color.from}08`,
+                }}
+              >
+                {/* Animated neon gradient overlay on hover */}
+                <motion.div
+                  className="absolute inset-0 rounded-2xl pointer-events-none"
+                  initial={{ opacity: 0 }}
+                  whileHover={{ opacity: 1 }}
+                  style={{
+                    background: `linear-gradient(135deg, ${color.from}14 0%, transparent 50%, ${color.to}0a 100%)`,
+                  }}
+                />
+                {/* Animated top edge neon line */}
+                <motion.div
+                  className="absolute top-0 left-0 right-0 h-px pointer-events-none"
+                  style={{
+                    background: `linear-gradient(90deg, transparent, ${color.from}, transparent)`,
+                    opacity: 0,
+                  }}
+                  whileHover={{ opacity: 0.6 }}
+                  transition={{ duration: 0.5 }}
+                />
+                <div className="relative z-10">
+                  <motion.div
+                    className="w-12 h-12 rounded-xl flex items-center justify-center mb-4 transition-shadow duration-500"
+                    style={{
+                      background: `linear-gradient(135deg, ${color.from}33, ${color.to}33)`,
+                    }}
+                    whileHover={{
+                      boxShadow: `0 0 25px ${color.from}4d`,
+                    }}
+                  >
+                    <h.icon className="w-6 h-6" style={{ color: color.icon }} />
+                  </motion.div>
+                  <h3 className="text-lg font-bold text-white mb-1">{h.label}</h3>
+                  <p className="text-sm text-[hsl(220,20%,55%)]">{h.desc}</p>
                 </div>
-                <h3 className="text-lg font-bold text-white mb-1">{h.label}</h3>
-                <p className="text-sm text-[hsl(220,20%,55%)]">{h.desc}</p>
-              </div>
-            </motion.div>
-          ))}
+              </motion.div>
+            );
+          })}
         </div>
 
         <motion.div
