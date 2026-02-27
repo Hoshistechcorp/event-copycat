@@ -1,12 +1,12 @@
+import mainLogo from "@/assets/mainlogo.png";
+
 const Footer = () => {
   return (
     <footer className="bg-foreground text-background py-14">
       <div className="container px-4 md:px-8">
         <div className="grid sm:grid-cols-3 gap-10 mb-10">
           <div>
-            <h3 className="text-xl font-extrabold mb-3">
-              i<span className="text-primary">BLOOV</span>
-            </h3>
+            <img src={mainLogo} alt="iBLOOV logo" className="h-10 w-auto mb-3 brightness-0 invert" />
             <p className="text-sm opacity-60 leading-relaxed">
               Delightful events start here. The #1 event platform in Africa.
             </p>

@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { motion } from "framer-motion";
+import { motion, useMotionValue, useTransform, useSpring } from "framer-motion";
 import eventHero from "@/assets/event-hero.jpg";
 
 const cities = ["Lagos", "Accra", "Nairobi", "London", "Dubai"];
@@ -9,6 +9,29 @@ const HeroSection = () => {
   const [cityIndex, setCityIndex] = useState(0);
   const [displayText, setDisplayText] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  const rotateX = useSpring(useTransform(mouseY, [-300, 300], [15, -15]), { stiffness: 150, damping: 20 });
+  const rotateY = useSpring(useTransform(mouseX, [-300, 300], [-15, 15]), { stiffness: 150, damping: 20 });
+  const glareX = useTransform(mouseX, [-300, 300], [0, 100]);
+  const glareY = useTransform(mouseY, [-300, 300], [0, 100]);
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    mouseX.set(e.clientX - centerX);
+    mouseY.set(e.clientY - centerY);
+  };
+
+  const handleMouseLeave = () => {
+    mouseX.set(0);
+    mouseY.set(0);
+  };
 
   useEffect(() => {
     const currentCity = cities[cityIndex];
@@ -89,26 +112,47 @@ const HeroSection = () => {
             </div>
           </motion.div>
 
-          {/* Right - tilted card */}
+          {/* Right - interactive 3D card */}
           <motion.div
-            className="hidden lg:flex justify-center"
-            initial={{ opacity: 0, rotate: 8, y: 40 }}
-            animate={{ opacity: 1, rotate: 6, y: 0 }}
+            className="hidden lg:flex justify-center perspective-[1200px]"
+            initial={{ opacity: 0, scale: 0.85 }}
+            animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            <div className="relative w-[320px] rounded-2xl overflow-hidden shadow-2xl bg-card border border-border transform hover:rotate-0 transition-transform duration-500">
+            <motion.div
+              ref={cardRef}
+              onMouseMove={handleMouseMove}
+              onMouseLeave={handleMouseLeave}
+              style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
+              className="relative w-[400px] rounded-3xl overflow-hidden shadow-2xl bg-card border border-border cursor-grab active:cursor-grabbing"
+            >
+              {/* Glare overlay */}
+              <motion.div
+                className="absolute inset-0 z-10 pointer-events-none rounded-3xl"
+                style={{
+                  background: useTransform(
+                    [glareX, glareY],
+                    ([x, y]) =>
+                      `radial-gradient(circle at ${x}% ${y}%, rgba(255,255,255,0.15) 0%, transparent 60%)`
+                  ),
+                }}
+              />
               <img
                 src={eventHero}
                 alt="Afrobeat Night Out event"
-                className="w-full h-[280px] object-cover"
+                className="w-full h-[360px] object-cover"
               />
-              <div className="p-5">
-                <h3 className="text-lg font-bold text-card-foreground">Afrobeat Night Out</h3>
+              <div className="p-6">
+                <h3 className="text-xl font-bold text-card-foreground">Afrobeat Night Out</h3>
                 <p className="text-sm text-muted-foreground mt-1">
                   Eko Hotel • Dec 20, 2026
                 </p>
+                <div className="flex items-center justify-between mt-4">
+                  <span className="text-sm font-semibold text-primary">₦15,000</span>
+                  <span className="text-xs text-muted-foreground">200+ vibing</span>
+                </div>
               </div>
-            </div>
+            </motion.div>
           </motion.div>
         </div>
       </div>
