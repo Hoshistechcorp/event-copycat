@@ -20,14 +20,64 @@ const NeonPartySection = () => {
       <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[hsl(180,100%,50%)] to-transparent" />
       <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-[hsl(180,100%,50%)]/10 to-transparent pointer-events-none" />
 
-      {/* Neon glow orbs */}
-      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] rounded-full bg-[hsl(280,100%,60%)] opacity-[0.08] blur-[120px] pointer-events-none animate-pulse" />
-      <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] rounded-full bg-[hsl(180,100%,50%)] opacity-[0.1] blur-[100px] pointer-events-none" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] rounded-full bg-[hsl(38,95%,55%)] opacity-[0.07] blur-[80px] pointer-events-none" />
+      {/* Animated neon orbs - different colors, moving around */}
+      <motion.div
+        className="absolute w-[500px] h-[500px] rounded-full bg-[hsl(280,100%,60%)] opacity-[0.07] blur-[120px] pointer-events-none"
+        animate={{
+          x: ["-10%", "15%", "-5%"],
+          y: ["-20%", "10%", "-15%"],
+        }}
+        transition={{ duration: 12, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
+        style={{ top: "5%", left: "10%" }}
+      />
+      <motion.div
+        className="absolute w-[400px] h-[400px] rounded-full bg-[hsl(180,100%,50%)] opacity-[0.08] blur-[100px] pointer-events-none"
+        animate={{
+          x: ["10%", "-15%", "5%"],
+          y: ["15%", "-10%", "20%"],
+        }}
+        transition={{ duration: 15, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
+        style={{ bottom: "10%", right: "15%" }}
+      />
+      <motion.div
+        className="absolute w-[350px] h-[350px] rounded-full bg-[hsl(320,100%,55%)] opacity-[0.06] blur-[90px] pointer-events-none"
+        animate={{
+          x: ["5%", "-10%", "8%"],
+          y: ["-5%", "15%", "-10%"],
+        }}
+        transition={{ duration: 18, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
+        style={{ top: "40%", left: "50%" }}
+      />
+      <motion.div
+        className="absolute w-[300px] h-[300px] rounded-full bg-[hsl(38,95%,55%)] opacity-[0.05] blur-[80px] pointer-events-none"
+        animate={{
+          x: ["-8%", "12%", "-6%"],
+          y: ["10%", "-12%", "8%"],
+        }}
+        transition={{ duration: 20, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
+        style={{ top: "20%", right: "25%" }}
+      />
+      <motion.div
+        className="absolute w-[250px] h-[250px] rounded-full bg-[hsl(140,80%,45%)] opacity-[0.05] blur-[70px] pointer-events-none"
+        animate={{
+          x: ["0%", "-8%", "6%"],
+          y: ["-8%", "10%", "-5%"],
+        }}
+        transition={{ duration: 14, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
+        style={{ bottom: "25%", left: "30%" }}
+      />
 
-      {/* Side neon glows */}
-      <div className="absolute top-1/3 left-0 w-24 h-[300px] bg-gradient-to-r from-[hsl(280,100%,60%)]/15 to-transparent pointer-events-none blur-[40px]" />
-      <div className="absolute bottom-1/3 right-0 w-24 h-[300px] bg-gradient-to-l from-[hsl(180,100%,50%)]/15 to-transparent pointer-events-none blur-[40px]" />
+      {/* Side neon glows - animated */}
+      <motion.div
+        className="absolute top-1/3 left-0 w-24 h-[300px] bg-gradient-to-r from-[hsl(280,100%,60%)]/15 to-transparent pointer-events-none blur-[40px]"
+        animate={{ opacity: [0.15, 0.25, 0.15], y: [-20, 20, -20] }}
+        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+      />
+      <motion.div
+        className="absolute bottom-1/3 right-0 w-24 h-[300px] bg-gradient-to-l from-[hsl(180,100%,50%)]/15 to-transparent pointer-events-none blur-[40px]"
+        animate={{ opacity: [0.15, 0.3, 0.15], y: [20, -20, 20] }}
+        transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+      />
 
       <div className="container px-4 md:px-8 relative z-10">
         <motion.div
@@ -42,9 +92,22 @@ const NeonPartySection = () => {
           </span>
           <h2 className="text-4xl md:text-5xl font-extrabold text-white mb-4 leading-tight">
             Where the night{" "}
-            <span className="bg-gradient-to-r from-[hsl(280,100%,70%)] via-[hsl(320,100%,65%)] to-[hsl(38,95%,55%)] bg-clip-text text-transparent drop-shadow-[0_0_20px_hsl(280,100%,60%,0.5)]">
+            <motion.span
+              className="bg-clip-text text-transparent"
+              animate={{
+                backgroundImage: [
+                  "linear-gradient(135deg, hsl(280,100%,70%), hsl(320,100%,65%), hsl(38,95%,55%))",
+                  "linear-gradient(135deg, hsl(180,100%,60%), hsl(280,100%,70%), hsl(320,100%,65%))",
+                  "linear-gradient(135deg, hsl(38,95%,55%), hsl(140,80%,50%), hsl(280,100%,70%))",
+                  "linear-gradient(135deg, hsl(320,100%,65%), hsl(38,95%,55%), hsl(180,100%,60%))",
+                  "linear-gradient(135deg, hsl(280,100%,70%), hsl(320,100%,65%), hsl(38,95%,55%))",
+                ],
+              }}
+              transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+              style={{ filter: "drop-shadow(0 0 20px hsl(280 100% 60% / 0.5))" }}
+            >
               comes alive
-            </span>
+            </motion.span>
           </h2>
           <p className="text-[hsl(220,20%,60%)] text-lg max-w-lg mx-auto">
             From underground raves to rooftop soirées, iBLOOV powers the best nightlife across the continent.

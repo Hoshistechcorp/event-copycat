@@ -11,12 +11,12 @@ import eventHero from "@/assets/event-hero.jpg";
 const cities = ["Lagos", "Accra", "Nairobi", "London", "Dubai"];
 
 const heroEvents = [
-  { image: eventHero, title: "Afrobeat Night Out", venue: "Eko Hotel", date: "Dec 20, 2026", price: "₦15,000", vibing: "200+" },
-  { image: event1, title: "Vibes & Grills 3.0", venue: "Lekki Phase 1", date: "Oct 12, 2026", price: "₦5,000", vibing: "120+" },
-  { image: event2, title: "Tech Mixer Lagos", venue: "Civic Centre", date: "Oct 15, 2026", price: "Free", vibing: "85+" },
-  { image: event3, title: "Sip & Paint Night", venue: "Art Studio X", date: "Oct 18, 2026", price: "₦7,500", vibing: "45+" },
-  { image: event4, title: "Outdoor Cinema", venue: "Park View", date: "Oct 20, 2026", price: "₦3,000", vibing: "200+" },
-  { image: event5, title: "Comedy Roast Night", venue: "The Vault", date: "Oct 22, 2026", price: "₦10,000", vibing: "150+" },
+  { image: eventHero, title: "Afrobeat Night Out", venue: "Eko Hotel", date: "Dec 20, 2026" },
+  { image: event1, title: "Vibes & Grills 3.0", venue: "Lekki Phase 1", date: "Oct 12, 2026" },
+  { image: event2, title: "Tech Mixer Lagos", venue: "Civic Centre", date: "Oct 15, 2026" },
+  { image: event3, title: "Sip & Paint Night", venue: "Art Studio X", date: "Oct 18, 2026" },
+  { image: event4, title: "Outdoor Cinema", venue: "Park View", date: "Oct 20, 2026" },
+  { image: event5, title: "Comedy Roast Night", venue: "The Vault", date: "Oct 22, 2026" },
 ];
 
 const HeroSection = () => {
@@ -24,6 +24,7 @@ const HeroSection = () => {
   const [displayText, setDisplayText] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
   const [eventIndex, setEventIndex] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
 
   // Typewriter effect
   useEffect(() => {
@@ -59,10 +60,12 @@ const HeroSection = () => {
   }, []);
 
   const currentEvent = heroEvents[eventIndex];
+  const prevEvent = heroEvents[(eventIndex - 1 + heroEvents.length) % heroEvents.length];
+  const nextEvent = heroEvents[(eventIndex + 1) % heroEvents.length];
 
   return (
     <section className="hero-gradient relative overflow-hidden">
-      <div className="container px-4 md:px-8 py-20 md:py-28">
+      <div className="container px-4 md:px-8 py-16 md:py-28">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Left */}
           <motion.div
@@ -75,7 +78,7 @@ const HeroSection = () => {
               The #1 Event Platform in Africa
             </span>
 
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold leading-[1.1] tracking-tight text-foreground mb-6">
+            <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold leading-[1.1] tracking-tight text-foreground mb-6">
               Delightful events{" "}
               <br className="hidden sm:block" />
               start{" "}
@@ -84,19 +87,19 @@ const HeroSection = () => {
               </span>
             </h1>
 
-            <p className="text-lg text-muted-foreground max-w-md mb-8">
+            <p className="text-base sm:text-lg text-muted-foreground max-w-md mb-8">
               Set up an event page, invite friends and sell tickets. Host a
               memorable event today with iBLOOV.
             </p>
 
             <div className="flex flex-wrap gap-3 mb-10">
-              <Button size="lg" className="rounded-full px-8 font-semibold text-base">
+              <Button size="lg" className="rounded-full px-6 sm:px-8 font-semibold text-base">
                 Create Your First Event
               </Button>
               <Button
                 size="lg"
                 variant="outline"
-                className="rounded-full px-8 font-semibold text-base"
+                className="rounded-full px-6 sm:px-8 font-semibold text-base"
               >
                 Sign In
               </Button>
@@ -115,7 +118,7 @@ const HeroSection = () => {
             </div>
           </motion.div>
 
-          {/* Right - stacked cards with hover tilt */}
+          {/* Right - stacked cards with prev/next previews */}
           <motion.div
             className="hidden lg:flex justify-center items-center"
             initial={{ opacity: 0, scale: 0.85 }}
@@ -124,31 +127,63 @@ const HeroSection = () => {
             style={{ perspective: 1200 }}
           >
             <div className="relative w-[340px] h-[460px]">
-              {/* Back card - tilted left */}
+              {/* Back card LEFT - previous event */}
               <motion.div
-                className="absolute inset-0 rounded-3xl bg-[hsl(45,30%,92%)] border border-border shadow-lg origin-bottom-center"
+                className="absolute inset-0 rounded-3xl overflow-hidden border border-border shadow-lg origin-bottom-center"
                 initial={{ opacity: 0, rotate: 0, scale: 0.8 }}
-                animate={{ opacity: 1, rotate: -8, scale: 0.92, x: -20 }}
+                animate={{ opacity: 1, rotate: -8, scale: 0.92, x: -24 }}
                 transition={{ duration: 0.6, delay: 0.4, type: "spring", stiffness: 120 }}
-              />
-              {/* Back card - tilted right */}
+              >
+                <img
+                  src={prevEvent.image}
+                  alt={prevEvent.title}
+                  className="w-full h-full object-cover opacity-40"
+                />
+              </motion.div>
+
+              {/* Back card RIGHT - next event */}
               <motion.div
-                className="absolute inset-0 rounded-3xl bg-[hsl(45,20%,96%)] border border-border shadow-lg origin-bottom-center"
+                className="absolute inset-0 rounded-3xl overflow-hidden border border-border shadow-lg origin-bottom-center"
                 initial={{ opacity: 0, rotate: 0, scale: 0.8 }}
-                animate={{ opacity: 1, rotate: 6, scale: 0.95, x: 20 }}
+                animate={{ opacity: 1, rotate: 6, scale: 0.95, x: 24 }}
                 transition={{ duration: 0.6, delay: 0.6, type: "spring", stiffness: 120 }}
-              />
+              >
+                <img
+                  src={nextEvent.image}
+                  alt={nextEvent.title}
+                  className="w-full h-full object-cover opacity-40"
+                />
+              </motion.div>
+
               {/* Main card */}
               <motion.div
-                className="relative w-full h-full rounded-3xl overflow-hidden shadow-2xl bg-card border border-border cursor-pointer z-10"
+                className="relative w-full h-full rounded-3xl overflow-hidden shadow-2xl bg-card cursor-pointer z-10"
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.6, delay: 0.8, type: "spring", stiffness: 120 }}
                 whileHover={{ rotate: 2, scale: 1.03 }}
+                onHoverStart={() => setIsHovered(true)}
+                onHoverEnd={() => setIsHovered(false)}
+                style={{
+                  border: "2px solid transparent",
+                  boxShadow: isHovered
+                    ? "0 0 20px hsl(228 65% 55% / 0.4), 0 0 40px hsl(228 65% 55% / 0.2), inset 0 0 20px hsl(228 65% 55% / 0.05)"
+                    : "0 25px 50px -12px rgb(0 0 0 / 0.25)",
+                  borderColor: isHovered ? "hsl(228 65% 55% / 0.6)" : "hsl(var(--border))",
+                  transition: "box-shadow 0.4s ease, border-color 0.4s ease",
+                }}
               >
                 {/* Glow overlay */}
                 <div className="absolute inset-0 z-20 pointer-events-none rounded-3xl bg-gradient-to-br from-primary/20 via-transparent to-accent/15" />
-                <div className="absolute inset-0 z-20 pointer-events-none rounded-3xl shadow-[inset_0_0_60px_rgba(99,102,241,0.12)]" />
+                <motion.div
+                  className="absolute inset-0 z-20 pointer-events-none rounded-3xl"
+                  animate={{
+                    boxShadow: isHovered
+                      ? "inset 0 0 80px hsl(228 65% 55% / 0.15)"
+                      : "inset 0 0 60px rgba(99,102,241,0.08)",
+                  }}
+                  transition={{ duration: 0.4 }}
+                />
 
                 <div className="relative overflow-hidden h-[340px]">
                   <AnimatePresence mode="popLayout">
