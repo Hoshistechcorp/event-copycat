@@ -115,62 +115,65 @@ const HeroSection = () => {
             </div>
           </motion.div>
 
-          {/* Right - hover tilt card with dynamic events */}
+          {/* Right - stacked cards with hover tilt */}
           <motion.div
-            className="hidden lg:flex justify-center"
+            className="hidden lg:flex justify-center items-center"
             initial={{ opacity: 0, scale: 0.85 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.2 }}
+            style={{ perspective: 1200 }}
           >
-            <motion.div
-              className="relative w-[400px] rounded-3xl overflow-hidden shadow-2xl bg-card border border-border cursor-pointer"
-              whileHover={{ rotateY: 8, rotateX: -5, scale: 1.03 }}
-              transition={{ type: "spring", stiffness: 200, damping: 15 }}
-              style={{ perspective: 1200, transformStyle: "preserve-3d" }}
-            >
-              <div className="relative overflow-hidden h-[360px]">
-                {heroEvents.map((evt, i) => (
-                  <motion.img
-                    key={i}
-                    src={evt.image}
-                    alt={evt.title}
-                    className="absolute inset-0 w-full h-full object-cover"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: i === eventIndex ? 1 : 0 }}
-                    transition={{ duration: 0.8 }}
-                  />
-                ))}
-              </div>
+            <div className="relative w-[340px] h-[460px]">
+              {/* Back card 2 */}
+              <div className="absolute inset-0 rounded-3xl bg-[hsl(45,30%,92%)] border border-border shadow-lg -rotate-6 scale-[0.94] origin-bottom-center" />
+              {/* Back card 1 */}
+              <div className="absolute inset-0 rounded-3xl bg-[hsl(45,20%,96%)] border border-border shadow-lg rotate-3 scale-[0.97] origin-bottom-center" />
+              {/* Main card */}
               <motion.div
-                className="p-6"
-                key={eventIndex}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
+                className="relative w-full h-full rounded-3xl overflow-hidden shadow-2xl bg-card border border-border cursor-pointer"
+                whileHover={{ rotate: 3, scale: 1.03 }}
+                transition={{ type: "spring", stiffness: 200, damping: 15 }}
               >
-                <h3 className="text-xl font-bold text-card-foreground">{currentEvent.title}</h3>
-                <p className="text-sm text-muted-foreground mt-1">
-                  {currentEvent.venue} • {currentEvent.date}
-                </p>
-                <div className="flex items-center justify-between mt-4">
-                  <span className="text-sm font-semibold text-primary">{currentEvent.price}</span>
-                  <span className="text-xs text-muted-foreground">{currentEvent.vibing} vibing</span>
+                <div className="relative overflow-hidden h-[340px]">
+                  {heroEvents.map((evt, i) => (
+                    <motion.img
+                      key={i}
+                      src={evt.image}
+                      alt={evt.title}
+                      className="absolute inset-0 w-full h-full object-cover"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: i === eventIndex ? 1 : 0 }}
+                      transition={{ duration: 0.8 }}
+                    />
+                  ))}
+                </div>
+                <motion.div
+                  className="p-5 bg-card"
+                  key={eventIndex}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <h3 className="text-lg font-bold text-card-foreground">{currentEvent.title}</h3>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    {currentEvent.venue} • {currentEvent.date}
+                  </p>
+                </motion.div>
+
+                {/* Dots indicator */}
+                <div className="flex justify-center gap-1.5 pb-4 bg-card">
+                  {heroEvents.map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setEventIndex(i)}
+                      className={`w-1.5 h-1.5 rounded-full transition-all ${
+                        i === eventIndex ? "bg-primary w-4" : "bg-muted-foreground/30"
+                      }`}
+                    />
+                  ))}
                 </div>
               </motion.div>
-
-              {/* Dots indicator */}
-              <div className="flex justify-center gap-1.5 pb-4">
-                {heroEvents.map((_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setEventIndex(i)}
-                    className={`w-1.5 h-1.5 rounded-full transition-all ${
-                      i === eventIndex ? "bg-primary w-4" : "bg-muted-foreground/30"
-                    }`}
-                  />
-                ))}
-              </div>
-            </motion.div>
+            </div>
           </motion.div>
         </div>
       </div>
