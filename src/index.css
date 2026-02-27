@@ -100,3 +100,9 @@
     background-clip: text;
   }
 }
+
+@property --border-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
