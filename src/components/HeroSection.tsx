@@ -125,9 +125,19 @@ const HeroSection = () => {
           >
             <div className="relative w-[340px] h-[460px]">
               {/* Back card 2 */}
-              <div className="absolute inset-0 rounded-3xl bg-[hsl(45,30%,92%)] border border-border shadow-lg -rotate-6 scale-[0.94] origin-bottom-center" />
+              <motion.div
+                className="absolute inset-0 rounded-3xl bg-[hsl(45,30%,92%)] border border-border shadow-lg -rotate-6 scale-[0.94] origin-bottom-center"
+                initial={{ opacity: 0, rotate: 0, scale: 0.8 }}
+                animate={{ opacity: 1, rotate: -6, scale: 0.94 }}
+                transition={{ duration: 0.6, delay: 0.4, type: "spring", stiffness: 120 }}
+              />
               {/* Back card 1 */}
-              <div className="absolute inset-0 rounded-3xl bg-[hsl(45,20%,96%)] border border-border shadow-lg rotate-3 scale-[0.97] origin-bottom-center" />
+              <motion.div
+                className="absolute inset-0 rounded-3xl bg-[hsl(45,20%,96%)] border border-border shadow-lg rotate-3 scale-[0.97] origin-bottom-center"
+                initial={{ opacity: 0, rotate: 0, scale: 0.8 }}
+                animate={{ opacity: 1, rotate: 3, scale: 0.97 }}
+                transition={{ duration: 0.6, delay: 0.6, type: "spring", stiffness: 120 }}
+              />
               {/* Main card */}
               <motion.div
                 className="relative w-full h-full rounded-3xl overflow-hidden shadow-2xl bg-card border border-border cursor-pointer"
