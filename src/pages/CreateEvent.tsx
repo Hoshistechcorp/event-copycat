@@ -23,6 +23,8 @@ interface TicketTier {
 interface Performer {
   name: string;
   role: string;
+  imageFile: File | null;
+  imagePreview: string | null;
 }
 
 const CATEGORIES = [
@@ -114,7 +116,7 @@ const CreateEvent = () => {
 
   const addPerformer = () => {
     if (performers.length >= 10) return;
-    setPerformers([...performers, { name: "", role: "Performer" }]);
+    setPerformers([...performers, { name: "", role: "Performer", imageFile: null, imagePreview: null }]);
   };
 
   const removePerformer = (i: number) => setPerformers(performers.filter((_, idx) => idx !== i));
@@ -123,6 +125,15 @@ const CreateEvent = () => {
     const updated = [...performers];
     updated[i] = { ...updated[i], [field]: value };
     setPerformers(updated);
+  };
+
+  const handlePerformerImage = (i: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const updated = [...performers];
+      updated[i] = { ...updated[i], imageFile: file, imagePreview: URL.createObjectURL(file) };
+      setPerformers(updated);
+    }
   };
 
   const addTier = () => {
@@ -187,14 +198,29 @@ const CreateEvent = () => {
     const { error: tierErr } = await supabase.from("ticket_tiers").insert(tierInserts);
     if (tierErr) { setError("Event created but ticket tiers failed: " + tierErr.message); setSubmitting(false); return; }
 
-    // Insert performers
+    // Insert performers (with optional avatar upload)
     const validPerformers = performers.filter((p) => p.name.trim());
     if (validPerformers.length > 0) {
-      const perfInserts = validPerformers.map((p) => ({
-        event_id: eventData.id,
-        name: p.name.trim(),
-        role: p.role.trim() || "Performer",
-      }));
+      const perfInserts = await Promise.all(
+        validPerformers.map(async (p) => {
+          let avatarUrl: string | null = null;
+          if (p.imageFile) {
+            const ext = p.imageFile.name.split(".").pop();
+            const path = `performers/${eventData.id}/${crypto.randomUUID()}.${ext}`;
+            const { error: upErr } = await supabase.storage.from("avatars").upload(path, p.imageFile);
+            if (!upErr) {
+              const { data: urlData } = supabase.storage.from("avatars").getPublicUrl(path);
+              avatarUrl = urlData.publicUrl;
+            }
+          }
+          return {
+            event_id: eventData.id,
+            name: p.name.trim(),
+            role: p.role.trim() || "Performer",
+            avatar_url: avatarUrl,
+          };
+        })
+      );
       await supabase.from("performers").insert(perfInserts);
     }
 
@@ -317,6 +343,16 @@ const CreateEvent = () => {
             <div className="space-y-3">
               {performers.map((p, i) => (
                 <div key={i} className="flex gap-3 items-start p-4 rounded-xl border border-border bg-card">
+                  <label htmlFor={`performer-img-${i}`} className="shrink-0 cursor-pointer">
+                    {p.imagePreview ? (
+                      <img src={p.imagePreview} alt={p.name} className="w-14 h-14 rounded-full object-cover border-2 border-border" />
+                    ) : (
+                      <div className="w-14 h-14 rounded-full bg-secondary border-2 border-dashed border-border flex items-center justify-center">
+                        <ImagePlus className="h-5 w-5 text-muted-foreground" />
+                      </div>
+                    )}
+                    <input id={`performer-img-${i}`} type="file" accept="image/*" className="hidden" onChange={(e) => handlePerformerImage(i, e)} />
+                  </label>
                   <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                       <label className="text-xs font-semibold text-foreground mb-1 block">Name *</label>
