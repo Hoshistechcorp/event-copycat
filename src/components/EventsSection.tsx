@@ -240,7 +240,7 @@ const EventsSection = () => {
 
         <div className="text-center mt-10">
           <Button variant="outline" className="rounded-full px-8 font-semibold" asChild>
-            <a href="#nightlife">View All Events</a>
+            <a href="/events">View All Events</a>
           </Button>
         </div>
       </div>
