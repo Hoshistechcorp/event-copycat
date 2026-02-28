@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { Mail, ArrowLeft, Loader2, Check } from "lucide-react";
 import mainLogo from "@/assets/mainlogo.png";
+import AuthCarousel from "@/components/AuthCarousel";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
@@ -51,38 +52,50 @@ const ForgotPassword = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center px-4">
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-sm">
-        <div className="text-center mb-8">
-          <Link to="/" className="inline-block mb-6">
-            <img src={mainLogo} alt="iBLOOV" className="h-6 mx-auto" />
-          </Link>
-          <h1 className="text-2xl font-extrabold text-foreground mb-1">Reset password</h1>
-          <p className="text-sm text-muted-foreground">Enter your email to receive a reset link</p>
-        </div>
+    <div className="min-h-screen flex bg-card">
+      <AuthCarousel />
 
-        <form onSubmit={handleReset} className="space-y-4">
-          {error && (
-            <div className="p-3 rounded-xl bg-destructive/10 text-destructive text-xs font-medium text-center">{error}</div>
-          )}
-          <div>
-            <label className="text-xs font-semibold text-foreground mb-1.5 block">Email</label>
-            <div className="relative">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input type="email" placeholder="your@email.com" value={email} onChange={(e) => setEmail(e.target.value)} className="rounded-xl pl-10" required />
-            </div>
+      <div className="flex-1 flex items-center justify-center px-6 py-12 lg:px-16">
+        <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="w-full max-w-md">
+          <div className="lg:hidden mb-8">
+            <Link to="/">
+              <img src={mainLogo} alt="iBLOOV" className="h-6" />
+            </Link>
           </div>
-          <Button type="submit" className="w-full rounded-xl h-11 font-bold" disabled={loading || !email.trim()}>
-            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Send reset link"}
-          </Button>
-        </form>
 
-        <div className="text-center mt-6">
-          <Button variant="ghost" size="sm" className="text-xs text-muted-foreground" asChild>
-            <Link to="/signin"><ArrowLeft className="w-3 h-3 mr-1" /> Back to sign in</Link>
-          </Button>
-        </div>
-      </motion.div>
+          <h1 className="text-2xl font-extrabold text-foreground mb-1">Reset password</h1>
+          <p className="text-sm text-muted-foreground mb-8">Enter your email to receive a reset link</p>
+
+          <form onSubmit={handleReset} className="space-y-5">
+            {error && (
+              <div className="p-3 rounded-xl bg-destructive/10 text-destructive text-xs font-medium text-center">{error}</div>
+            )}
+            <div>
+              <label className="text-sm font-semibold text-foreground mb-1.5 block">Email Address</label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="email"
+                  placeholder="Enter your email address"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="rounded-xl pl-10 h-12 bg-secondary border-border"
+                  required
+                />
+              </div>
+            </div>
+            <Button type="submit" className="w-full rounded-xl h-12 font-bold text-base" disabled={loading || !email.trim()}>
+              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Send reset link"}
+            </Button>
+          </form>
+
+          <div className="text-center mt-6">
+            <Button variant="ghost" size="sm" className="text-sm text-muted-foreground" asChild>
+              <Link to="/signin"><ArrowLeft className="w-3 h-3 mr-1" /> Back to sign in</Link>
+            </Button>
+          </div>
+        </motion.div>
+      </div>
     </div>
   );
 };
