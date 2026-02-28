@@ -64,34 +64,36 @@ const MyTickets = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.05 }}
-                  className="bg-card rounded-2xl border border-border overflow-hidden shadow-sm"
                 >
-                  <Link to={`/events/${event.id}`}>
+                  <Link
+                    to={`/my-tickets/${ticket.id}`}
+                    className="block bg-card rounded-2xl border border-border overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                  >
                     <img src={event.image} alt={event.title} className="w-full h-36 object-cover" />
+                    <div className="p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-primary/10 text-primary">
+                          {ticket.ticketType}
+                        </span>
+                        <span className="text-xs font-bold text-primary">{ticket.price}</span>
+                      </div>
+                      <h3 className="text-sm font-bold text-card-foreground mb-2">{event.title}</h3>
+                      <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-1">
+                        <Calendar className="w-3 h-3" />
+                        {event.fullDate} · {event.time}
+                      </div>
+                      <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-3">
+                        <MapPin className="w-3 h-3" />
+                        {event.venue}, {event.location}
+                      </div>
+                      <div className="pt-3 border-t border-border flex items-center justify-between">
+                        <span className="text-[10px] text-muted-foreground">Qty: {ticket.quantity}</span>
+                        <span className="text-[10px] text-muted-foreground">
+                          {new Date(ticket.purchasedAt).toLocaleDateString()}
+                        </span>
+                      </div>
+                    </div>
                   </Link>
-                  <div className="p-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-primary/10 text-primary">
-                        {ticket.ticketType}
-                      </span>
-                      <span className="text-xs font-bold text-primary">{ticket.price}</span>
-                    </div>
-                    <h3 className="text-sm font-bold text-card-foreground mb-2">{event.title}</h3>
-                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-1">
-                      <Calendar className="w-3 h-3" />
-                      {event.fullDate} · {event.time}
-                    </div>
-                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-3">
-                      <MapPin className="w-3 h-3" />
-                      {event.venue}, {event.location}
-                    </div>
-                    <div className="pt-3 border-t border-border flex items-center justify-between">
-                      <span className="text-[10px] text-muted-foreground">Qty: {ticket.quantity}</span>
-                      <span className="text-[10px] text-muted-foreground">
-                        {new Date(ticket.purchasedAt).toLocaleDateString()}
-                      </span>
-                    </div>
-                  </div>
                 </motion.div>
               );
             })}
