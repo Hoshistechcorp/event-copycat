@@ -1,9 +1,35 @@
-import { Search, Menu } from "lucide-react";
+import { Search, Menu, LogOut, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
+import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 import mainLogo from "@/assets/mainlogo.png";
 
 const Navbar = () => {
+  const { user, loading, signOut } = useAuth();
+  const navigate = useNavigate();
+
+  const handleCreateEvents = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (user) {
+      // TODO: navigate to create event page when built
+      navigate("/");
+    } else {
+      navigate("/signin");
+    }
+  };
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate("/");
+  };
+
+  const initials = user?.user_metadata?.display_name
+    ? user.user_metadata.display_name.split(" ").map((n: string) => n[0]).join("").toUpperCase().slice(0, 2)
+    : user?.email?.slice(0, 2).toUpperCase() || "U";
+
   return (
     <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
       <div className="container flex items-center justify-between h-16 px-4 md:px-8">
@@ -12,12 +38,12 @@ const Navbar = () => {
             <img src={mainLogo} alt="iBLOOV logo" className="h-5 w-auto" />
           </a>
           <div className="hidden md:flex items-center gap-6">
-            <a href="#events" className="text-sm font-semibold text-foreground hover:text-primary transition-colors">
+            <a href="/events" className="text-sm font-semibold text-foreground hover:text-primary transition-colors">
               Find Events
             </a>
-            <a href="#creators" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+            <button onClick={handleCreateEvents} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               Create Events
-            </a>
+            </button>
           </div>
         </div>
 
@@ -36,9 +62,44 @@ const Navbar = () => {
           <a href="/my-tickets" className="hidden md:inline-flex text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
             Find my tickets
           </a>
-          <Button size="sm" className="hidden md:inline-flex rounded-full px-5 font-semibold" asChild>
-            <a href="/signin">Sign in</a>
-          </Button>
+
+          {!loading && (
+            <>
+              {user ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="hidden md:flex items-center gap-2 rounded-full px-2 h-9">
+                      <Avatar className="h-7 w-7">
+                        <AvatarFallback className="text-[10px] font-bold bg-primary/10 text-primary">
+                          {initials}
+                        </AvatarFallback>
+                      </Avatar>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48 rounded-xl">
+                    <div className="px-3 py-2">
+                      <p className="text-xs font-semibold text-foreground truncate">
+                        {user.user_metadata?.display_name || user.email}
+                      </p>
+                      <p className="text-[10px] text-muted-foreground truncate">{user.email}</p>
+                    </div>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => navigate("/my-tickets")} className="text-xs cursor-pointer">
+                      <User className="w-3.5 h-3.5 mr-2" /> My Tickets
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={handleSignOut} className="text-xs text-destructive cursor-pointer">
+                      <LogOut className="w-3.5 h-3.5 mr-2" /> Sign out
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <Button size="sm" className="hidden md:inline-flex rounded-full px-5 font-semibold" asChild>
+                  <a href="/signin">Sign in</a>
+                </Button>
+              )}
+            </>
+          )}
 
           {/* Mobile hamburger */}
           <Sheet>
@@ -65,18 +126,24 @@ const Navbar = () => {
                 </div>
 
                 <nav className="flex flex-col gap-4">
-                  <a href="#events" className="text-base font-semibold text-foreground hover:text-primary transition-colors">
+                  <a href="/events" className="text-base font-semibold text-foreground hover:text-primary transition-colors">
                     Find Events
                   </a>
-                  <a href="#creators" className="text-base font-medium text-muted-foreground hover:text-foreground transition-colors">
+                  <button onClick={handleCreateEvents} className="text-left text-base font-medium text-muted-foreground hover:text-foreground transition-colors">
                     Create Events
-                  </a>
+                  </button>
                   <a href="/my-tickets" className="text-base font-medium text-muted-foreground hover:text-foreground transition-colors">
                     Find my tickets
                   </a>
-                  <a href="/signin" className="text-base font-medium text-muted-foreground hover:text-foreground transition-colors">
-                    Sign in
-                  </a>
+                  {user ? (
+                    <button onClick={handleSignOut} className="text-left text-base font-medium text-destructive hover:text-destructive/80 transition-colors">
+                      Sign out
+                    </button>
+                  ) : (
+                    <a href="/signin" className="text-base font-medium text-muted-foreground hover:text-foreground transition-colors">
+                      Sign in
+                    </a>
+                  )}
                 </nav>
               </div>
             </SheetContent>
