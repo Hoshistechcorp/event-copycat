@@ -62,6 +62,41 @@ export type Database = {
         }
         Relationships: []
       }
+      performers: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          event_id: string
+          id: string
+          name: string
+          role: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          event_id: string
+          id?: string
+          name: string
+          role?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          event_id?: string
+          id?: string
+          name?: string
+          role?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "performers_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
