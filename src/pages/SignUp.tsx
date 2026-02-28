@@ -22,10 +22,24 @@ const SignUp = () => {
   const [success, setSuccess] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
 
+  const passwordChecks = [
+    { label: "At least 8 characters", test: (p: string) => p.length >= 8 },
+    { label: "One uppercase letter", test: (p: string) => /[A-Z]/.test(p) },
+    { label: "One lowercase letter", test: (p: string) => /[a-z]/.test(p) },
+    { label: "One number", test: (p: string) => /\d/.test(p) },
+    { label: "One special character (!@#$...)", test: (p: string) => /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(p) },
+  ];
+
+  const allChecksPassed = passwordChecks.every((c) => c.test(password));
+
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     if (!email.trim() || !password.trim() || !displayName.trim()) return;
+    if (!allChecksPassed) {
+      setError("Please meet all password requirements");
+      return;
+    }
 
     setLoading(true);
     const { error } = await supabase.auth.signUp({
@@ -134,14 +148,24 @@ const SignUp = () => {
               <label className="text-sm font-semibold text-foreground mb-1.5 block">Create Password</label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input type={showPassword ? "text" : "password"} placeholder="Enter your password" value={password} onChange={(e) => setPassword(e.target.value)} className="rounded-xl pl-10 pr-10 h-12 bg-secondary border-border" required minLength={6} />
+                <Input type={showPassword ? "text" : "password"} placeholder="Enter your password" value={password} onChange={(e) => setPassword(e.target.value)} className="rounded-xl pl-10 pr-10 h-12 bg-secondary border-border" required minLength={8} />
                 <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
+              {password.length > 0 && (
+                <ul className="mt-2 space-y-1">
+                  {passwordChecks.map((check) => (
+                    <li key={check.label} className={`flex items-center gap-1.5 text-xs ${check.test(password) ? "text-primary" : "text-muted-foreground"}`}>
+                      {check.test(password) ? <Check className="h-3 w-3" /> : <span className="h-3 w-3 rounded-full border border-muted-foreground/40 inline-block" />}
+                      {check.label}
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
 
-            <Button type="submit" className="w-full rounded-xl h-12 font-bold text-base" disabled={loading || !email.trim() || !password.trim() || !displayName.trim()}>
+            <Button type="submit" className="w-full rounded-xl h-12 font-bold text-base" disabled={loading || !email.trim() || !password.trim() || !displayName.trim() || !allChecksPassed}>
               {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Sign Up"}
             </Button>
           </form>
