@@ -1,9 +1,11 @@
 import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { BadgeCheck, MapPin, Calendar, Clock, Users, ArrowLeft, Share2, Heart, Check } from "lucide-react";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { BadgeCheck, MapPin, Calendar, Clock, Users, ArrowLeft, Share2, Heart, Check, Music } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import CheckoutModal from "@/components/CheckoutModal";
 import { allEvents } from "@/data/events";
 import { useState } from "react";
 
@@ -11,6 +13,7 @@ const EventDetail = () => {
   const { id } = useParams();
   const event = allEvents.find((e) => e.id === Number(id));
   const [selectedTicket, setSelectedTicket] = useState(0);
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
 
   if (!event) {
     return (
@@ -61,7 +64,7 @@ const EventDetail = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
-            className="lg:col-span-2"
+            className="lg:col-span-2 space-y-6"
           >
             <div className="bg-card rounded-2xl border border-border p-6 md:p-8 shadow-sm">
               {/* Category & Verified */}
@@ -116,9 +119,66 @@ const EventDetail = () => {
               <p className="text-sm text-muted-foreground leading-relaxed">{event.description}</p>
             </div>
 
+            {/* Performers Section */}
+            {event.performers.length > 0 && (
+              <div className="bg-card rounded-2xl border border-border p-6 md:p-8 shadow-sm">
+                <div className="flex items-center gap-2 mb-5">
+                  <Music className="w-5 h-5 text-primary" />
+                  <h2 className="text-lg font-bold text-card-foreground">Performing at this event</h2>
+                </div>
+                <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
+                  {event.performers.map((performer) => (
+                    <div
+                      key={performer.name}
+                      className="flex items-center gap-3 p-4 rounded-xl bg-secondary/50 border border-border"
+                    >
+                      <Avatar className="h-12 w-12">
+                        <AvatarImage src={performer.avatar} alt={performer.name} />
+                        <AvatarFallback className="text-xs font-bold">
+                          {performer.name.split(" ").map((n) => n[0]).join("")}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <p className="text-sm font-bold text-card-foreground">{performer.name}</p>
+                        <p className="text-xs text-muted-foreground">{performer.role}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Location Map */}
+            <div className="bg-card rounded-2xl border border-border p-6 md:p-8 shadow-sm">
+              <div className="flex items-center gap-2 mb-2">
+                <MapPin className="w-5 h-5 text-primary" />
+                <h2 className="text-lg font-bold text-card-foreground">Event Location</h2>
+              </div>
+              <p className="text-sm text-muted-foreground mb-4">{event.venue}, {event.location}</p>
+              <div className="rounded-xl overflow-hidden border border-border aspect-video">
+                <iframe
+                  title="Event location map"
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  src={`https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${event.coordinates.lat},${event.coordinates.lng}&zoom=15`}
+                />
+              </div>
+              <a
+                href={`https://www.google.com/maps/dir/?api=1&destination=${event.coordinates.lat},${event.coordinates.lng}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline mt-3"
+              >
+                <MapPin className="w-3.5 h-3.5" /> Get directions
+              </a>
+            </div>
+
             {/* Related Events */}
             {relatedEvents.length > 0 && (
-              <div className="mt-8">
+              <div>
                 <h2 className="text-lg font-bold text-foreground mb-4">More {event.category} events</h2>
                 <div className="grid sm:grid-cols-3 gap-4">
                   {relatedEvents.map((re) => (
@@ -175,7 +235,10 @@ const EventDetail = () => {
                 ))}
               </div>
 
-              <Button className="w-full rounded-xl h-12 text-sm font-bold">
+              <Button
+                className="w-full rounded-xl h-12 text-sm font-bold"
+                onClick={() => setCheckoutOpen(true)}
+              >
                 Get {event.tickets[selectedTicket].name} — {event.tickets[selectedTicket].price}
               </Button>
 
@@ -186,6 +249,13 @@ const EventDetail = () => {
           </motion.div>
         </div>
       </section>
+
+      <CheckoutModal
+        open={checkoutOpen}
+        onOpenChange={setCheckoutOpen}
+        event={event}
+        selectedTicketIndex={selectedTicket}
+      />
 
       <Footer />
     </div>
