@@ -131,7 +131,13 @@ const CheckoutModal = ({ open, onOpenChange, event, selectedTicketIndex }: Check
               onClick={handlePurchase}
               disabled={!name.trim() || !email.trim()}
             >
-              Pay {ticket.price} × {quantity}
+              {ticket.price === "Free"
+                ? `Get ${quantity} Ticket${quantity > 1 ? "s" : ""}`
+                : `Pay ${(() => {
+                    const num = Number(ticket.price.replace(/[^0-9]/g, ""));
+                    const total = num * quantity;
+                    return `₦${total.toLocaleString()}`;
+                  })()}`}
             </Button>
             <p className="text-[10px] text-muted-foreground text-center">
               Secure checkout · Instant confirmation
