@@ -1,4 +1,4 @@
-import { Search, Menu, LogOut, User } from "lucide-react";
+import { Search, Menu, LogOut, User, LayoutDashboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -83,6 +83,9 @@ const Navbar = () => {
                       <p className="text-[10px] text-muted-foreground truncate">{user.email}</p>
                     </div>
                     <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => navigate("/dashboard")} className="text-xs cursor-pointer">
+                      <LayoutDashboard className="w-3.5 h-3.5 mr-2" /> Dashboard
+                    </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => navigate("/profile")} className="text-xs cursor-pointer">
                       <User className="w-3.5 h-3.5 mr-2" /> Profile
                     </DropdownMenuItem>
