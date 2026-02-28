@@ -29,16 +29,16 @@ const Footer = () => {
                 Technology that makes Africa smile.
               </p>
               <div className="flex items-center gap-2 mb-5">
-                <a href="#" className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors">
+                <a href="#" className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-all duration-200 hover:scale-110">
                   <XIcon className="w-3.5 h-3.5" />
                 </a>
-                <a href="#" className="w-8 h-8 rounded-full bg-accent text-accent-foreground flex items-center justify-center hover:opacity-90 transition-opacity">
+                <a href="#" className="w-8 h-8 rounded-full bg-accent text-accent-foreground flex items-center justify-center transition-all duration-200 hover:scale-110 hover:shadow-md">
                   <Instagram className="w-3.5 h-3.5" />
                 </a>
-                <a href="#" className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors">
+                <a href="#" className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-all duration-200 hover:scale-110">
                   <Linkedin className="w-3.5 h-3.5" />
                 </a>
-                <a href="#" className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors">
+                <a href="#" className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-all duration-200 hover:scale-110">
                   <TikTokIcon className="w-3.5 h-3.5" />
                 </a>
               </div>
