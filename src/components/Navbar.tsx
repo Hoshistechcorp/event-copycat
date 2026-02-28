@@ -32,13 +32,13 @@ const Navbar = () => {
           </div>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
           <a href="#tickets" className="hidden md:inline-flex text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
             Find my tickets
           </a>
-          <a href="/signin" className="hidden md:inline-flex text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-            Sign in
-          </a>
+          <Button size="sm" className="hidden md:inline-flex rounded-full px-5 font-semibold" asChild>
+            <a href="/signin">Sign in</a>
+          </Button>
 
           {/* Mobile hamburger */}
           <Sheet>
