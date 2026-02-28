@@ -14,8 +14,7 @@ const Navbar = () => {
   const handleCreateEvents = (e: React.MouseEvent) => {
     e.preventDefault();
     if (user) {
-      // TODO: navigate to create event page when built
-      navigate("/");
+      navigate("/create-event");
     } else {
       navigate("/signin");
     }
@@ -84,6 +83,9 @@ const Navbar = () => {
                       <p className="text-[10px] text-muted-foreground truncate">{user.email}</p>
                     </div>
                     <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => navigate("/profile")} className="text-xs cursor-pointer">
+                      <User className="w-3.5 h-3.5 mr-2" /> Profile
+                    </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => navigate("/my-tickets")} className="text-xs cursor-pointer">
                       <User className="w-3.5 h-3.5 mr-2" /> My Tickets
                     </DropdownMenuItem>
