@@ -1,54 +1,13 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { BadgeCheck, MapPin, ChevronDown, Search, Navigation, Calendar, SlidersHorizontal, ArrowLeft } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import event1 from "@/assets/event-1.jpg";
-import event2 from "@/assets/event-2.jpg";
-import event3 from "@/assets/event-3.jpg";
-import event4 from "@/assets/event-4.jpg";
-import event5 from "@/assets/event-5.jpg";
-import event6 from "@/assets/event-6.jpg";
+import { allEvents, categories, locations, dateFilters, type EventCategory, type Location, type DateFilter } from "@/data/events";
 
-type EventCategory = "All" | "Music" | "Parties" | "Workshops" | "Tech" | "Food & Drink" | "Arts" | "Sports";
-type Location = "All Locations" | "Lagos" | "Abuja" | "Port Harcourt" | "Ibadan" | "Accra";
-type DateFilter = "Any Date" | "Today" | "This Weekend" | "This Week" | "This Month";
-
-interface EventItem {
-  id: number;
-  title: string;
-  organizer: string;
-  date: string;
-  fullDate: string;
-  time: string;
-  price: string;
-  image: string;
-  vibing: string;
-  verified: boolean;
-  category: EventCategory;
-  location: Location;
-  venue: string;
-}
-
-const allEvents: EventItem[] = [
-  { id: 1, title: "Vibes & Grills 3.0", organizer: "The Grill Master", date: "OCT 12", fullDate: "Saturday, October 12, 2025", time: "4:00 PM", price: "₦5,000", image: event1, vibing: "120+", verified: true, category: "Parties", location: "Lagos", venue: "Lekki Phase 1" },
-  { id: 2, title: "Tech Mixer Lagos", organizer: "Lagos Tech Hub", date: "OCT 15", fullDate: "Tuesday, October 15, 2025", time: "10:00 AM", price: "Free", image: event2, vibing: "85+", verified: false, category: "Tech", location: "Lagos", venue: "Co-Creation Hub, Yaba" },
-  { id: 3, title: "Sip & Paint Night", organizer: "Art Studio X", date: "OCT 18", fullDate: "Friday, October 18, 2025", time: "6:00 PM", price: "₦7,500", image: event3, vibing: "45+", verified: false, category: "Arts", location: "Abuja", venue: "Wuse 2 Art Gallery" },
-  { id: 4, title: "Outdoor Cinema: Classics", organizer: "Park View Screens", date: "OCT 20", fullDate: "Sunday, October 20, 2025", time: "7:30 PM", price: "₦3,000", image: event4, vibing: "200+", verified: true, category: "Parties", location: "Port Harcourt", venue: "Port Harcourt Pleasure Park" },
-  { id: 5, title: "Comedy Roast Night", organizer: "Lagos Laughs", date: "OCT 22", fullDate: "Tuesday, October 22, 2025", time: "8:00 PM", price: "₦10,000", image: event5, vibing: "150+", verified: false, category: "Music", location: "Ibadan", venue: "Ventura Mall, Samonda" },
-  { id: 6, title: "Morning Yoga Session", organizer: "Flow with Tola", date: "OCT 23", fullDate: "Wednesday, October 23, 2025", time: "6:30 AM", price: "Free", image: event6, vibing: "30+", verified: false, category: "Sports", location: "Accra", venue: "Labadi Beach" },
-  { id: 7, title: "Afrobeats Dance Class", organizer: "Dance Lagos", date: "OCT 25", fullDate: "Friday, October 25, 2025", time: "5:00 PM", price: "₦4,000", image: event1, vibing: "60+", verified: true, category: "Music", location: "Lagos", venue: "National Theatre, Iganmu" },
-  { id: 8, title: "Startup Pitch Night", organizer: "Founders Club", date: "OCT 26", fullDate: "Saturday, October 26, 2025", time: "3:00 PM", price: "Free", image: event2, vibing: "95+", verified: true, category: "Tech", location: "Abuja", venue: "Transcorp Hilton" },
-  { id: 9, title: "Jollof Cook-Off", organizer: "Foodies NG", date: "OCT 28", fullDate: "Monday, October 28, 2025", time: "12:00 PM", price: "₦2,500", image: event3, vibing: "180+", verified: false, category: "Food & Drink", location: "Lagos", venue: "Eko Atlantic" },
-  { id: 10, title: "Open Mic Poetry", organizer: "Verse Lagos", date: "OCT 30", fullDate: "Wednesday, October 30, 2025", time: "7:00 PM", price: "₦1,500", image: event4, vibing: "40+", verified: false, category: "Arts", location: "Ibadan", venue: "UI Conference Centre" },
-  { id: 11, title: "Beach Volleyball Tournament", organizer: "Sports NG", date: "NOV 1", fullDate: "Friday, November 1, 2025", time: "9:00 AM", price: "₦3,500", image: event5, vibing: "110+", verified: true, category: "Sports", location: "Lagos", venue: "Elegushi Beach" },
-  { id: 12, title: "Wine Tasting Evening", organizer: "Vine & Dine", date: "NOV 3", fullDate: "Sunday, November 3, 2025", time: "6:00 PM", price: "₦15,000", image: event6, vibing: "35+", verified: false, category: "Food & Drink", location: "Abuja", venue: "Sheraton Hotel" },
-];
-
-const categories: EventCategory[] = ["All", "Music", "Parties", "Workshops", "Tech", "Food & Drink", "Arts", "Sports"];
-const locations: Location[] = ["All Locations", "Lagos", "Abuja", "Port Harcourt", "Ibadan", "Accra"];
-const dateFilters: DateFilter[] = ["Any Date", "Today", "This Weekend", "This Week", "This Month"];
+const EVENTS_PER_PAGE = 8;
 
 const Events = () => {
   const [activeCategory, setActiveCategory] = useState<EventCategory>("All");
@@ -58,6 +17,7 @@ const Events = () => {
   const [locationOpen, setLocationOpen] = useState(false);
   const [dateOpen, setDateOpen] = useState(false);
   const [locationSearch, setLocationSearch] = useState("");
+  const [visibleCount, setVisibleCount] = useState(EVENTS_PER_PAGE);
   const locationRef = useRef<HTMLDivElement>(null);
   const dateRef = useRef<HTMLDivElement>(null);
 
@@ -74,6 +34,11 @@ const Events = () => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  // Reset visible count when filters change
+  useEffect(() => {
+    setVisibleCount(EVENTS_PER_PAGE);
+  }, [activeCategory, selectedLocation, searchQuery, selectedDate]);
 
   const filteredLocations = locations.filter((loc) => loc.toLowerCase().includes(locationSearch.toLowerCase())).slice(0, 4);
 
@@ -92,6 +57,9 @@ const Events = () => {
     const searchMatch = searchQuery === "" || e.title.toLowerCase().includes(searchQuery.toLowerCase()) || e.organizer.toLowerCase().includes(searchQuery.toLowerCase()) || e.venue.toLowerCase().includes(searchQuery.toLowerCase());
     return categoryMatch && locationMatch && searchMatch;
   });
+
+  const visibleEvents = filtered.slice(0, visibleCount);
+  const hasMore = visibleCount < filtered.length;
 
   return (
     <div className="min-h-screen bg-background">
@@ -257,55 +225,69 @@ const Events = () => {
               transition={{ duration: 0.3 }}
               className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
             >
-              {filtered.map((event) => (
-                <motion.div
-                  key={event.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3 }}
-                  className="group bg-card rounded-2xl overflow-hidden border border-border hover:shadow-xl transition-shadow duration-300 cursor-pointer"
-                >
-                  <div className="relative overflow-hidden">
-                    <img
-                      src={event.image}
-                      alt={event.title}
-                      className="w-full h-52 object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                    <div className="absolute top-3 left-3 bg-card/90 backdrop-blur-sm text-foreground text-xs font-bold px-3 py-1.5 rounded-lg border border-border">
-                      {event.date}
-                    </div>
-                    {event.verified && (
-                      <span className="absolute top-3 right-3 bg-primary/90 backdrop-blur-sm text-primary-foreground text-[10px] font-semibold px-2.5 py-1 rounded-full flex items-center gap-1">
-                        <BadgeCheck className="w-3 h-3" /> Verified
-                      </span>
-                    )}
-                    <div className="absolute bottom-3 right-3 bg-card/90 backdrop-blur-sm text-foreground text-xs font-bold px-3 py-1.5 rounded-lg border border-border">
-                      {event.price}
-                    </div>
-                  </div>
-                  <div className="p-4">
-                    <h3 className="text-base font-bold text-card-foreground leading-tight">{event.title}</h3>
-                    <p className="text-sm text-muted-foreground mt-1">{event.fullDate} · {event.time}</p>
-                    <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
-                      <MapPin className="w-3 h-3" />
-                      {event.venue}
-                    </p>
-                    <div className="flex items-center justify-between mt-3 pt-3 border-t border-border">
-                      <p className="text-xs text-muted-foreground">by {event.organizer}</p>
-                      <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                        <div className="flex -space-x-1">
-                          <div className="w-4 h-4 rounded-full bg-muted-foreground/30" />
-                          <div className="w-4 h-4 rounded-full bg-muted-foreground/20" />
-                          <div className="w-4 h-4 rounded-full bg-muted-foreground/15" />
-                        </div>
-                        <span>{event.vibing} vibing</span>
+              {visibleEvents.map((event) => (
+                <Link to={`/events/${event.id}`} key={event.id}>
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="group bg-card rounded-2xl overflow-hidden border border-border hover:shadow-xl transition-shadow duration-300 cursor-pointer h-full"
+                  >
+                    <div className="relative overflow-hidden">
+                      <img
+                        src={event.image}
+                        alt={event.title}
+                        className="w-full h-52 object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <div className="absolute top-3 left-3 bg-card/90 backdrop-blur-sm text-foreground text-xs font-bold px-3 py-1.5 rounded-lg border border-border">
+                        {event.date}
+                      </div>
+                      {event.verified && (
+                        <span className="absolute top-3 right-3 bg-primary/90 backdrop-blur-sm text-primary-foreground text-[10px] font-semibold px-2.5 py-1 rounded-full flex items-center gap-1">
+                          <BadgeCheck className="w-3 h-3" /> Verified
+                        </span>
+                      )}
+                      <div className="absolute bottom-3 right-3 bg-card/90 backdrop-blur-sm text-foreground text-xs font-bold px-3 py-1.5 rounded-lg border border-border">
+                        {event.price}
                       </div>
                     </div>
-                  </div>
-                </motion.div>
+                    <div className="p-4">
+                      <h3 className="text-base font-bold text-card-foreground leading-tight">{event.title}</h3>
+                      <p className="text-sm text-muted-foreground mt-1">{event.fullDate} · {event.time}</p>
+                      <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
+                        <MapPin className="w-3 h-3" />
+                        {event.venue}
+                      </p>
+                      <div className="flex items-center justify-between mt-3 pt-3 border-t border-border">
+                        <p className="text-xs text-muted-foreground">by {event.organizer}</p>
+                        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                          <div className="flex -space-x-1">
+                            <div className="w-4 h-4 rounded-full bg-muted-foreground/30" />
+                            <div className="w-4 h-4 rounded-full bg-muted-foreground/20" />
+                            <div className="w-4 h-4 rounded-full bg-muted-foreground/15" />
+                          </div>
+                          <span>{event.vibing} vibing</span>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                </Link>
               ))}
             </motion.div>
           </AnimatePresence>
+
+          {/* Load More */}
+          {hasMore && (
+            <div className="flex justify-center mt-10">
+              <Button
+                variant="outline"
+                className="rounded-full px-8"
+                onClick={() => setVisibleCount((prev) => prev + EVENTS_PER_PAGE)}
+              >
+                Load more events ({filtered.length - visibleCount} remaining)
+              </Button>
+            </div>
+          )}
 
           {filtered.length === 0 && (
             <div className="text-center py-20">
