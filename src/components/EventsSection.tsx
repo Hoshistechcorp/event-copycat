@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { BadgeCheck, Users } from "lucide-react";
+import { BadgeCheck, MapPin, ChevronDown } from "lucide-react";
 import event1 from "@/assets/event-1.jpg";
 import event2 from "@/assets/event-2.jpg";
 import event3 from "@/assets/event-3.jpg";
@@ -10,6 +10,7 @@ import event5 from "@/assets/event-5.jpg";
 import event6 from "@/assets/event-6.jpg";
 
 type EventCategory = "All" | "Music" | "Parties" | "Workshops";
+type Location = "All Locations" | "Lagos" | "Abuja" | "Port Harcourt" | "Ibadan" | "Accra";
 
 interface EventItem {
   id: number;
@@ -21,22 +22,42 @@ interface EventItem {
   vibing: string;
   verified: boolean;
   category: EventCategory;
+  location: Location;
 }
 
 const events: EventItem[] = [
-  { id: 1, title: "Vibes & Grills 3.0", organizer: "The Grill Master", date: "OCT 12", price: "₦5,000", image: event1, vibing: "120+", verified: true, category: "Parties" },
-  { id: 2, title: "Tech Mixer Lagos", organizer: "Lagos Tech Hub", date: "OCT 15", price: "Free", image: event2, vibing: "85+", verified: false, category: "Workshops" },
-  { id: 3, title: "Sip & Paint Night", organizer: "Art Studio X", date: "OCT 18", price: "₦7,500", image: event3, vibing: "45+", verified: false, category: "Workshops" },
-  { id: 4, title: "Outdoor Cinema: Classics", organizer: "Park View Screens", date: "OCT 20", price: "₦3,000", image: event4, vibing: "200+", verified: true, category: "Parties" },
-  { id: 5, title: "Comedy Roast Night", organizer: "Lagos Laughs", date: "OCT 22", price: "₦10,000", image: event5, vibing: "150+", verified: false, category: "Music" },
-  { id: 6, title: "Morning Yoga Session", organizer: "Flow with Tola", date: "OCT 23", price: "Free", image: event6, vibing: "30+", verified: false, category: "Workshops" },
+  { id: 1, title: "Vibes & Grills 3.0", organizer: "The Grill Master", date: "OCT 12", price: "₦5,000", image: event1, vibing: "120+", verified: true, category: "Parties", location: "Lagos" },
+  { id: 2, title: "Tech Mixer Lagos", organizer: "Lagos Tech Hub", date: "OCT 15", price: "Free", image: event2, vibing: "85+", verified: false, category: "Workshops", location: "Lagos" },
+  { id: 3, title: "Sip & Paint Night", organizer: "Art Studio X", date: "OCT 18", price: "₦7,500", image: event3, vibing: "45+", verified: false, category: "Workshops", location: "Abuja" },
+  { id: 4, title: "Outdoor Cinema: Classics", organizer: "Park View Screens", date: "OCT 20", price: "₦3,000", image: event4, vibing: "200+", verified: true, category: "Parties", location: "Port Harcourt" },
+  { id: 5, title: "Comedy Roast Night", organizer: "Lagos Laughs", date: "OCT 22", price: "₦10,000", image: event5, vibing: "150+", verified: false, category: "Music", location: "Ibadan" },
+  { id: 6, title: "Morning Yoga Session", organizer: "Flow with Tola", date: "OCT 23", price: "Free", image: event6, vibing: "30+", verified: false, category: "Workshops", location: "Accra" },
 ];
 
 const tabs: EventCategory[] = ["All", "Music", "Parties", "Workshops"];
+const locations: Location[] = ["All Locations", "Lagos", "Abuja", "Port Harcourt", "Ibadan", "Accra"];
 
 const EventsSection = () => {
   const [active, setActive] = useState<EventCategory>("All");
-  const filtered = active === "All" ? events : events.filter((e) => e.category === active);
+  const [selectedLocation, setSelectedLocation] = useState<Location>("All Locations");
+  const [locationOpen, setLocationOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setLocationOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const filtered = events.filter((e) => {
+    const categoryMatch = active === "All" || e.category === active;
+    const locationMatch = selectedLocation === "All Locations" || e.location === selectedLocation;
+    return categoryMatch && locationMatch;
+  });
 
   return (
     <section id="events" className="py-20 md:py-28 bg-secondary/30">
@@ -47,9 +68,49 @@ const EventsSection = () => {
             <h2 className="text-3xl md:text-4xl font-extrabold text-foreground mb-2">
               Discover Experiences
             </h2>
-            <p className="text-muted-foreground text-lg">
-              Handpicked events for you in Lagos & beyond.
-            </p>
+            {/* Eventbrite-style location selector */}
+            <div className="flex items-center gap-2 mt-1">
+              <p className="text-muted-foreground text-lg">Browsing events in</p>
+              <div className="relative" ref={dropdownRef}>
+                <button
+                  onClick={() => setLocationOpen(!locationOpen)}
+                  className="inline-flex items-center gap-1.5 text-lg font-semibold text-primary hover:text-primary/80 transition-colors"
+                >
+                  <MapPin className="w-4 h-4" />
+                  {selectedLocation === "All Locations" ? "Choose a location" : selectedLocation}
+                  <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${locationOpen ? "rotate-180" : ""}`} />
+                </button>
+                <AnimatePresence>
+                  {locationOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 4 }}
+                      transition={{ duration: 0.15 }}
+                      className="absolute left-0 top-full mt-2 z-50 min-w-[200px] bg-card border border-border rounded-xl shadow-lg overflow-hidden"
+                    >
+                      {locations.map((loc) => (
+                        <button
+                          key={loc}
+                          onClick={() => {
+                            setSelectedLocation(loc);
+                            setLocationOpen(false);
+                          }}
+                          className={`w-full text-left px-4 py-2.5 text-sm transition-colors flex items-center gap-2 ${
+                            selectedLocation === loc
+                              ? "bg-primary/10 text-primary font-semibold"
+                              : "text-muted-foreground hover:bg-accent hover:text-foreground"
+                          }`}
+                        >
+                          <MapPin className="w-3.5 h-3.5" />
+                          {loc}
+                        </button>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            </div>
           </div>
 
           <div className="flex gap-1 border border-border rounded-full p-1 bg-card">
