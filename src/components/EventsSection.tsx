@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { BadgeCheck, MapPin, ChevronDown } from "lucide-react";
+import { BadgeCheck, MapPin, ChevronDown, Search, Navigation } from "lucide-react";
 import event1 from "@/assets/event-1.jpg";
 import event2 from "@/assets/event-2.jpg";
 import event3 from "@/assets/event-3.jpg";
@@ -41,17 +41,42 @@ const EventsSection = () => {
   const [active, setActive] = useState<EventCategory>("All");
   const [selectedLocation, setSelectedLocation] = useState<Location>("All Locations");
   const [locationOpen, setLocationOpen] = useState(false);
+  const [locationSearch, setLocationSearch] = useState("");
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
         setLocationOpen(false);
+        setLocationSearch("");
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  const filteredLocations = locations
+    .filter((loc) => loc.toLowerCase().includes(locationSearch.toLowerCase()))
+    .slice(0, 4);
+
+  const handleUseMyLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        () => {
+          // For demo, default to Lagos as nearest
+          setSelectedLocation("Lagos");
+          setLocationOpen(false);
+          setLocationSearch("");
+        },
+        () => {
+          // Fallback on error
+          setSelectedLocation("Lagos");
+          setLocationOpen(false);
+          setLocationSearch("");
+        }
+      );
+    }
+  };
 
   const filtered = events.filter((e) => {
     const categoryMatch = active === "All" || e.category === active;
@@ -87,14 +112,40 @@ const EventsSection = () => {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 4 }}
                       transition={{ duration: 0.15 }}
-                      className="absolute left-0 top-full mt-2 z-50 min-w-[200px] bg-card border border-border rounded-xl shadow-lg overflow-hidden"
+                      className="absolute left-0 top-full mt-2 z-50 w-[260px] bg-card border border-border rounded-xl shadow-lg overflow-hidden"
                     >
-                      {locations.map((loc) => (
+                      {/* Search input */}
+                      <div className="p-2 border-b border-border">
+                        <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-accent/50">
+                          <Search className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                          <input
+                            type="text"
+                            placeholder="Search location..."
+                            value={locationSearch}
+                            onChange={(e) => setLocationSearch(e.target.value)}
+                            className="bg-transparent text-sm outline-none w-full text-foreground placeholder:text-muted-foreground"
+                            autoFocus
+                          />
+                        </div>
+                      </div>
+
+                      {/* Use precise location */}
+                      <button
+                        onClick={handleUseMyLocation}
+                        className="w-full text-left px-4 py-2.5 text-sm transition-colors flex items-center gap-2 text-primary hover:bg-accent font-medium border-b border-border"
+                      >
+                        <Navigation className="w-3.5 h-3.5" />
+                        Use my precise location
+                      </button>
+
+                      {/* Location list (max 4) */}
+                      {filteredLocations.map((loc) => (
                         <button
                           key={loc}
                           onClick={() => {
                             setSelectedLocation(loc);
                             setLocationOpen(false);
+                            setLocationSearch("");
                           }}
                           className={`w-full text-left px-4 py-2.5 text-sm transition-colors flex items-center gap-2 ${
                             selectedLocation === loc
@@ -106,6 +157,9 @@ const EventsSection = () => {
                           {loc}
                         </button>
                       ))}
+                      {filteredLocations.length === 0 && (
+                        <p className="px-4 py-3 text-sm text-muted-foreground text-center">No locations found</p>
+                      )}
                     </motion.div>
                   )}
                 </AnimatePresence>
