@@ -7,6 +7,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { Lock, Loader2, Check } from "lucide-react";
 import mainLogo from "@/assets/mainlogo.png";
 
+const passwordChecks = [
+  { label: "At least 8 characters", test: (p: string) => p.length >= 8 },
+  { label: "One uppercase letter", test: (p: string) => /[A-Z]/.test(p) },
+  { label: "One lowercase letter", test: (p: string) => /[a-z]/.test(p) },
+  { label: "One number", test: (p: string) => /\d/.test(p) },
+  { label: "One special character (!@#$...)", test: (p: string) => /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(p) },
+];
+
 const ResetPassword = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -15,11 +23,11 @@ const ResetPassword = () => {
   const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
 
+  const allChecksPassed = passwordChecks.every((c) => c.test(password));
+
   useEffect(() => {
-    // Check if we have a recovery session
     const hash = window.location.hash;
     if (!hash.includes("type=recovery")) {
-      // No recovery token, redirect
       navigate("/signin");
     }
   }, [navigate]);
@@ -28,12 +36,12 @@ const ResetPassword = () => {
     e.preventDefault();
     setError("");
 
-    if (password !== confirmPassword) {
-      setError("Passwords do not match");
+    if (!allChecksPassed) {
+      setError("Please meet all password requirements");
       return;
     }
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters");
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
       return;
     }
 
@@ -82,17 +90,27 @@ const ResetPassword = () => {
             <label className="text-xs font-semibold text-foreground mb-1.5 block">New Password</label>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input type="password" placeholder="Min. 6 characters" value={password} onChange={(e) => setPassword(e.target.value)} className="rounded-xl pl-10" required minLength={6} />
+              <Input type="password" placeholder="Min. 8 characters" value={password} onChange={(e) => setPassword(e.target.value)} className="rounded-xl pl-10" required minLength={8} />
             </div>
+            {password.length > 0 && (
+              <ul className="mt-2 space-y-1">
+                {passwordChecks.map((check) => (
+                  <li key={check.label} className={`flex items-center gap-1.5 text-xs ${check.test(password) ? "text-primary" : "text-muted-foreground"}`}>
+                    {check.test(password) ? <Check className="h-3 w-3" /> : <span className="h-3 w-3 rounded-full border border-muted-foreground/40 inline-block" />}
+                    {check.label}
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
           <div>
             <label className="text-xs font-semibold text-foreground mb-1.5 block">Confirm Password</label>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input type="password" placeholder="Repeat password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="rounded-xl pl-10" required minLength={6} />
+              <Input type="password" placeholder="Repeat password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="rounded-xl pl-10" required minLength={8} />
             </div>
           </div>
-          <Button type="submit" className="w-full rounded-xl h-11 font-bold" disabled={loading || !password.trim() || !confirmPassword.trim()}>
+          <Button type="submit" className="w-full rounded-xl h-11 font-bold" disabled={loading || !allChecksPassed || !confirmPassword.trim()}>
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Update password"}
           </Button>
         </form>
