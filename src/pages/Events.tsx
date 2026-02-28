@@ -1,11 +1,12 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { BadgeCheck, MapPin, ChevronDown, Search, Navigation, Calendar, SlidersHorizontal, ArrowLeft } from "lucide-react";
+import { BadgeCheck, MapPin, ChevronDown, Search, Navigation, Calendar, SlidersHorizontal, ArrowLeft, Loader2 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { allEvents, categories, locations, dateFilters, type EventCategory, type Location, type DateFilter } from "@/data/events";
+import { useDbEvents } from "@/hooks/useDbEvents";
 
 const EVENTS_PER_PAGE = 8;
 
@@ -21,6 +22,10 @@ const Events = () => {
   const locationRef = useRef<HTMLDivElement>(null);
   const dateRef = useRef<HTMLDivElement>(null);
 
+  const { data: dbEvents = [], isLoading } = useDbEvents();
+
+  const combinedEvents = useMemo(() => [...dbEvents, ...allEvents], [dbEvents]);
+
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (locationRef.current && !locationRef.current.contains(e.target as Node)) {
@@ -35,7 +40,6 @@ const Events = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Reset visible count when filters change
   useEffect(() => {
     setVisibleCount(EVENTS_PER_PAGE);
   }, [activeCategory, selectedLocation, searchQuery, selectedDate]);
@@ -51,7 +55,7 @@ const Events = () => {
     }
   };
 
-  const filtered = allEvents.filter((e) => {
+  const filtered = combinedEvents.filter((e) => {
     const categoryMatch = activeCategory === "All" || e.category === activeCategory;
     const locationMatch = selectedLocation === "All Locations" || e.location === selectedLocation;
     const searchMatch = searchQuery === "" || e.title.toLowerCase().includes(searchQuery.toLowerCase()) || e.organizer.toLowerCase().includes(searchQuery.toLowerCase()) || e.venue.toLowerCase().includes(searchQuery.toLowerCase());
@@ -209,7 +213,7 @@ const Events = () => {
           {/* Results count */}
           <div className="flex items-center justify-between mb-6">
             <p className="text-sm text-muted-foreground">
-              {filtered.length} event{filtered.length !== 1 ? "s" : ""} found
+              {isLoading ? "Loading..." : `${filtered.length} event${filtered.length !== 1 ? "s" : ""} found`}
               {selectedLocation !== "All Locations" && <span> in <span className="font-semibold text-foreground">{selectedLocation}</span></span>}
               {activeCategory !== "All" && <span> • <span className="font-semibold text-foreground">{activeCategory}</span></span>}
             </p>
@@ -289,7 +293,7 @@ const Events = () => {
             </div>
           )}
 
-          {filtered.length === 0 && (
+          {!isLoading && filtered.length === 0 && (
             <div className="text-center py-20">
               <Search className="w-12 h-12 text-muted-foreground/40 mx-auto mb-4" />
               <h3 className="text-lg font-semibold text-foreground mb-2">No events found</h3>

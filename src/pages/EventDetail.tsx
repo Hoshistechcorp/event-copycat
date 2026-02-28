@@ -2,18 +2,40 @@ import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { BadgeCheck, MapPin, Calendar, Clock, Users, ArrowLeft, Share2, Heart, Check, Music } from "lucide-react";
+import { BadgeCheck, MapPin, Calendar, Clock, Users, ArrowLeft, Share2, Heart, Check, Music, Loader2 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import CheckoutModal from "@/components/CheckoutModal";
 import { allEvents } from "@/data/events";
-import { useState } from "react";
+import { useDbEvent } from "@/hooks/useDbEvents";
+import { useState, useMemo } from "react";
+
+const isUuid = (str: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
 
 const EventDetail = () => {
   const { id } = useParams();
-  const event = allEvents.find((e) => e.id === Number(id));
+  const isDbId = id ? isUuid(id) : false;
+  const { data: dbEvent, isLoading } = useDbEvent(isDbId ? id! : "");
+
+  const event = useMemo(() => {
+    if (isDbId) return dbEvent || null;
+    return allEvents.find((e) => e.id === Number(id)) || null;
+  }, [id, isDbId, dbEvent]);
+
   const [selectedTicket, setSelectedTicket] = useState(0);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
+
+  if (isLoading && isDbId) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <div className="flex items-center justify-center py-32">
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   if (!event) {
     return (
@@ -67,7 +89,6 @@ const EventDetail = () => {
             className="lg:col-span-2 space-y-6"
           >
             <div className="bg-card rounded-2xl border border-border p-6 md:p-8 shadow-sm">
-              {/* Category & Verified */}
               <div className="flex items-center gap-2 mb-3 flex-wrap">
                 <span className="text-xs font-semibold px-3 py-1 rounded-full bg-primary/10 text-primary">
                   {event.category}
@@ -82,7 +103,6 @@ const EventDetail = () => {
               <h1 className="text-2xl md:text-3xl font-extrabold text-card-foreground mb-2">{event.title}</h1>
               <p className="text-sm text-muted-foreground mb-6">by <span className="font-semibold text-foreground">{event.organizer}</span></p>
 
-              {/* Info Grid */}
               <div className="grid sm:grid-cols-2 gap-4 mb-8">
                 <div className="flex items-start gap-3 p-4 rounded-xl bg-secondary/50">
                   <Calendar className="w-5 h-5 text-primary mt-0.5 shrink-0" />
@@ -114,12 +134,11 @@ const EventDetail = () => {
                 </div>
               </div>
 
-              {/* Description */}
               <h2 className="text-lg font-bold text-card-foreground mb-3">About this event</h2>
               <p className="text-sm text-muted-foreground leading-relaxed">{event.description}</p>
             </div>
 
-            {/* Performers Section */}
+            {/* Performers */}
             {event.performers.length > 0 && (
               <div className="bg-card rounded-2xl border border-border p-6 md:p-8 shadow-sm">
                 <div className="flex items-center gap-2 mb-5">
@@ -128,10 +147,7 @@ const EventDetail = () => {
                 </div>
                 <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
                   {event.performers.map((performer) => (
-                    <div
-                      key={performer.name}
-                      className="flex items-center gap-3 p-4 rounded-xl bg-secondary/50 border border-border"
-                    >
+                    <div key={performer.name} className="flex items-center gap-3 p-4 rounded-xl bg-secondary/50 border border-border">
                       <Avatar className="h-12 w-12">
                         <AvatarImage src={performer.avatar} alt={performer.name} />
                         <AvatarFallback className="text-xs font-bold">
