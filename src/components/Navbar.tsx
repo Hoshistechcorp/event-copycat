@@ -9,7 +9,7 @@ const Navbar = () => {
       <div className="container flex items-center justify-between h-16 px-4 md:px-8">
         <div className="flex items-center gap-8">
           <a href="/" className="flex items-center gap-2">
-            <img src={mainLogo} alt="iBLOOV logo" className="h-12 w-auto" />
+            <img src={mainLogo} alt="iBLOOV logo" className="h-14 w-auto" />
           </a>
           <div className="hidden md:flex items-center gap-6">
             <a href="#events" className="text-sm font-semibold text-foreground hover:text-primary transition-colors">
