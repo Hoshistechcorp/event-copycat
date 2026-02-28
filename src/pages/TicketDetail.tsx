@@ -1,18 +1,20 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Calendar, MapPin, Clock, Users, Check, QrCode, Download } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { allEvents } from "@/data/events";
+import { allEvents, type EventItem } from "@/data/events";
+import { useDbEvents } from "@/hooks/useDbEvents";
 import type { PurchasedTicket } from "@/pages/MyTickets";
 
 const TicketDetail = () => {
   const { ticketId } = useParams();
   const navigate = useNavigate();
   const [ticket, setTicket] = useState<PurchasedTicket | null>(null);
+  const { data: dbEvents = [] } = useDbEvents();
 
   useEffect(() => {
     const stored = localStorage.getItem("purchased_tickets");
@@ -22,6 +24,13 @@ const TicketDetail = () => {
       setTicket(found || null);
     }
   }, [ticketId]);
+
+  const event: EventItem | undefined = useMemo(() => {
+    if (!ticket) return undefined;
+    const fromDb = dbEvents.find((e) => e.id === ticket.eventId);
+    if (fromDb) return fromDb;
+    return allEvents.find((e) => e.id === ticket.eventId);
+  }, [ticket, dbEvents]);
 
   if (!ticket) {
     return (
@@ -39,7 +48,6 @@ const TicketDetail = () => {
     );
   }
 
-  const event = allEvents.find((e) => e.id === ticket.eventId);
   if (!event) return null;
 
   const ticketTier = event.tickets.find((t) => t.name === ticket.ticketType);

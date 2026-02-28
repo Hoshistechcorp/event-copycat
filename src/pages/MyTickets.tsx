@@ -6,11 +6,12 @@ import { Input } from "@/components/ui/input";
 import { Ticket, Calendar, MapPin, ArrowLeft, Search, Mail } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { allEvents } from "@/data/events";
+import { allEvents, type EventItem } from "@/data/events";
+import { useDbEvents } from "@/hooks/useDbEvents";
 
 export interface PurchasedTicket {
   id: string;
-  eventId: number;
+  eventId: number | string;
   ticketType: string;
   price: string;
   quantity: number;
@@ -24,6 +25,13 @@ const MyTickets = () => {
   const [searchedEmail, setSearchedEmail] = useState("");
   const [tickets, setTickets] = useState<PurchasedTicket[]>([]);
   const [hasSearched, setHasSearched] = useState(false);
+  const { data: dbEvents = [] } = useDbEvents();
+
+  const findEvent = (eventId: number | string): EventItem | undefined => {
+    const fromDb = dbEvents.find((e) => e.id === eventId);
+    if (fromDb) return fromDb;
+    return allEvents.find((e) => e.id === eventId);
+  };
 
   const lookupTickets = (lookupEmail: string) => {
     const stored = localStorage.getItem("purchased_tickets");
@@ -120,7 +128,7 @@ const MyTickets = () => {
             </p>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {tickets.map((ticket, i) => {
-                const event = allEvents.find((e) => e.id === ticket.eventId);
+                const event = findEvent(ticket.eventId);
                 if (!event) return null;
                 return (
                   <motion.div

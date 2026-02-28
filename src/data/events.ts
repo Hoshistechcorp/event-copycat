@@ -16,7 +16,7 @@ export interface Performer {
 }
 
 export interface EventItem {
-  id: number;
+  id: number | string;
   title: string;
   organizer: string;
   date: string;
