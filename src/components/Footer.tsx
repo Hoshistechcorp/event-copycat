@@ -1,41 +1,46 @@
+import { Instagram, Linkedin } from "lucide-react";
 import mainLogo from "@/assets/mainlogo.png";
+
+const XIcon = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" className={className} fill="currentColor">
+    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+  </svg>
+);
+
+const TikTokIcon = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" className={className} fill="currentColor">
+    <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1v-3.5a6.37 6.37 0 00-.79-.05A6.34 6.34 0 003.15 15.2a6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.34-6.34V8.87a8.16 8.16 0 004.76 1.52v-3.4a4.85 4.85 0 01-1-.3z" />
+  </svg>
+);
 
 const Footer = () => {
   return (
     <footer className="bg-secondary/50 pt-16 pb-6">
       <div className="container px-4 md:px-8">
-        {/* Main footer card */}
         <div className="bg-background rounded-2xl border border-border p-8 md:p-12 mb-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-10">
             {/* Brand column */}
             <div className="lg:col-span-1">
               <div className="flex items-center gap-2 mb-4">
-                <img src={mainLogo} alt="iBLOOV logo" className="h-8 w-auto" />
-                <span className="bg-accent text-accent-foreground text-xs font-bold px-2 py-0.5 rounded">BETA</span>
+                <img src={mainLogo} alt="iBLOOV logo" className="h-14 w-auto" />
+                <span className="bg-accent text-accent-foreground text-[10px] font-bold px-1.5 py-0.5 rounded">BETA</span>
               </div>
               <p className="text-sm text-muted-foreground leading-relaxed mb-5">
                 Technology that makes Africa smile.
               </p>
-              {/* Social icons */}
               <div className="flex items-center gap-2 mb-5">
-                {[
-                  { label: "X", href: "#" },
-                  { label: "IG", href: "#", highlight: true },
-                  { label: "LI", href: "#" },
-                  { label: "TK", href: "#" },
-                ].map((s) => (
-                  <a
-                    key={s.label}
-                    href={s.href}
-                    className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${
-                      s.highlight
-                        ? "bg-accent text-accent-foreground"
-                        : "bg-secondary text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                    }`}
-                  >
-                    {s.label}
-                  </a>
-                ))}
+                <a href="#" className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors">
+                  <XIcon className="w-3.5 h-3.5" />
+                </a>
+                <a href="#" className="w-8 h-8 rounded-full bg-accent text-accent-foreground flex items-center justify-center hover:opacity-90 transition-opacity">
+                  <Instagram className="w-3.5 h-3.5" />
+                </a>
+                <a href="#" className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors">
+                  <Linkedin className="w-3.5 h-3.5" />
+                </a>
+                <a href="#" className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors">
+                  <TikTokIcon className="w-3.5 h-3.5" />
+                </a>
               </div>
               <div className="inline-flex items-center gap-2 bg-secondary rounded-full px-3 py-1.5 text-xs font-medium text-foreground">
                 <span className="w-2 h-2 rounded-full bg-green-500" />
@@ -88,7 +93,6 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Bottom bar */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-muted-foreground">
           <p>© 2026 Ibloov Africa — Technology that makes you smile.</p>
           <div className="flex items-center gap-6">
