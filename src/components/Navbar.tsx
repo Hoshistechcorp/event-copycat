@@ -4,13 +4,20 @@ import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/s
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/contexts/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import mainLogo from "@/assets/mainlogo.png";
 import CurrencySelector from "@/components/CurrencySelector";
+
+const navLinkClass = (isActive: boolean) =>
+  `text-sm font-medium transition-colors ${isActive ? "text-primary font-semibold" : "text-muted-foreground hover:text-foreground"}`;
+
+const mobileNavLinkClass = (isActive: boolean) =>
+  `text-base font-medium transition-colors ${isActive ? "text-primary font-semibold" : "text-muted-foreground hover:text-foreground"}`;
 
 const Navbar = () => {
   const { user, loading, signOut } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleCreateEvents = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -38,10 +45,10 @@ const Navbar = () => {
             <img src={mainLogo} alt="iBLOOV logo" className="h-5 w-auto" />
           </a>
           <div className="hidden md:flex items-center gap-6">
-            <a href="/events" className="text-sm font-semibold text-foreground hover:text-primary transition-colors">
+            <a href="/events" className={navLinkClass(location.pathname === "/events")}>
               Find Events
             </a>
-            <button onClick={handleCreateEvents} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+            <button onClick={handleCreateEvents} className={navLinkClass(location.pathname === "/create-event")}>
               Create Events
             </button>
           </div>
@@ -60,7 +67,7 @@ const Navbar = () => {
 
         <div className="flex items-center gap-3">
           <CurrencySelector />
-          <a href="/my-tickets" className="hidden md:inline-flex text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+          <a href="/my-tickets" className={`hidden md:inline-flex ${navLinkClass(location.pathname === "/my-tickets")}`}>
             Find my tickets
           </a>
 
@@ -133,13 +140,13 @@ const Navbar = () => {
                 </div>
 
                 <nav className="flex flex-col gap-4">
-                  <a href="/events" className="text-base font-semibold text-foreground hover:text-primary transition-colors">
+                  <a href="/events" className={mobileNavLinkClass(location.pathname === "/events")}>
                     Find Events
                   </a>
-                  <button onClick={handleCreateEvents} className="text-left text-base font-medium text-muted-foreground hover:text-foreground transition-colors">
+                  <button onClick={handleCreateEvents} className={`text-left ${mobileNavLinkClass(location.pathname === "/create-event")}`}>
                     Create Events
                   </button>
-                  <a href="/my-tickets" className="text-base font-medium text-muted-foreground hover:text-foreground transition-colors">
+                  <a href="/my-tickets" className={mobileNavLinkClass(location.pathname === "/my-tickets")}>
                     Find my tickets
                   </a>
                   {user ? (
