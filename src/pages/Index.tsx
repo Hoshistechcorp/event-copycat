@@ -2,7 +2,7 @@ import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
 import Footer from "@/components/Footer";
 import { motion } from "framer-motion";
-import { CalendarPlus, Ticket } from "lucide-react";
+import { CalendarPlus, Ticket, Sparkles } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -27,7 +27,7 @@ const Index = () => {
       <section className="py-20 md:py-28">
         <div className="container px-4 md:px-8">
           <motion.div
-            className="text-center mb-12"
+            className="text-center mb-14"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -41,72 +41,62 @@ const Index = () => {
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
             {/* Host an Event Card */}
             <motion.button
               onClick={handleHost}
-              className="group relative overflow-hidden rounded-3xl p-8 md:p-10 text-left border border-border bg-card transition-all duration-500 hover:shadow-[0_8px_40px_hsl(var(--primary)/0.15)]"
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              className="group relative overflow-hidden rounded-[2rem] min-h-[220px] p-8 text-left bg-secondary transition-all duration-500 hover:shadow-xl"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              whileHover={{ y: -4 }}
+              transition={{ duration: 0.5 }}
+              whileHover={{ y: -6, scale: 1.02 }}
             >
-              {/* Gradient overlay */}
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              {/* Glow circle */}
-              <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-primary/10 blur-[60px] opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+              {/* Decorative element */}
+              <div className="absolute -bottom-6 -right-6 w-36 h-36 md:w-44 md:h-44 rounded-3xl bg-primary/10 rotate-12 group-hover:rotate-6 transition-transform duration-500 flex items-center justify-center">
+                <CalendarPlus className="w-16 h-16 text-primary/30 -rotate-12 group-hover:-rotate-6 transition-transform duration-500" />
+              </div>
+              <div className="absolute -bottom-10 -right-10 w-28 h-28 rounded-full bg-accent/10 group-hover:bg-accent/15 transition-colors duration-500" />
 
               <div className="relative z-10">
-                <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 group-hover:bg-primary/20 transition-colors duration-300">
-                  <CalendarPlus className="w-7 h-7 text-primary" />
-                </div>
-                <h3 className="text-2xl font-bold text-foreground mb-2">
+                <span className="inline-block px-3 py-1 rounded-lg bg-primary/15 text-primary text-xs font-bold uppercase tracking-wider mb-4">
+                  For Creators
+                </span>
+                <h3 className="text-2xl md:text-3xl font-extrabold text-foreground mb-2 leading-tight">
                   Host an Event
                 </h3>
-                <p className="text-muted-foreground leading-relaxed mb-6">
-                  Create, manage, and sell tickets for your next unforgettable experience. Launch in minutes.
+                <p className="text-muted-foreground text-sm md:text-base leading-relaxed max-w-[240px]">
+                  Launch and sell tickets in minutes!
                 </p>
-                <span className="inline-flex items-center gap-2 text-sm font-semibold text-primary group-hover:gap-3 transition-all duration-300">
-                  Get started
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                  </svg>
-                </span>
               </div>
             </motion.button>
 
             {/* Buy Tickets Card */}
             <motion.button
               onClick={() => navigate("/events")}
-              className="group relative overflow-hidden rounded-3xl p-8 md:p-10 text-left border border-border bg-card transition-all duration-500 hover:shadow-[0_8px_40px_hsl(var(--accent)/0.15)]"
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              className="group relative overflow-hidden rounded-[2rem] min-h-[220px] p-8 text-left bg-secondary transition-all duration-500 hover:shadow-xl"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              whileHover={{ y: -4 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              whileHover={{ y: -6, scale: 1.02 }}
             >
-              {/* Gradient overlay */}
-              <div className="absolute inset-0 bg-gradient-to-br from-accent/10 via-transparent to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              {/* Glow circle */}
-              <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-accent/10 blur-[60px] opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+              {/* Decorative element */}
+              <div className="absolute -bottom-6 -right-6 w-36 h-36 md:w-44 md:h-44 rounded-3xl bg-accent/10 -rotate-12 group-hover:-rotate-6 transition-transform duration-500 flex items-center justify-center">
+                <Ticket className="w-16 h-16 text-accent/30 rotate-12 group-hover:rotate-6 transition-transform duration-500" />
+              </div>
+              <div className="absolute -bottom-10 -right-10 w-28 h-28 rounded-full bg-primary/10 group-hover:bg-primary/15 transition-colors duration-500" />
 
               <div className="relative z-10">
-                <div className="w-14 h-14 rounded-2xl bg-accent/10 flex items-center justify-center mb-6 group-hover:bg-accent/20 transition-colors duration-300">
-                  <Ticket className="w-7 h-7 text-accent" />
-                </div>
-                <h3 className="text-2xl font-bold text-foreground mb-2">
+                <span className="inline-block px-3 py-1 rounded-lg bg-accent/15 text-accent text-xs font-bold uppercase tracking-wider mb-4">
+                  For Everyone
+                </span>
+                <h3 className="text-2xl md:text-3xl font-extrabold text-foreground mb-2 leading-tight">
                   Buy Tickets
                 </h3>
-                <p className="text-muted-foreground leading-relaxed mb-6">
-                  Discover the hottest events around you. Secure your spot with just a few taps.
+                <p className="text-muted-foreground text-sm md:text-base leading-relaxed max-w-[240px]">
+                  Discover events and secure your spot!
                 </p>
-                <span className="inline-flex items-center gap-2 text-sm font-semibold text-accent group-hover:gap-3 transition-all duration-300">
-                  Explore events
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                  </svg>
-                </span>
               </div>
             </motion.button>
           </div>
