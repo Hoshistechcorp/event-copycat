@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import event1 from "@/assets/event-1.jpg";
@@ -11,20 +12,26 @@ import eventHero from "@/assets/event-hero.jpg";
 const cities = ["Lagos", "Accra", "Nairobi", "London", "Dubai"];
 
 const heroEvents = [
-  { image: eventHero, title: "Afrobeat Night Out", venue: "Eko Hotel", date: "Dec 20, 2026" },
-  { image: event1, title: "Vibes & Grills 3.0", venue: "Lekki Phase 1", date: "Oct 12, 2026" },
-  { image: event2, title: "Tech Mixer Lagos", venue: "Civic Centre", date: "Oct 15, 2026" },
-  { image: event3, title: "Sip & Paint Night", venue: "Art Studio X", date: "Oct 18, 2026" },
-  { image: event4, title: "Outdoor Cinema", venue: "Park View", date: "Oct 20, 2026" },
-  { image: event5, title: "Comedy Roast Night", venue: "The Vault", date: "Oct 22, 2026" },
+  { image: eventHero, title: "Afrobeat Night Out", venue: "Eko Hotel", date: "Dec 20, 2026", id: null },
+  { image: event1, title: "Vibes & Grills 3.0", venue: "Lekki Phase 1", date: "Oct 12, 2026", id: 1 },
+  { image: event2, title: "Tech Mixer Lagos", venue: "Civic Centre", date: "Oct 15, 2026", id: 2 },
+  { image: event3, title: "Sip & Paint Night", venue: "Art Studio X", date: "Oct 18, 2026", id: 3 },
+  { image: event4, title: "Outdoor Cinema", venue: "Park View", date: "Oct 20, 2026", id: 4 },
+  { image: event5, title: "Comedy Roast Night", venue: "The Vault", date: "Oct 22, 2026", id: 5 },
 ];
 
 const HeroSection = () => {
+  const navigate = useNavigate();
   const [cityIndex, setCityIndex] = useState(0);
   const [displayText, setDisplayText] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
   const [eventIndex, setEventIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
+
+  const handleCardClick = () => {
+    const ev = heroEvents[eventIndex];
+    if (ev.id) navigate(`/events/${ev.id}`);
+  };
 
   // Typewriter effect
   useEffect(() => {
@@ -182,6 +189,7 @@ const HeroSection = () => {
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.6, delay: 0.8, type: "spring", stiffness: 120 }}
                   whileHover={{ rotate: 2, scale: 1.03 }}
+                  onClick={handleCardClick}
                   style={{
                     boxShadow: isHovered
                       ? "0 0 25px hsl(280 100% 60% / 0.3), 0 0 50px hsl(228 65% 55% / 0.15)"

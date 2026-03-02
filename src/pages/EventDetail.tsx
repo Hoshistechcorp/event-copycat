@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { BadgeCheck, MapPin, Calendar, Clock, Users, ArrowLeft, Share2, Heart, Check, Music, Loader2 } from "lucide-react";
+import { useCurrency } from "@/contexts/CurrencyContext";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import CheckoutModal from "@/components/CheckoutModal";
@@ -24,6 +25,7 @@ const EventDetail = () => {
 
   const [selectedTicket, setSelectedTicket] = useState(0);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const { formatPrice } = useCurrency();
 
   if (isLoading && isDbId) {
     return (
@@ -237,7 +239,7 @@ const EventDetail = () => {
                   >
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-sm font-bold text-card-foreground">{ticket.name}</span>
-                      <span className="text-sm font-extrabold text-primary">{ticket.price}</span>
+                      <span className="text-sm font-extrabold text-primary">{formatPrice(ticket.price)}</span>
                     </div>
                     <ul className="space-y-1">
                       {ticket.perks.map((perk) => (
@@ -255,7 +257,7 @@ const EventDetail = () => {
                 className="w-full rounded-xl h-12 text-sm font-bold"
                 onClick={() => setCheckoutOpen(true)}
               >
-                Get {event.tickets[selectedTicket].name} — {event.tickets[selectedTicket].price}
+                Get {event.tickets[selectedTicket].name} — {formatPrice(event.tickets[selectedTicket].price)}
               </Button>
 
               <p className="text-[10px] text-muted-foreground text-center mt-3">

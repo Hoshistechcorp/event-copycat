@@ -6,6 +6,7 @@ import { Check, Minus, Plus, Loader2 } from "lucide-react";
 import type { EventItem } from "@/data/events";
 import type { PurchasedTicket } from "@/pages/MyTickets";
 import { useNavigate } from "react-router-dom";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 interface CheckoutModalProps {
   open: boolean;
@@ -21,6 +22,7 @@ const CheckoutModal = ({ open, onOpenChange, event, selectedTicketIndex }: Check
   const [email, setEmail] = useState("");
   const [step, setStep] = useState<"details" | "processing" | "success">("details");
   const navigate = useNavigate();
+  const { formatPrice, convertAmount } = useCurrency();
 
   const handlePurchase = () => {
     if (!name.trim() || !email.trim()) return;
@@ -75,7 +77,7 @@ const CheckoutModal = ({ open, onOpenChange, event, selectedTicketIndex }: Check
               <p className="text-xs text-muted-foreground mb-3">{event.fullDate} · {event.time}</p>
               <div className="flex items-center justify-between">
                 <span className="text-sm font-semibold text-foreground">{ticket.name}</span>
-                <span className="text-sm font-extrabold text-primary">{ticket.price}</span>
+                <span className="text-sm font-extrabold text-primary">{formatPrice(ticket.price)}</span>
               </div>
             </div>
 
@@ -131,12 +133,12 @@ const CheckoutModal = ({ open, onOpenChange, event, selectedTicketIndex }: Check
               onClick={handlePurchase}
               disabled={!name.trim() || !email.trim()}
             >
-              {ticket.price === "Free"
+              {ticket.price === "Free" || ticket.price.toLowerCase() === "free"
                 ? `Get ${quantity} Ticket${quantity > 1 ? "s" : ""}`
                 : `Pay ${(() => {
                     const num = Number(ticket.price.replace(/[^0-9]/g, ""));
                     const total = num * quantity;
-                    return `₦${total.toLocaleString()}`;
+                    return formatPrice(`₦${total}`);
                   })()}`}
             </Button>
             <p className="text-[10px] text-muted-foreground text-center">

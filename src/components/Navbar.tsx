@@ -6,6 +6,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import mainLogo from "@/assets/mainlogo.png";
+import CurrencySelector from "@/components/CurrencySelector";
 
 const Navbar = () => {
   const { user, loading, signOut } = useAuth();
@@ -61,6 +62,7 @@ const Navbar = () => {
         </div>
 
         <div className="flex items-center gap-3">
+          <CurrencySelector />
           <a href="/my-tickets" className="hidden md:inline-flex text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
             Find my tickets
           </a>
