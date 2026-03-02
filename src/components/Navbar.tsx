@@ -44,9 +44,6 @@ const Navbar = () => {
             <button onClick={handleCreateEvents} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               Create Events
             </button>
-            <a href="/about" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-              About
-            </a>
           </div>
         </div>
 
@@ -144,9 +141,6 @@ const Navbar = () => {
                   </button>
                   <a href="/my-tickets" className="text-base font-medium text-muted-foreground hover:text-foreground transition-colors">
                     Find my tickets
-                  </a>
-                  <a href="/about" className="text-base font-medium text-muted-foreground hover:text-foreground transition-colors">
-                    About
                   </a>
                   {user ? (
                     <button onClick={handleSignOut} className="text-left text-base font-medium text-destructive hover:text-destructive/80 transition-colors">
