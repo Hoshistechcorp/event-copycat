@@ -18,6 +18,7 @@ import CreateEvent from "./pages/CreateEvent";
 import Profile from "./pages/Profile";
 import Dashboard from "./pages/Dashboard";
 import EditEvent from "./pages/EditEvent";
+import About from "./pages/About";
 
 const queryClient = new QueryClient();
 
@@ -30,6 +31,7 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/about" element={<About />} />
             <Route path="/events" element={<Events />} />
             <Route path="/events/:id" element={<EventDetail />} />
             <Route path="/create-event" element={<CreateEvent />} />
