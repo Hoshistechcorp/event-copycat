@@ -18,7 +18,7 @@ const Footer = () => {
     <footer className="bg-secondary/50 pt-16 pb-6">
       <div className="container px-4 md:px-8">
         <div className="bg-background rounded-2xl border border-border p-8 md:p-12 mb-8">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
             {/* Brand column */}
             <div className="lg:col-span-1">
               <div className="flex items-center gap-2 mb-4">
@@ -26,7 +26,7 @@ const Footer = () => {
                 <span className="bg-accent text-accent-foreground text-[10px] font-bold px-1.5 py-0.5 rounded">BETA</span>
               </div>
               <p className="text-sm text-muted-foreground leading-relaxed mb-5">
-                Technology that makes Africa smile.
+                Technology that makes you smile.
               </p>
               <div className="flex items-center gap-2 mb-5">
                 <a href="#" className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-all duration-200 hover:scale-110">
@@ -52,9 +52,7 @@ const Footer = () => {
             <div>
               <h4 className="font-bold text-sm text-foreground uppercase tracking-wide mb-4">Products</h4>
               <ul className="space-y-2.5 text-sm text-muted-foreground">
-                <li><a href="#events" className="hover:text-foreground transition-colors">Ibloov Events</a></li>
-                <li><a href="#nightlife" className="hover:text-foreground transition-colors">Ibloov Learning</a></li>
-                <li><a href="#features" className="hover:text-foreground transition-colors">Ibloov Flex-it</a></li>
+                <li><a href="/events" className="hover:text-foreground transition-colors">View the Orbit</a></li>
               </ul>
             </div>
 
@@ -62,21 +60,9 @@ const Footer = () => {
             <div>
               <h4 className="font-bold text-sm text-foreground uppercase tracking-wide mb-4">Company</h4>
               <ul className="space-y-2.5 text-sm text-muted-foreground">
-                <li><a href="/about" className="hover:text-foreground transition-colors">About Ibloov</a></li>
+                <li><a href="/about" className="hover:text-foreground transition-colors">About iBloov</a></li>
                 <li><a href="#creators" className="hover:text-foreground transition-colors">Careers</a></li>
                 <li><a href="#testimonials" className="hover:text-foreground transition-colors">Blog</a></li>
-                <li><a href="#creators" className="hover:text-foreground transition-colors">Campus Ambassadors</a></li>
-              </ul>
-            </div>
-
-            {/* Community */}
-            <div>
-              <h4 className="font-bold text-sm text-foreground uppercase tracking-wide mb-4">Community</h4>
-              <ul className="space-y-2.5 text-sm text-muted-foreground">
-                <li><a href="#" className="hover:text-foreground transition-colors">Join Community</a></li>
-                <li><a href="#" className="hover:text-foreground transition-colors">Discord</a></li>
-                <li><a href="#" className="hover:text-foreground transition-colors">Twitter / X</a></li>
-                <li><a href="#" className="hover:text-foreground transition-colors">Instagram</a></li>
               </ul>
             </div>
 
@@ -94,7 +80,7 @@ const Footer = () => {
         </div>
 
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-muted-foreground">
-          <p>© 2026 Ibloov Africa — Technology that makes you smile.</p>
+          <p>© 2026 iBloov — Technology that makes you smile.</p>
           <div className="flex items-center gap-6">
             <a href="#" className="hover:text-foreground transition-colors">Privacy Policy</a>
             <a href="#" className="hover:text-foreground transition-colors">Terms</a>
