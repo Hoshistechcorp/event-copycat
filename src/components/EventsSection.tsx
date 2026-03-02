@@ -1,7 +1,9 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { BadgeCheck, MapPin, ChevronDown, Search, Navigation } from "lucide-react";
+import { useCurrency } from "@/contexts/CurrencyContext";
 import event1 from "@/assets/event-1.jpg";
 import event2 from "@/assets/event-2.jpg";
 import event3 from "@/assets/event-3.jpg";
@@ -38,6 +40,7 @@ const tabs: EventCategory[] = ["All", "Music", "Parties", "Workshops"];
 const locations: Location[] = ["All Locations", "Lagos", "Abuja", "Port Harcourt", "Ibadan", "Accra"];
 
 const EventsSection = () => {
+  const { formatPrice } = useCurrency();
   const [active, setActive] = useState<EventCategory>("All");
   const [selectedLocation, setSelectedLocation] = useState<Location>("All Locations");
   const [locationOpen, setLocationOpen] = useState(false);
@@ -194,8 +197,8 @@ const EventsSection = () => {
             className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6"
           >
             {filtered.map((event) => (
+              <Link to={`/events/${event.id}`} key={event.id}>
               <div
-                key={event.id}
                 className="group bg-card rounded-2xl overflow-hidden border border-border hover:shadow-xl transition-shadow duration-300 cursor-pointer"
               >
                 <div className="relative overflow-hidden">
@@ -215,7 +218,7 @@ const EventsSection = () => {
                     )}
                   </div>
                   <div className="absolute bottom-3 right-3 bg-card/90 backdrop-blur-sm text-foreground text-xs font-bold px-3 py-1.5 rounded-lg border border-border">
-                    {event.price}
+                    {formatPrice(event.price)}
                   </div>
                 </div>
                 <div className="p-5">
@@ -234,6 +237,7 @@ const EventsSection = () => {
                   </div>
                 </div>
               </div>
+              </Link>
             ))}
           </motion.div>
         </AnimatePresence>

@@ -2,11 +2,27 @@ import { useState, useRef, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { BadgeCheck, MapPin, ChevronDown, Search, Navigation, Calendar, SlidersHorizontal, ArrowLeft, Loader2 } from "lucide-react";
+import { BadgeCheck, MapPin, ChevronDown, Search, Navigation, Calendar, SlidersHorizontal, ArrowLeft, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { allEvents, categories, locations, dateFilters, type EventCategory, type Location, type DateFilter } from "@/data/events";
 import { useDbEvents } from "@/hooks/useDbEvents";
+import { useCurrency } from "@/contexts/CurrencyContext";
+import event1 from "@/assets/event-1.jpg";
+import event2 from "@/assets/event-2.jpg";
+import event3 from "@/assets/event-3.jpg";
+import event4 from "@/assets/event-4.jpg";
+import event5 from "@/assets/event-5.jpg";
+import eventHero from "@/assets/event-hero.jpg";
+
+const bannerEvents = [
+  { image: eventHero, title: "Afrobeat Night Out", subtitle: "Eko Hotel · Dec 20", id: null as number | null },
+  { image: event1, title: "Vibes & Grills 3.0", subtitle: "Lekki Phase 1 · Oct 12", id: 1 },
+  { image: event2, title: "Tech Mixer Lagos", subtitle: "Civic Centre · Oct 15", id: 2 },
+  { image: event3, title: "Sip & Paint Night", subtitle: "Art Studio X · Oct 18", id: 3 },
+  { image: event4, title: "Outdoor Cinema", subtitle: "Park View · Oct 20", id: 4 },
+  { image: event5, title: "Comedy Roast Night", subtitle: "The Vault · Oct 22", id: 5 },
+];
 
 const EVENTS_PER_PAGE = 8;
 
@@ -21,6 +37,9 @@ const Events = () => {
   const [visibleCount, setVisibleCount] = useState(EVENTS_PER_PAGE);
   const locationRef = useRef<HTMLDivElement>(null);
   const dateRef = useRef<HTMLDivElement>(null);
+
+  const { formatPrice } = useCurrency();
+  const [bannerIndex, setBannerIndex] = useState(0);
 
   const { data: dbEvents = [], isLoading } = useDbEvents();
 
@@ -38,6 +57,14 @@ const Events = () => {
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Auto-cycle banner
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setBannerIndex((prev) => (prev + 1) % bannerEvents.length);
+    }, 5000);
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
@@ -68,6 +95,48 @@ const Events = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
+
+      {/* Event Image Banner */}
+      <section className="relative h-[220px] md:h-[300px] overflow-hidden">
+        <AnimatePresence mode="popLayout">
+          <motion.div
+            key={bannerIndex}
+            className="absolute inset-0"
+            initial={{ opacity: 0, scale: 1.05 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.6 }}
+          >
+            {bannerEvents[bannerIndex].id ? (
+              <Link to={`/events/${bannerEvents[bannerIndex].id}`} className="block w-full h-full">
+                <img src={bannerEvents[bannerIndex].image} alt={bannerEvents[bannerIndex].title} className="w-full h-full object-cover" />
+              </Link>
+            ) : (
+              <img src={bannerEvents[bannerIndex].image} alt={bannerEvents[bannerIndex].title} className="w-full h-full object-cover" />
+            )}
+          </motion.div>
+        </AnimatePresence>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent pointer-events-none" />
+        <div className="absolute bottom-6 left-6 md:left-10 z-10">
+          <p className="text-white/70 text-xs font-semibold uppercase tracking-wider mb-1">Featured Event</p>
+          <h2 className="text-xl md:text-3xl font-extrabold text-white">{bannerEvents[bannerIndex].title}</h2>
+          <p className="text-white/80 text-sm mt-1">{bannerEvents[bannerIndex].subtitle}</p>
+        </div>
+        <div className="absolute bottom-6 right-6 md:right-10 z-10 flex gap-2">
+          <button onClick={() => setBannerIndex((prev) => (prev - 1 + bannerEvents.length) % bannerEvents.length)} className="w-9 h-9 rounded-full bg-white/20 backdrop-blur-sm text-white flex items-center justify-center hover:bg-white/30 transition-colors">
+            <ChevronLeft className="w-4 h-4" />
+          </button>
+          <button onClick={() => setBannerIndex((prev) => (prev + 1) % bannerEvents.length)} className="w-9 h-9 rounded-full bg-white/20 backdrop-blur-sm text-white flex items-center justify-center hover:bg-white/30 transition-colors">
+            <ChevronRight className="w-4 h-4" />
+          </button>
+        </div>
+        {/* Dots */}
+        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-10 flex gap-1.5">
+          {bannerEvents.map((_, i) => (
+            <button key={i} onClick={() => setBannerIndex(i)} className={`w-1.5 h-1.5 rounded-full transition-all ${i === bannerIndex ? "bg-white w-4" : "bg-white/40"}`} />
+          ))}
+        </div>
+      </section>
 
       {/* Hero Search Banner */}
       <section className="bg-primary py-12 md:py-16">
@@ -252,7 +321,7 @@ const Events = () => {
                         </span>
                       )}
                       <div className="absolute bottom-3 right-3 bg-card/90 backdrop-blur-sm text-foreground text-xs font-bold px-3 py-1.5 rounded-lg border border-border">
-                        {event.price}
+                        {formatPrice(event.price)}
                       </div>
                     </div>
                     <div className="p-4">
