@@ -80,11 +80,6 @@ const HeroSection = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7 }}
           >
-            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-secondary text-sm font-medium text-muted-foreground mb-6">
-              <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-              The #1 Event Platform in Africa
-            </span>
-
             <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold leading-[1.1] tracking-tight text-foreground mb-6">
               Delightful events{" "}
               <br className="hidden sm:block" />
@@ -99,30 +94,10 @@ const HeroSection = () => {
               memorable event today with iBLOOV.
             </p>
 
-            <div className="flex flex-wrap gap-3 mb-10">
+            <div className="flex flex-wrap gap-3">
               <Button size="lg" className="rounded-full px-6 sm:px-8 font-semibold text-base" asChild>
                 <a href="#events">Explore Events</a>
               </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className="rounded-full px-6 sm:px-8 font-semibold text-base"
-                asChild
-              >
-                <a href="#features">Learn More</a>
-              </Button>
-            </div>
-
-            <div className="flex items-center gap-8 pt-6 border-t border-border">
-              <div>
-                <p className="text-2xl font-extrabold text-foreground">50k+</p>
-                <p className="text-sm text-muted-foreground">Tickets Sold</p>
-              </div>
-              <div className="w-px h-10 bg-border" />
-              <div>
-                <p className="text-2xl font-extrabold text-foreground">1200+</p>
-                <p className="text-sm text-muted-foreground">Organizers</p>
-              </div>
             </div>
           </motion.div>
 
