@@ -2,9 +2,11 @@ import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
 import Footer from "@/components/Footer";
 import { motion } from "framer-motion";
-import { CalendarPlus, Ticket, Sparkles } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { Button } from "@/components/ui/button";
+import ctaHostImg from "@/assets/cta-host.jpg";
+import ctaTicketsImg from "@/assets/cta-tickets.jpg";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -43,62 +45,77 @@ const Index = () => {
 
           <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
             {/* Host an Event Card */}
-            <motion.button
-              onClick={handleHost}
-              className="group relative overflow-hidden rounded-[2rem] min-h-[220px] p-8 text-left bg-secondary transition-all duration-500 hover:shadow-xl"
+            <motion.div
+              className="group relative overflow-hidden rounded-[2rem] min-h-[320px] cursor-pointer"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5 }}
               whileHover={{ y: -6, scale: 1.02 }}
+              onClick={handleHost}
             >
-              {/* Decorative element */}
-              <div className="absolute -bottom-6 -right-6 w-36 h-36 md:w-44 md:h-44 rounded-3xl bg-primary/10 rotate-12 group-hover:rotate-6 transition-transform duration-500 flex items-center justify-center">
-                <CalendarPlus className="w-16 h-16 text-primary/30 -rotate-12 group-hover:-rotate-6 transition-transform duration-500" />
-              </div>
-              <div className="absolute -bottom-10 -right-10 w-28 h-28 rounded-full bg-accent/10 group-hover:bg-accent/15 transition-colors duration-500" />
-
-              <div className="relative z-10">
-                <span className="inline-block px-3 py-1 rounded-lg bg-primary/15 text-primary text-xs font-bold uppercase tracking-wider mb-4">
+              <img
+                src={ctaHostImg}
+                alt="Host an event"
+                className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+              <div className="relative z-10 flex flex-col justify-end h-full p-8">
+                <span className="inline-block self-start px-3 py-1 rounded-lg bg-primary/90 text-primary-foreground text-xs font-bold uppercase tracking-wider mb-3">
                   For Creators
                 </span>
-                <h3 className="text-2xl md:text-3xl font-extrabold text-foreground mb-2 leading-tight">
+                <h3 className="text-2xl md:text-3xl font-extrabold text-white mb-2 leading-tight">
                   Host an Event
                 </h3>
-                <p className="text-muted-foreground text-sm md:text-base leading-relaxed max-w-[240px]">
-                  Launch and sell tickets in minutes!
+                <p className="text-white/80 text-sm leading-relaxed mb-5 max-w-[280px]">
+                  Create, manage, and sell tickets for your next unforgettable experience.
                 </p>
+                <Button
+                  size="lg"
+                  className="self-start rounded-xl font-semibold"
+                  onClick={(e) => { e.stopPropagation(); handleHost(); }}
+                >
+                  Get Started
+                </Button>
               </div>
-            </motion.button>
+            </motion.div>
 
             {/* Buy Tickets Card */}
-            <motion.button
-              onClick={() => navigate("/events")}
-              className="group relative overflow-hidden rounded-[2rem] min-h-[220px] p-8 text-left bg-secondary transition-all duration-500 hover:shadow-xl"
+            <motion.div
+              className="group relative overflow-hidden rounded-[2rem] min-h-[320px] cursor-pointer"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.1 }}
               whileHover={{ y: -6, scale: 1.02 }}
+              onClick={() => navigate("/events")}
             >
-              {/* Decorative element */}
-              <div className="absolute -bottom-6 -right-6 w-36 h-36 md:w-44 md:h-44 rounded-3xl bg-accent/10 -rotate-12 group-hover:-rotate-6 transition-transform duration-500 flex items-center justify-center">
-                <Ticket className="w-16 h-16 text-accent/30 rotate-12 group-hover:rotate-6 transition-transform duration-500" />
-              </div>
-              <div className="absolute -bottom-10 -right-10 w-28 h-28 rounded-full bg-primary/10 group-hover:bg-primary/15 transition-colors duration-500" />
-
-              <div className="relative z-10">
-                <span className="inline-block px-3 py-1 rounded-lg bg-accent/15 text-accent text-xs font-bold uppercase tracking-wider mb-4">
+              <img
+                src={ctaTicketsImg}
+                alt="Buy tickets"
+                className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+              <div className="relative z-10 flex flex-col justify-end h-full p-8">
+                <span className="inline-block self-start px-3 py-1 rounded-lg bg-accent/90 text-accent-foreground text-xs font-bold uppercase tracking-wider mb-3">
                   For Everyone
                 </span>
-                <h3 className="text-2xl md:text-3xl font-extrabold text-foreground mb-2 leading-tight">
+                <h3 className="text-2xl md:text-3xl font-extrabold text-white mb-2 leading-tight">
                   Buy Tickets
                 </h3>
-                <p className="text-muted-foreground text-sm md:text-base leading-relaxed max-w-[240px]">
-                  Discover events and secure your spot!
+                <p className="text-white/80 text-sm leading-relaxed mb-5 max-w-[280px]">
+                  Discover the hottest events around you. Secure your spot with just a few taps.
                 </p>
+                <Button
+                  size="lg"
+                  variant="secondary"
+                  className="self-start rounded-xl font-semibold"
+                  onClick={(e) => { e.stopPropagation(); navigate("/events"); }}
+                >
+                  Explore Events
+                </Button>
               </div>
-            </motion.button>
+            </motion.div>
           </div>
         </div>
       </section>
