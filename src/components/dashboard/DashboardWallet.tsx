@@ -51,11 +51,25 @@ const DashboardWallet = () => {
   const [processing, setProcessing] = useState(false);
   const [step, setStep] = useState<"amount" | "confirm">("amount");
 
-  // Mock earnings
-  const totalEarned = 0;
+  // Mock earnings data
+  const totalEarned = 847500;
   const commission = totalEarned * COMMISSION_RATE;
   const availableBalance = totalEarned - commission;
-  const pendingAmount = 0;
+  const pendingAmount = 35000;
+
+  // Mock transaction history (combined withdrawals + ticket sales)
+  const mockTransactions = [
+    { id: "t1", type: "sale" as const, description: "VIP Ticket – Neon Nights Lagos", date: "2026-03-02T14:30:00Z", amount: 25000, status: "completed" },
+    { id: "t2", type: "sale" as const, description: "Regular Ticket × 3 – Neon Nights Lagos", date: "2026-03-02T10:15:00Z", amount: 15000, status: "completed" },
+    { id: "t3", type: "withdrawal" as const, description: "GTBank • ****4521", date: "2026-03-01T09:00:00Z", amount: 150000, status: "completed" },
+    { id: "t4", type: "sale" as const, description: "VVIP Ticket – Afrobeats Festival", date: "2026-02-28T18:45:00Z", amount: 50000, status: "completed" },
+    { id: "t5", type: "sale" as const, description: "Regular Ticket × 5 – Afrobeats Festival", date: "2026-02-28T16:20:00Z", amount: 25000, status: "completed" },
+    { id: "t6", type: "withdrawal" as const, description: "Access Bank • ****7890", date: "2026-02-27T11:00:00Z", amount: 200000, status: "completed" },
+    { id: "t7", type: "sale" as const, description: "Early Bird Ticket × 10 – Tech Meetup", date: "2026-02-26T08:00:00Z", amount: 50000, status: "completed" },
+    { id: "t8", type: "withdrawal" as const, description: "GTBank • ****4521", date: "2026-02-25T14:00:00Z", amount: 35000, status: "pending" },
+    { id: "t9", type: "sale" as const, description: "VIP Ticket × 2 – Neon Nights Lagos", date: "2026-02-24T20:10:00Z", amount: 50000, status: "completed" },
+    { id: "t10", type: "sale" as const, description: "Regular Ticket – Comedy Night", date: "2026-02-23T12:30:00Z", amount: 5000, status: "completed" },
+  ];
 
   useEffect(() => {
     if (!user) return;
@@ -234,55 +248,49 @@ const DashboardWallet = () => {
           <p className="text-xs text-muted-foreground">Your withdrawals and ticket sales</p>
         </CardHeader>
         <CardContent>
-          {withdrawals.length === 0 ? (
-            <div className="text-center py-10">
-              <Clock className="h-8 w-8 text-muted-foreground/30 mx-auto mb-3" />
-              <p className="text-sm font-medium text-foreground">No transactions yet</p>
-              <p className="text-xs text-muted-foreground">Your withdrawal and sales history will appear here</p>
-            </div>
-          ) : (
-            <div className="overflow-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="text-xs">Type</TableHead>
-                    <TableHead className="text-xs">Details</TableHead>
-                    <TableHead className="text-xs">Date</TableHead>
-                    <TableHead className="text-xs text-right">Amount</TableHead>
-                    <TableHead className="text-xs text-right">Status</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {withdrawals.map((w) => (
-                    <TableRow key={w.id}>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <div className="h-7 w-7 rounded-full flex items-center justify-center bg-destructive/10">
+          <div className="overflow-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="text-xs">Type</TableHead>
+                  <TableHead className="text-xs">Details</TableHead>
+                  <TableHead className="text-xs">Date</TableHead>
+                  <TableHead className="text-xs text-right">Amount</TableHead>
+                  <TableHead className="text-xs text-right">Status</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {mockTransactions.map((t) => (
+                  <TableRow key={t.id}>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <div className={`h-7 w-7 rounded-full flex items-center justify-center ${t.type === "sale" ? "bg-green-500/10" : "bg-destructive/10"}`}>
+                          {t.type === "sale" ? (
+                            <ArrowDownLeft className="h-3.5 w-3.5 text-green-600" />
+                          ) : (
                             <ArrowUpRight className="h-3.5 w-3.5 text-destructive" />
-                          </div>
-                          <span className="text-xs font-medium">Withdrawal</span>
+                          )}
                         </div>
-                      </TableCell>
-                      <TableCell className="text-xs text-muted-foreground">
-                        {w.bank_accounts?.bank_name || "Bank"} • ****{w.bank_accounts?.account_number?.slice(-4) || ""}
-                      </TableCell>
-                      <TableCell className="text-xs text-muted-foreground">
-                        {format(new Date(w.created_at), "MMM d, yyyy")}
-                      </TableCell>
-                      <TableCell className="text-xs font-bold text-right text-destructive">
-                        -₦{w.amount.toLocaleString()}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Badge variant="outline" className={`text-[10px] capitalize ${statusColor(w.status)}`}>
-                          {w.status}
-                        </Badge>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          )}
+                        <span className="text-xs font-medium capitalize">{t.type === "sale" ? "Ticket Sale" : "Withdrawal"}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-xs text-muted-foreground">{t.description}</TableCell>
+                    <TableCell className="text-xs text-muted-foreground">
+                      {format(new Date(t.date), "MMM d, yyyy")}
+                    </TableCell>
+                    <TableCell className={`text-xs font-bold text-right ${t.type === "sale" ? "text-green-600" : "text-destructive"}`}>
+                      {t.type === "sale" ? "+" : "-"}₦{t.amount.toLocaleString()}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Badge variant="outline" className={`text-[10px] capitalize ${statusColor(t.status)}`}>
+                        {t.status}
+                      </Badge>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         </CardContent>
       </Card>
 
