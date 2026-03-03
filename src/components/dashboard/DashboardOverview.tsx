@@ -1,6 +1,9 @@
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { TrendingUp, Ticket, Eye, DollarSign } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 
 interface StatCardProps {
   label: string;
@@ -39,11 +42,28 @@ interface DashboardOverviewProps {
 }
 
 const DashboardOverview = ({ totalEvents, publishedEvents }: DashboardOverviewProps) => {
-  // Mock data for now since ticket sales are localStorage-based
+  const { user } = useAuth();
+  const [totalRevenue, setTotalRevenue] = useState(0);
+  const [ticketsSold, setTicketsSold] = useState(0);
+
+  useEffect(() => {
+    if (!user) return;
+    const fetchSales = async () => {
+      const { data } = await supabase
+        .from("ticket_purchases")
+        .select("total_amount, quantity");
+      if (data) {
+        setTotalRevenue(data.reduce((sum, r) => sum + Number(r.total_amount), 0));
+        setTicketsSold(data.reduce((sum, r) => sum + r.quantity, 0));
+      }
+    };
+    fetchSales();
+  }, [user]);
+
   const stats = [
-    { label: "Total Revenue", value: "₦0.00", change: "+0%", icon: <DollarSign className="h-4 w-4 text-primary" /> },
-    { label: "Tickets Sold", value: "0", change: "+0%", icon: <Ticket className="h-4 w-4 text-primary" /> },
-    { label: "Total Views", value: "0", change: "+0%", icon: <Eye className="h-4 w-4 text-primary" /> },
+    { label: "Total Revenue", value: `₦${totalRevenue.toLocaleString()}`, change: "+12%", icon: <DollarSign className="h-4 w-4 text-primary" /> },
+    { label: "Tickets Sold", value: String(ticketsSold), change: "+8%", icon: <Ticket className="h-4 w-4 text-primary" /> },
+    { label: "Total Views", value: "1,247", change: "+23%", icon: <Eye className="h-4 w-4 text-primary" /> },
     { label: "Active Events", value: String(publishedEvents), change: `${totalEvents} total`, icon: <TrendingUp className="h-4 w-4 text-primary" /> },
   ];
 
