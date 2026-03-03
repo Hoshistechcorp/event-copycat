@@ -70,10 +70,10 @@ const Footer = () => {
             <div>
               <h4 className="font-bold text-sm text-foreground uppercase tracking-wide mb-4">Support</h4>
               <ul className="space-y-2.5 text-sm text-muted-foreground">
-                <li><a href="#" className="hover:text-foreground transition-colors">Contact Us</a></li>
-                <li><a href="#" className="hover:text-foreground transition-colors">FAQs</a></li>
-                <li><a href="#" className="hover:text-foreground transition-colors">Privacy Policy</a></li>
-                <li><a href="#" className="hover:text-foreground transition-colors">Terms of Service</a></li>
+                <li><a href="/contact" className="hover:text-foreground transition-colors">Contact Us</a></li>
+                <li><a href="/faq" className="hover:text-foreground transition-colors">FAQs</a></li>
+                <li><a href="/privacy" className="hover:text-foreground transition-colors">Privacy Policy</a></li>
+                <li><a href="/terms" className="hover:text-foreground transition-colors">Terms of Service</a></li>
               </ul>
             </div>
           </div>
@@ -82,9 +82,9 @@ const Footer = () => {
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-muted-foreground">
           <p>© 2026 iBloov — Technology that makes you smile.</p>
           <div className="flex items-center gap-6">
-            <a href="#" className="hover:text-foreground transition-colors">Privacy Policy</a>
-            <a href="#" className="hover:text-foreground transition-colors">Terms</a>
-            <a href="#" className="hover:text-foreground transition-colors">Code of Conduct</a>
+            <a href="/privacy" className="hover:text-foreground transition-colors">Privacy Policy</a>
+            <a href="/terms" className="hover:text-foreground transition-colors">Terms</a>
+            <a href="/contact" className="hover:text-foreground transition-colors">Contact</a>
           </div>
         </div>
       </div>
