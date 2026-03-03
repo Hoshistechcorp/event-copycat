@@ -3,6 +3,7 @@ import { User as UserType } from "@supabase/supabase-js";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Shield, Lock, Loader2, Eye, EyeOff } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -40,43 +41,48 @@ const ProfileSecurity = ({ user }: Props) => {
   };
 
   return (
-    <div>
-      <h2 className="text-xl font-bold text-foreground mb-6">Security</h2>
-      <Card className="rounded-2xl border-border">
-        <CardHeader className="pb-2">
-          <div className="flex items-center gap-2">
-            <Lock className="h-4 w-4 text-primary" />
-            <CardTitle className="text-sm font-bold text-foreground">Change Password</CardTitle>
+    <Card className="rounded-2xl border-border">
+      <CardHeader className="pb-4">
+        <div className="flex items-center gap-2">
+          <Shield className="h-4 w-4 text-primary" />
+          <CardTitle className="text-base font-bold">Security</CardTitle>
+        </div>
+        <p className="text-xs text-muted-foreground">Update your account password</p>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <Label className="text-xs font-semibold mb-1.5">New Password</Label>
+            <div className="relative">
+              <Input
+                type={showPass ? "text" : "password"}
+                placeholder="New password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                className="rounded-xl h-11 bg-secondary border-border pr-10"
+              />
+              <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground" onClick={() => setShowPass(!showPass)}>
+                {showPass ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
           </div>
-          <p className="text-xs text-muted-foreground">Update your account password</p>
-        </CardHeader>
-        <CardContent className="space-y-3 max-w-sm">
-          <div className="relative">
+          <div>
+            <Label className="text-xs font-semibold mb-1.5">Confirm Password</Label>
             <Input
               type={showPass ? "text" : "password"}
-              placeholder="New password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              className="rounded-xl h-10 bg-secondary border-border pr-10"
+              placeholder="Confirm new password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className="rounded-xl h-11 bg-secondary border-border"
             />
-            <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground" onClick={() => setShowPass(!showPass)}>
-              {showPass ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-            </button>
           </div>
-          <Input
-            type={showPass ? "text" : "password"}
-            placeholder="Confirm new password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            className="rounded-xl h-10 bg-secondary border-border"
-          />
-          <Button size="sm" className="rounded-xl text-xs font-bold" disabled={saving} onClick={handleChangePassword}>
-            {saving ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <Shield className="h-3 w-3 mr-1" />}
-            Update Password
-          </Button>
-        </CardContent>
-      </Card>
-    </div>
+        </div>
+        <Button size="sm" className="rounded-xl text-xs font-bold h-10 px-6" disabled={saving} onClick={handleChangePassword}>
+          {saving ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <Lock className="h-3 w-3 mr-1" />}
+          Update Password
+        </Button>
+      </CardContent>
+    </Card>
   );
 };
 
