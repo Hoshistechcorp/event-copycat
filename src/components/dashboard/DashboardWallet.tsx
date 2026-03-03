@@ -30,6 +30,19 @@ interface Withdrawal {
   bank_accounts: { bank_name: string; account_number: string } | null;
 }
 
+interface TicketPurchase {
+  id: string;
+  quantity: number;
+  unit_price: number;
+  total_amount: number;
+  status: string;
+  created_at: string;
+  buyer_name: string | null;
+  buyer_email: string;
+  ticket_tiers: { name: string } | null;
+  events: { title: string } | null;
+}
+
 const COMMISSION_RATE = 0.05;
 
 const DashboardWallet = () => {
@@ -39,6 +52,7 @@ const DashboardWallet = () => {
 
   const [bankAccounts, setBankAccounts] = useState<BankAccount[]>([]);
   const [withdrawals, setWithdrawals] = useState<Withdrawal[]>([]);
+  const [ticketSales, setTicketSales] = useState<TicketPurchase[]>([]);
   const [hasPin, setHasPin] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -51,34 +65,15 @@ const DashboardWallet = () => {
   const [processing, setProcessing] = useState(false);
   const [step, setStep] = useState<"amount" | "confirm">("amount");
 
-  // Mock earnings data
-  const totalEarned = 847500;
-  const commission = totalEarned * COMMISSION_RATE;
-  const availableBalance = totalEarned - commission;
-  const pendingAmount = 35000;
-
-  // Mock transaction history (combined withdrawals + ticket sales)
-  const mockTransactions = [
-    { id: "t1", type: "sale" as const, description: "VIP Ticket – Neon Nights Lagos", date: "2026-03-02T14:30:00Z", amount: 25000, status: "completed" },
-    { id: "t2", type: "sale" as const, description: "Regular Ticket × 3 – Neon Nights Lagos", date: "2026-03-02T10:15:00Z", amount: 15000, status: "completed" },
-    { id: "t3", type: "withdrawal" as const, description: "GTBank • ****4521", date: "2026-03-01T09:00:00Z", amount: 150000, status: "completed" },
-    { id: "t4", type: "sale" as const, description: "VVIP Ticket – Afrobeats Festival", date: "2026-02-28T18:45:00Z", amount: 50000, status: "completed" },
-    { id: "t5", type: "sale" as const, description: "Regular Ticket × 5 – Afrobeats Festival", date: "2026-02-28T16:20:00Z", amount: 25000, status: "completed" },
-    { id: "t6", type: "withdrawal" as const, description: "Access Bank • ****7890", date: "2026-02-27T11:00:00Z", amount: 200000, status: "completed" },
-    { id: "t7", type: "sale" as const, description: "Early Bird Ticket × 10 – Tech Meetup", date: "2026-02-26T08:00:00Z", amount: 50000, status: "completed" },
-    { id: "t8", type: "withdrawal" as const, description: "GTBank • ****4521", date: "2026-02-25T14:00:00Z", amount: 35000, status: "pending" },
-    { id: "t9", type: "sale" as const, description: "VIP Ticket × 2 – Neon Nights Lagos", date: "2026-02-24T20:10:00Z", amount: 50000, status: "completed" },
-    { id: "t10", type: "sale" as const, description: "Regular Ticket – Comedy Night", date: "2026-02-23T12:30:00Z", amount: 5000, status: "completed" },
-  ];
-
   useEffect(() => {
     if (!user) return;
     const load = async () => {
       setLoading(true);
-      const [bankRes, withdrawRes, profileRes] = await Promise.all([
+      const [bankRes, withdrawRes, profileRes, salesRes] = await Promise.all([
         supabase.from("bank_accounts").select("*").eq("user_id", user.id).order("created_at"),
         supabase.from("withdrawals").select("*, bank_accounts(bank_name, account_number)").eq("user_id", user.id).order("created_at", { ascending: false }),
         supabase.from("profiles").select("withdrawal_pin").eq("user_id", user.id).single(),
+        supabase.from("ticket_purchases").select("*, ticket_tiers(name), events(title)").order("created_at", { ascending: false }),
       ]);
       if (bankRes.data) {
         setBankAccounts(bankRes.data);
@@ -87,10 +82,37 @@ const DashboardWallet = () => {
       }
       if (withdrawRes.data) setWithdrawals(withdrawRes.data as unknown as Withdrawal[]);
       if (profileRes.data) setHasPin(!!profileRes.data.withdrawal_pin);
+      if (salesRes.data) setTicketSales(salesRes.data as unknown as TicketPurchase[]);
       setLoading(false);
     };
     load();
   }, [user]);
+
+  // Compute real earnings from ticket sales
+  const totalEarned = ticketSales.reduce((sum, s) => sum + Number(s.total_amount), 0);
+  const commission = totalEarned * COMMISSION_RATE;
+  const availableBalance = totalEarned - commission;
+  const pendingWithdrawals = withdrawals.filter(w => w.status === "pending").reduce((sum, w) => sum + Number(w.amount), 0);
+
+  // Merge withdrawals + sales into unified transaction list
+  const transactions = [
+    ...withdrawals.map((w) => ({
+      id: w.id,
+      type: "withdrawal" as const,
+      description: `${w.bank_accounts?.bank_name || "Bank"} • ****${w.bank_accounts?.account_number?.slice(-4) || ""}`,
+      date: w.created_at,
+      amount: Number(w.amount),
+      status: w.status,
+    })),
+    ...ticketSales.map((s) => ({
+      id: s.id,
+      type: "sale" as const,
+      description: `${(s.ticket_tiers as any)?.name || "Ticket"} × ${s.quantity} – ${(s.events as any)?.title || "Event"}`,
+      date: s.created_at,
+      amount: Number(s.total_amount),
+      status: s.status,
+    })),
+  ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
   const openWithdrawModal = () => {
     setStep("amount");
@@ -190,7 +212,7 @@ const DashboardWallet = () => {
           {
             icon: Clock,
             label: "Pending",
-            value: `₦${pendingAmount.toLocaleString()}`,
+            value: `₦${pendingWithdrawals.toLocaleString()}`,
             sub: "Processing in 2-3 days",
           },
           {
@@ -248,6 +270,13 @@ const DashboardWallet = () => {
           <p className="text-xs text-muted-foreground">Your withdrawals and ticket sales</p>
         </CardHeader>
         <CardContent>
+          {transactions.length === 0 ? (
+            <div className="text-center py-10">
+              <Clock className="h-8 w-8 text-muted-foreground/30 mx-auto mb-3" />
+              <p className="text-sm font-medium text-foreground">No transactions yet</p>
+              <p className="text-xs text-muted-foreground">Your withdrawal and sales history will appear here</p>
+            </div>
+          ) : (
           <div className="overflow-auto">
             <Table>
               <TableHeader>
@@ -260,7 +289,7 @@ const DashboardWallet = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {mockTransactions.map((t) => (
+                {transactions.map((t) => (
                   <TableRow key={t.id}>
                     <TableCell>
                       <div className="flex items-center gap-2">
@@ -291,6 +320,7 @@ const DashboardWallet = () => {
               </TableBody>
             </Table>
           </div>
+          )}
         </CardContent>
       </Card>
 
