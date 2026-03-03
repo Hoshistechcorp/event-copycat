@@ -124,6 +124,50 @@ export type Database = {
         }
         Relationships: []
       }
+      promotions: {
+        Row: {
+          amount_paid: number
+          created_at: string
+          end_date: string
+          event_id: string
+          host_id: string
+          id: string
+          placement: string
+          start_date: string
+          status: string
+        }
+        Insert: {
+          amount_paid?: number
+          created_at?: string
+          end_date: string
+          event_id: string
+          host_id: string
+          id?: string
+          placement?: string
+          start_date?: string
+          status?: string
+        }
+        Update: {
+          amount_paid?: number
+          created_at?: string
+          end_date?: string
+          event_id?: string
+          host_id?: string
+          id?: string
+          placement?: string
+          start_date?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "promotions_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ticket_tiers: {
         Row: {
           created_at: string
