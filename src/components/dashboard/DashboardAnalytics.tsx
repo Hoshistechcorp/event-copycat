@@ -1,6 +1,9 @@
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from "recharts";
+import { Download } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const revenueData = [
   { month: "Jan", revenue: 0 },
@@ -27,9 +30,37 @@ const categoryData = [
   { name: "Other", value: 10, color: "hsl(220, 15%, 70%)" },
 ];
 
+const exportToCSV = () => {
+  const headers = ["Month", "Revenue (₦)", "Tickets Sold"];
+  const rows = revenueData.map((r, i) => [r.month, r.revenue, ticketData[i].sold]);
+  const csv = [headers, ...rows].map((row) => row.join(",")).join("\n");
+  const blob = new Blob([csv], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `analytics-report-${new Date().toISOString().slice(0, 10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+};
+
 const DashboardAnalytics = () => {
+  const { toast } = useToast();
+
+  const handleExport = () => {
+    exportToCSV();
+    toast({ title: "Report exported", description: "CSV file downloaded successfully." });
+  };
+
   return (
     <div className="space-y-6">
+      {/* Export button */}
+      <div className="flex justify-end">
+        <Button variant="outline" className="rounded-xl text-xs font-bold gap-2" onClick={handleExport}>
+          <Download className="h-3.5 w-3.5" />
+          Export Report
+        </Button>
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Revenue Chart */}
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
