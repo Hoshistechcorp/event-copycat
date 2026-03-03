@@ -2,14 +2,14 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Camera, User, Mail, Calendar, Mic, Save, Building2, Plus, Trash2, Lock, Eye, EyeOff, Star, ArrowLeft, Shield, Bell, CreditCard, HelpCircle, FileText } from "lucide-react";
+import { Loader2, ArrowLeft, User, Mail, Shield, CreditCard, Building2, Lock, Camera, Calendar, Mic, Save, Bell, LogOut } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import ProfileEditSection from "@/components/profile/ProfileEditSection";
 import ProfileBankAccounts from "@/components/profile/ProfileBankAccounts";
@@ -17,7 +17,6 @@ import ProfileWithdrawalPin from "@/components/profile/ProfileWithdrawalPin";
 import ProfileSecurity from "@/components/profile/ProfileSecurity";
 
 type AccountType = "attendee" | "host";
-type ProfileTab = "edit" | "withdrawal" | "security";
 
 export interface BankAccount {
   id: string;
@@ -39,7 +38,6 @@ const Profile = () => {
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [loadingProfile, setLoadingProfile] = useState(true);
-  const [activeTab, setActiveTab] = useState<ProfileTab>("edit");
 
   // Bank accounts
   const [bankAccounts, setBankAccounts] = useState<BankAccount[]>([]);
@@ -142,16 +140,15 @@ const Profile = () => {
     setSaving(false);
   };
 
-  const sidebarTabs = [
-    { id: "edit" as ProfileTab, label: "Edit Profile", icon: User },
-    ...(isHost ? [{ id: "withdrawal" as ProfileTab, label: "Withdrawal Settings", icon: CreditCard }] : []),
-    { id: "security" as ProfileTab, label: "Security", icon: Shield },
-  ];
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    navigate("/");
+  };
 
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <div className="container max-w-6xl px-4 py-10 md:py-16">
+      <div className="container max-w-4xl px-4 py-10 md:py-16">
         {/* Header */}
         <div className="flex items-center gap-3 mb-8">
           <Button variant="ghost" size="icon" className="rounded-xl" onClick={() => navigate(-1)}>
@@ -159,70 +156,107 @@ const Profile = () => {
           </Button>
           <div>
             <h1 className="text-2xl font-extrabold text-foreground">Profile & Settings</h1>
+            <p className="text-sm text-muted-foreground">Manage your account, security and preferences</p>
           </div>
         </div>
 
-        <div className="flex flex-col md:flex-row gap-8">
-          {/* Sidebar */}
-          <aside className="w-full md:w-72 flex-shrink-0">
-            <nav className="space-y-1.5">
-              {sidebarTabs.map((tab) => {
-                const Icon = tab.icon;
-                return (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all text-left ${
-                      activeTab === tab.id
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-secondary text-foreground hover:bg-secondary/80"
-                    }`}
+        <div className="space-y-6">
+          {/* Profile Card - Avatar & Basic Info */}
+          <Card className="rounded-2xl border-border overflow-hidden">
+            <div className="h-24 bg-gradient-to-r from-primary/20 via-primary/10 to-accent/20" />
+            <CardContent className="relative px-6 pb-6">
+              <div className="flex flex-col sm:flex-row items-center sm:items-end gap-4 -mt-12">
+                <div className="relative">
+                  <Avatar className="h-24 w-24 border-4 border-background shadow-lg">
+                    <AvatarImage src={avatarPreview || avatarUrl || undefined} />
+                    <AvatarFallback className="text-2xl font-bold bg-primary/10 text-primary">
+                      {initials}
+                    </AvatarFallback>
+                  </Avatar>
+                  <label
+                    htmlFor="avatar-upload"
+                    className="absolute bottom-0 right-0 h-8 w-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center cursor-pointer hover:bg-primary/90 transition-colors shadow-md"
                   >
-                    <Icon className="h-4 w-4" />
-                    {tab.label}
-                  </button>
-                );
-              })}
-            </nav>
-          </aside>
-
-          {/* Content */}
-          <main className="flex-1 min-w-0">
-            <motion.div key={activeTab} initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.2 }}>
-              {activeTab === "edit" && (
-                <ProfileEditSection
-                  user={user}
-                  displayName={displayName}
-                  setDisplayName={setDisplayName}
-                  avatarUrl={avatarUrl}
-                  avatarPreview={avatarPreview}
-                  initials={initials}
-                  accountType={accountType}
-                  setAccountType={setAccountType}
-                  handleAvatarChange={handleAvatarChange}
-                  handleSave={handleSave}
-                  saving={saving}
-                />
-              )}
-              {activeTab === "withdrawal" && isHost && (
-                <div className="space-y-6">
-                  <ProfileBankAccounts
-                    user={user}
-                    bankAccounts={bankAccounts}
-                    setBankAccounts={setBankAccounts}
-                  />
-                  <ProfileWithdrawalPin
-                    user={user}
-                    hasPin={hasPin}
-                    setHasPin={setHasPin}
-                  />
+                    <Camera className="h-4 w-4" />
+                  </label>
+                  <input id="avatar-upload" type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
                 </div>
-              )}
-              {activeTab === "security" && (
-                <ProfileSecurity user={user} />
-              )}
+                <div className="text-center sm:text-left flex-1">
+                  <h2 className="text-xl font-bold text-foreground">{displayName || "Your Name"}</h2>
+                  <p className="text-sm text-muted-foreground">{user.email}</p>
+                </div>
+                <Badge variant="outline" className="capitalize">
+                  {accountType === "host" ? "Event Host" : "Attendee"}
+                </Badge>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Personal Information */}
+          <Card className="rounded-2xl border-border">
+            <CardHeader className="pb-4">
+              <div className="flex items-center gap-2">
+                <User className="h-4 w-4 text-primary" />
+                <CardTitle className="text-base font-bold">Personal Information</CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <ProfileEditSection
+                user={user}
+                displayName={displayName}
+                setDisplayName={setDisplayName}
+                avatarUrl={avatarUrl}
+                avatarPreview={avatarPreview}
+                initials={initials}
+                accountType={accountType}
+                setAccountType={setAccountType}
+                handleAvatarChange={handleAvatarChange}
+                handleSave={handleSave}
+                saving={saving}
+              />
+            </CardContent>
+          </Card>
+
+          {/* Bank Accounts - Host only */}
+          {isHost && (
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+              <ProfileBankAccounts
+                user={user}
+                bankAccounts={bankAccounts}
+                setBankAccounts={setBankAccounts}
+              />
             </motion.div>
-          </main>
+          )}
+
+          {/* Withdrawal PIN - Host only */}
+          {isHost && (
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
+              <ProfileWithdrawalPin
+                user={user}
+                hasPin={hasPin}
+                setHasPin={setHasPin}
+              />
+            </motion.div>
+          )}
+
+          {/* Security */}
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+            <ProfileSecurity user={user} />
+          </motion.div>
+
+          {/* Sign Out */}
+          <Card className="rounded-2xl border-destructive/20">
+            <CardContent className="p-6 flex items-center justify-between">
+              <div>
+                <p className="text-sm font-semibold text-foreground">Sign Out</p>
+                <p className="text-xs text-muted-foreground">Log out of your account on this device</p>
+              </div>
+              <Button variant="destructive" size="sm" className="rounded-xl" onClick={handleSignOut}>
+                <LogOut className="h-4 w-4 mr-2" />
+                Sign Out
+              </Button>
+            </CardContent>
+          </Card>
         </div>
       </div>
       <Footer />
