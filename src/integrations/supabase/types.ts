@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      bank_accounts: {
+        Row: {
+          account_name: string
+          account_number: string
+          bank_name: string
+          created_at: string
+          id: string
+          is_default: boolean
+          user_id: string
+        }
+        Insert: {
+          account_name: string
+          account_number: string
+          bank_name: string
+          created_at?: string
+          id?: string
+          is_default?: boolean
+          user_id: string
+        }
+        Update: {
+          account_name?: string
+          account_number?: string
+          bank_name?: string
+          created_at?: string
+          id?: string
+          is_default?: boolean
+          user_id?: string
+        }
+        Relationships: []
+      }
       events: {
         Row: {
           category: string | null
@@ -105,6 +135,7 @@ export type Database = {
           id: string
           updated_at: string
           user_id: string
+          withdrawal_pin: string | null
         }
         Insert: {
           avatar_url?: string | null
@@ -113,6 +144,7 @@ export type Database = {
           id?: string
           updated_at?: string
           user_id: string
+          withdrawal_pin?: string | null
         }
         Update: {
           avatar_url?: string | null
@@ -121,6 +153,7 @@ export type Database = {
           id?: string
           updated_at?: string
           user_id?: string
+          withdrawal_pin?: string | null
         }
         Relationships: []
       }
@@ -202,6 +235,41 @@ export type Database = {
             columns: ["event_id"]
             isOneToOne: false
             referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      withdrawals: {
+        Row: {
+          amount: number
+          bank_account_id: string
+          created_at: string
+          id: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          bank_account_id: string
+          created_at?: string
+          id?: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          bank_account_id?: string
+          created_at?: string
+          id?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "withdrawals_bank_account_id_fkey"
+            columns: ["bank_account_id"]
+            isOneToOne: false
+            referencedRelation: "bank_accounts"
             referencedColumns: ["id"]
           },
         ]
