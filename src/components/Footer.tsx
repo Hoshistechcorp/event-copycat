@@ -52,7 +52,7 @@ const Footer = () => {
             <div>
               <h4 className="font-bold text-sm text-foreground uppercase tracking-wide mb-4">Products</h4>
               <ul className="space-y-2.5 text-sm text-muted-foreground">
-                <li><a href="https://orbit-connect-joy.lovable.app/aura" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">View the Orbit</a></li>
+                <li><a href="https://orbit-connect-joy.lovable.app/aura" className="hover:text-foreground transition-colors">View the Orbit</a></li>
               </ul>
             </div>
 
