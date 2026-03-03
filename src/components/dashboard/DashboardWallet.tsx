@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Wallet, ArrowUpRight, ArrowDownLeft, Clock, CreditCard, Building2, Lock, Loader2, Eye, EyeOff, AlertCircle } from "lucide-react";
+import { Wallet, ArrowUpRight, Clock, CreditCard, Building2, Lock, Loader2, Eye, EyeOff, AlertCircle, Info } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -27,11 +27,7 @@ interface Withdrawal {
   bank_accounts: { bank_name: string; account_number: string } | null;
 }
 
-const mockTransactions = [
-  { id: "1", type: "credit", label: "Ticket sale – Neon Nights", amount: "+₦5,000", date: "Mar 1, 2026", status: "completed" },
-  { id: "2", type: "debit", label: "Withdrawal to bank", amount: "-₦3,000", date: "Feb 28, 2026", status: "completed" },
-  { id: "3", type: "credit", label: "Ticket sale – Lagos Tech Meetup", amount: "+₦2,500", date: "Feb 25, 2026", status: "pending" },
-];
+const COMMISSION_RATE = 0.05; // 5%
 
 const DashboardWallet = () => {
   const { user } = useAuth();
@@ -43,7 +39,7 @@ const DashboardWallet = () => {
   const [hasPin, setHasPin] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // Withdrawal modal state
+  // Withdrawal form state — always visible
   const [showWithdraw, setShowWithdraw] = useState(false);
   const [withdrawAmount, setWithdrawAmount] = useState("");
   const [selectedBank, setSelectedBank] = useState("");
@@ -51,6 +47,12 @@ const DashboardWallet = () => {
   const [showPin, setShowPin] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [step, setStep] = useState<"amount" | "confirm">("amount");
+
+  // Mock earnings
+  const totalEarned = 0;
+  const commission = totalEarned * COMMISSION_RATE;
+  const availableBalance = totalEarned - commission;
+  const pendingAmount = 0;
 
   useEffect(() => {
     if (!user) return;
@@ -74,14 +76,6 @@ const DashboardWallet = () => {
   }, [user]);
 
   const handleStartWithdraw = () => {
-    if (bankAccounts.length === 0) {
-      toast({ title: "No bank account", description: "Add a bank account in your Profile first.", variant: "destructive" });
-      return;
-    }
-    if (!hasPin) {
-      toast({ title: "No withdrawal PIN", description: "Set up a withdrawal PIN in your Profile first.", variant: "destructive" });
-      return;
-    }
     setStep("amount");
     setShowWithdraw(true);
     setWithdrawAmount("");
@@ -89,6 +83,14 @@ const DashboardWallet = () => {
   };
 
   const handleConfirmWithdraw = async () => {
+    if (bankAccounts.length === 0) {
+      toast({ title: "No bank account", description: "Add a bank account in your Profile → Withdrawal Settings.", variant: "destructive" });
+      return;
+    }
+    if (!hasPin) {
+      toast({ title: "No withdrawal PIN", description: "Set up a withdrawal PIN in your Profile → Withdrawal Settings.", variant: "destructive" });
+      return;
+    }
     const amount = parseFloat(withdrawAmount);
     if (!amount || amount <= 0) {
       toast({ title: "Invalid amount", variant: "destructive" });
@@ -104,21 +106,13 @@ const DashboardWallet = () => {
     }
 
     setProcessing(true);
-
-    // Verify PIN
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("withdrawal_pin")
-      .eq("user_id", user!.id)
-      .single();
-
+    const { data: profile } = await supabase.from("profiles").select("withdrawal_pin").eq("user_id", user!.id).single();
     if (!profile || profile.withdrawal_pin !== pinInput) {
       toast({ title: "Incorrect PIN", description: "The withdrawal PIN you entered is wrong.", variant: "destructive" });
       setProcessing(false);
       return;
     }
 
-    // Create withdrawal
     const { data, error } = await supabase.from("withdrawals").insert({
       user_id: user!.id,
       bank_account_id: selectedBank,
@@ -157,13 +151,9 @@ const DashboardWallet = () => {
                 <Wallet className="h-4 w-4 opacity-80" />
                 <span className="text-xs font-medium opacity-80">Available Balance</span>
               </div>
-              <p className="text-3xl font-extrabold">₦0.00</p>
-              <Button
-                size="sm"
-                variant="secondary"
-                className="mt-4 rounded-xl text-xs font-bold"
-                onClick={handleStartWithdraw}
-              >
+              <p className="text-3xl font-extrabold">₦{availableBalance.toLocaleString()}</p>
+              <p className="text-[10px] opacity-70 mt-1">After 5% platform commission</p>
+              <Button size="sm" variant="secondary" className="mt-4 rounded-xl text-xs font-bold" onClick={handleStartWithdraw}>
                 Withdraw Funds
               </Button>
             </CardContent>
@@ -177,7 +167,7 @@ const DashboardWallet = () => {
                 <Clock className="h-4 w-4 text-muted-foreground" />
                 <span className="text-xs font-medium text-muted-foreground">Pending</span>
               </div>
-              <p className="text-3xl font-extrabold text-foreground">₦0.00</p>
+              <p className="text-3xl font-extrabold text-foreground">₦{pendingAmount.toLocaleString()}</p>
               <p className="text-xs text-muted-foreground mt-2">Processing in 2-3 days</p>
             </CardContent>
           </Card>
@@ -190,42 +180,38 @@ const DashboardWallet = () => {
                 <CreditCard className="h-4 w-4 text-muted-foreground" />
                 <span className="text-xs font-medium text-muted-foreground">Total Earned</span>
               </div>
-              <p className="text-3xl font-extrabold text-foreground">₦0.00</p>
+              <p className="text-3xl font-extrabold text-foreground">₦{totalEarned.toLocaleString()}</p>
               <p className="text-xs text-muted-foreground mt-2">All time earnings</p>
             </CardContent>
           </Card>
         </motion.div>
       </div>
 
-      {/* Setup status alerts */}
-      {(bankAccounts.length === 0 || !hasPin) && (
-        <Card className="rounded-2xl border-border border-dashed">
-          <CardContent className="p-4 space-y-2">
-            <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
-              <AlertCircle className="h-4 w-4 text-primary" />
-              Complete setup to withdraw
+      {/* Commission breakdown */}
+      <Card className="rounded-2xl border-border">
+        <CardContent className="p-4">
+          <div className="flex items-center gap-2 mb-3 text-sm font-semibold text-foreground">
+            <Info className="h-4 w-4 text-primary" />
+            Earnings Breakdown
+          </div>
+          <div className="space-y-2 text-xs">
+            <div className="flex justify-between py-1.5 border-b border-border">
+              <span className="text-muted-foreground">Gross Earnings</span>
+              <span className="font-bold text-foreground">₦{totalEarned.toLocaleString()}</span>
             </div>
-            {bankAccounts.length === 0 && (
-              <div className="flex items-center justify-between py-2">
-                <span className="text-xs text-muted-foreground">Add a bank account</span>
-                <Button size="sm" variant="outline" className="h-7 text-xs rounded-lg" onClick={() => navigate("/profile")}>
-                  Go to Profile
-                </Button>
-              </div>
-            )}
-            {!hasPin && (
-              <div className="flex items-center justify-between py-2">
-                <span className="text-xs text-muted-foreground">Set up withdrawal PIN</span>
-                <Button size="sm" variant="outline" className="h-7 text-xs rounded-lg" onClick={() => navigate("/profile")}>
-                  Go to Profile
-                </Button>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      )}
+            <div className="flex justify-between py-1.5 border-b border-border">
+              <span className="text-muted-foreground">Platform Commission (5%)</span>
+              <span className="font-bold text-destructive">-₦{commission.toLocaleString()}</span>
+            </div>
+            <div className="flex justify-between py-1.5">
+              <span className="text-muted-foreground font-semibold">Available to Withdraw</span>
+              <span className="font-extrabold text-foreground">₦{availableBalance.toLocaleString()}</span>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
-      {/* Withdrawal flow */}
+      {/* Withdrawal flow — always accessible */}
       {showWithdraw && (
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
           <Card className="rounded-2xl border-primary/30 ring-2 ring-primary/10">
@@ -248,42 +234,72 @@ const DashboardWallet = () => {
                       min={100}
                     />
                   </div>
-                  <div>
-                    <label className="text-xs font-semibold text-foreground mb-1.5 block">Withdraw to</label>
-                    <div className="space-y-2">
-                      {bankAccounts.map((acc) => (
-                        <button
-                          key={acc.id}
-                          onClick={() => setSelectedBank(acc.id)}
-                          className={`w-full flex items-center gap-3 p-3 rounded-xl border text-left transition-all ${
-                            selectedBank === acc.id
-                              ? "border-primary bg-primary/5 ring-2 ring-primary/20"
-                              : "border-border hover:border-primary/30"
-                          }`}
-                        >
-                          <Building2 className="h-4 w-4 text-primary flex-shrink-0" />
-                          <div className="min-w-0">
-                            <p className="text-sm font-semibold text-foreground">{acc.bank_name}</p>
-                            <p className="text-xs text-muted-foreground">{acc.account_name} • ****{acc.account_number.slice(-4)}</p>
-                          </div>
-                          {acc.is_default && <Badge className="text-[9px] ml-auto">Default</Badge>}
-                        </button>
-                      ))}
+
+                  {bankAccounts.length > 0 ? (
+                    <div>
+                      <label className="text-xs font-semibold text-foreground mb-1.5 block">Withdraw to</label>
+                      <div className="space-y-2">
+                        {bankAccounts.map((acc) => (
+                          <button
+                            key={acc.id}
+                            onClick={() => setSelectedBank(acc.id)}
+                            className={`w-full flex items-center gap-3 p-3 rounded-xl border text-left transition-all ${
+                              selectedBank === acc.id
+                                ? "border-primary bg-primary/5 ring-2 ring-primary/20"
+                                : "border-border hover:border-primary/30"
+                            }`}
+                          >
+                            <Building2 className="h-4 w-4 text-primary flex-shrink-0" />
+                            <div className="min-w-0">
+                              <p className="text-sm font-semibold text-foreground">{acc.bank_name}</p>
+                              <p className="text-xs text-muted-foreground">{acc.account_name} • ****{acc.account_number.slice(-4)}</p>
+                            </div>
+                            {acc.is_default && <Badge className="text-[9px] ml-auto">Default</Badge>}
+                          </button>
+                        ))}
+                      </div>
                     </div>
-                  </div>
+                  ) : (
+                    <div className="p-4 rounded-xl border border-dashed border-border text-center">
+                      <Building2 className="h-6 w-6 text-muted-foreground/40 mx-auto mb-2" />
+                      <p className="text-xs text-muted-foreground mb-2">No bank accounts added yet</p>
+                      <Button size="sm" variant="outline" className="text-xs rounded-lg" onClick={() => navigate("/profile")}>
+                        Add Bank Account
+                      </Button>
+                    </div>
+                  )}
+
+                  {!hasPin && (
+                    <div className="p-3 rounded-xl border border-dashed border-border flex items-center gap-3">
+                      <AlertCircle className="h-4 w-4 text-primary flex-shrink-0" />
+                      <div className="flex-1">
+                        <p className="text-xs text-muted-foreground">You need a withdrawal PIN to proceed</p>
+                      </div>
+                      <Button size="sm" variant="outline" className="text-xs rounded-lg h-7" onClick={() => navigate("/profile")}>
+                        Set PIN
+                      </Button>
+                    </div>
+                  )}
+
                   <div className="flex gap-2">
                     <Button className="rounded-xl font-bold text-xs" onClick={() => {
                       if (!withdrawAmount || parseFloat(withdrawAmount) <= 0) {
                         toast({ title: "Enter an amount", variant: "destructive" });
                         return;
                       }
+                      if (bankAccounts.length === 0) {
+                        toast({ title: "Add a bank account first", variant: "destructive" });
+                        return;
+                      }
+                      if (!hasPin) {
+                        toast({ title: "Set up a withdrawal PIN first", variant: "destructive" });
+                        return;
+                      }
                       setStep("confirm");
                     }}>
                       Continue
                     </Button>
-                    <Button variant="ghost" className="rounded-xl text-xs" onClick={() => setShowWithdraw(false)}>
-                      Cancel
-                    </Button>
+                    <Button variant="ghost" className="rounded-xl text-xs" onClick={() => setShowWithdraw(false)}>Cancel</Button>
                   </div>
                 </>
               ) : (
@@ -314,11 +330,7 @@ const DashboardWallet = () => {
                         className="rounded-xl h-10 pl-10 pr-10 bg-secondary border-border tracking-[0.5em] text-center font-bold"
                         maxLength={4}
                       />
-                      <button
-                        type="button"
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
-                        onClick={() => setShowPin(!showPin)}
-                      >
+                      <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground" onClick={() => setShowPin(!showPin)}>
                         {showPin ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                       </button>
                     </div>
@@ -328,9 +340,7 @@ const DashboardWallet = () => {
                       {processing ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : null}
                       Confirm Withdrawal
                     </Button>
-                    <Button variant="ghost" className="rounded-xl text-xs" onClick={() => setStep("amount")}>
-                      Back
-                    </Button>
+                    <Button variant="ghost" className="rounded-xl text-xs" onClick={() => setStep("amount")}>Back</Button>
                   </div>
                 </>
               )}
@@ -355,17 +365,13 @@ const DashboardWallet = () => {
                         <ArrowUpRight className="h-4 w-4 text-destructive" />
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-foreground">
-                          Withdrawal to {w.bank_accounts?.bank_name || "Bank"}
-                        </p>
+                        <p className="text-sm font-medium text-foreground">Withdrawal to {w.bank_accounts?.bank_name || "Bank"}</p>
                         <p className="text-xs text-muted-foreground">{format(new Date(w.created_at), "MMM d, yyyy")}</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
                       <span className="text-sm font-bold text-destructive">-₦{w.amount.toLocaleString()}</span>
-                      <Badge variant={w.status === "completed" ? "default" : "secondary"} className="text-[10px] rounded-full">
-                        {w.status}
-                      </Badge>
+                      <Badge variant={w.status === "completed" ? "default" : "secondary"} className="text-[10px] rounded-full">{w.status}</Badge>
                     </div>
                   </div>
                 ))}
@@ -374,47 +380,6 @@ const DashboardWallet = () => {
           </Card>
         </motion.div>
       )}
-
-      {/* Mock transaction history */}
-      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.24 }}>
-        <Card className="rounded-2xl border-border">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-bold text-foreground">Transaction History</CardTitle>
-            <p className="text-xs text-muted-foreground">Your recent earnings and withdrawals</p>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {mockTransactions.map((tx) => (
-                <div key={tx.id} className="flex items-center justify-between py-3 border-b border-border last:border-0">
-                  <div className="flex items-center gap-3">
-                    <div className={`h-8 w-8 rounded-full flex items-center justify-center ${
-                      tx.type === "credit" ? "bg-green-500/10" : "bg-destructive/10"
-                    }`}>
-                      {tx.type === "credit" ? (
-                        <ArrowDownLeft className="h-4 w-4 text-green-500" />
-                      ) : (
-                        <ArrowUpRight className="h-4 w-4 text-destructive" />
-                      )}
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-foreground">{tx.label}</p>
-                      <p className="text-xs text-muted-foreground">{tx.date}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <span className={`text-sm font-bold ${tx.type === "credit" ? "text-green-500" : "text-destructive"}`}>
-                      {tx.amount}
-                    </span>
-                    <Badge variant={tx.status === "completed" ? "default" : "secondary"} className="text-[10px] rounded-full">
-                      {tx.status}
-                    </Badge>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      </motion.div>
     </div>
   );
 };
