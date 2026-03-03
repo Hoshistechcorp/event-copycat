@@ -201,6 +201,63 @@ export type Database = {
           },
         ]
       }
+      ticket_purchases: {
+        Row: {
+          buyer_email: string
+          buyer_name: string | null
+          buyer_user_id: string | null
+          created_at: string
+          event_id: string
+          id: string
+          quantity: number
+          status: string
+          ticket_tier_id: string
+          total_amount: number
+          unit_price: number
+        }
+        Insert: {
+          buyer_email: string
+          buyer_name?: string | null
+          buyer_user_id?: string | null
+          created_at?: string
+          event_id: string
+          id?: string
+          quantity?: number
+          status?: string
+          ticket_tier_id: string
+          total_amount: number
+          unit_price: number
+        }
+        Update: {
+          buyer_email?: string
+          buyer_name?: string | null
+          buyer_user_id?: string | null
+          created_at?: string
+          event_id?: string
+          id?: string
+          quantity?: number
+          status?: string
+          ticket_tier_id?: string
+          total_amount?: number
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ticket_purchases_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ticket_purchases_ticket_tier_id_fkey"
+            columns: ["ticket_tier_id"]
+            isOneToOne: false
+            referencedRelation: "ticket_tiers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ticket_tiers: {
         Row: {
           created_at: string
