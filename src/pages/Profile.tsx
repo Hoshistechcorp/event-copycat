@@ -15,6 +15,7 @@ import ProfileEditSection from "@/components/profile/ProfileEditSection";
 import ProfileBankAccounts from "@/components/profile/ProfileBankAccounts";
 import ProfileWithdrawalPin from "@/components/profile/ProfileWithdrawalPin";
 import ProfileSecurity from "@/components/profile/ProfileSecurity";
+import ProfileNotifications from "@/components/profile/ProfileNotifications";
 
 type AccountType = "attendee" | "host";
 
@@ -239,8 +240,13 @@ const Profile = () => {
             </motion.div>
           )}
 
-          {/* Security */}
+          {/* Notifications */}
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+            <ProfileNotifications />
+          </motion.div>
+
+          {/* Security */}
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
             <ProfileSecurity user={user} />
           </motion.div>
 
