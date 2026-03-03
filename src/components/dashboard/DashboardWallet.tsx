@@ -7,7 +7,8 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Wallet, ArrowUpRight, ArrowDownLeft, Clock, CreditCard, Building2, Lock, Loader2, Eye, EyeOff, AlertCircle, Info } from "lucide-react";
+import { Wallet, ArrowUpRight, ArrowDownLeft, Clock, CreditCard, Building2, Lock, Loader2, Eye, EyeOff, AlertCircle, Info, Filter, Search } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -65,6 +66,11 @@ const DashboardWallet = () => {
   const [processing, setProcessing] = useState(false);
   const [step, setStep] = useState<"amount" | "confirm">("amount");
 
+  // Transaction filters
+  const [typeFilter, setTypeFilter] = useState<"all" | "sale" | "withdrawal">("all");
+  const [statusFilter, setStatusFilter] = useState<"all" | "completed" | "pending" | "failed">("all");
+  const [searchQuery, setSearchQuery] = useState("");
+
   useEffect(() => {
     if (!user) return;
     const load = async () => {
@@ -113,6 +119,14 @@ const DashboardWallet = () => {
       status: s.status,
     })),
   ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+  // Apply filters
+  const filteredTransactions = transactions.filter((t) => {
+    if (typeFilter !== "all" && t.type !== typeFilter) return false;
+    if (statusFilter !== "all" && t.status !== statusFilter) return false;
+    if (searchQuery && !t.description.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+    return true;
+  });
 
   const openWithdrawModal = () => {
     setStep("amount");
@@ -266,15 +280,57 @@ const DashboardWallet = () => {
       {/* Transaction History */}
       <Card className="rounded-2xl border-border">
         <CardHeader className="pb-2">
-          <CardTitle className="text-base font-bold text-foreground">Transaction History</CardTitle>
-          <p className="text-xs text-muted-foreground">Your withdrawals and ticket sales</p>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div>
+              <CardTitle className="text-base font-bold text-foreground">Transaction History</CardTitle>
+              <p className="text-xs text-muted-foreground">Your withdrawals and ticket sales</p>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="relative">
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                <Input
+                  placeholder="Search..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="h-8 w-[140px] pl-8 text-xs rounded-lg bg-secondary border-border"
+                />
+              </div>
+              <Select value={typeFilter} onValueChange={(v) => setTypeFilter(v as any)}>
+                <SelectTrigger className="h-8 w-[110px] text-xs rounded-lg bg-secondary border-border">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Types</SelectItem>
+                  <SelectItem value="sale">Sales</SelectItem>
+                  <SelectItem value="withdrawal">Withdrawals</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as any)}>
+                <SelectTrigger className="h-8 w-[110px] text-xs rounded-lg bg-secondary border-border">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Status</SelectItem>
+                  <SelectItem value="completed">Completed</SelectItem>
+                  <SelectItem value="pending">Pending</SelectItem>
+                  <SelectItem value="failed">Failed</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
         </CardHeader>
         <CardContent>
-          {transactions.length === 0 ? (
+          {filteredTransactions.length === 0 ? (
             <div className="text-center py-10">
               <Clock className="h-8 w-8 text-muted-foreground/30 mx-auto mb-3" />
-              <p className="text-sm font-medium text-foreground">No transactions yet</p>
-              <p className="text-xs text-muted-foreground">Your withdrawal and sales history will appear here</p>
+              <p className="text-sm font-medium text-foreground">
+                {transactions.length === 0 ? "No transactions yet" : "No matching transactions"}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {transactions.length === 0
+                  ? "Your withdrawal and sales history will appear here"
+                  : "Try adjusting your filters"}
+              </p>
             </div>
           ) : (
           <div className="overflow-auto">
@@ -289,7 +345,7 @@ const DashboardWallet = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {transactions.map((t) => (
+                {filteredTransactions.map((t) => (
                   <TableRow key={t.id}>
                     <TableCell>
                       <div className="flex items-center gap-2">
