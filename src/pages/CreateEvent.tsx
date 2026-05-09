@@ -208,6 +208,9 @@ const CreateEvent = () => {
     const visibility = isTest ? "unlisted" : settings.visibility;
     const finalDate = date || new Date(Date.now() + 7 * 24 * 3600 * 1000).toISOString();
 
+    // If any tier has a test fee %, the test run becomes paid (creator collects fraction of normal price)
+    const testHasPaidTiers = isTest && tiers.some((t) => (parseFloat(t.test_fee_percent) || 0) > 0 && (parseFloat(t.price) || 0) > 0);
+
     const { data: eventData, error: evErr } = await supabase.from("events").insert({
       host_id: user.id,
       title: isTest ? `[Test Run] ${title.trim()}` : title.trim(),
@@ -224,24 +227,44 @@ const CreateEvent = () => {
       location_reveal: location.location_reveal,
       reveal_hours_before: location.reveal_hours_before,
       visibility,
-      requires_rsvp: isTest ? true : settings.requires_rsvp,
-      is_paid: isTest ? false : settings.is_paid,
+      requires_rsvp: isTest && !testHasPaidTiers ? true : settings.requires_rsvp,
+      is_paid: isTest ? testHasPaidTiers : settings.is_paid,
       currency: settings.currency,
-    }).select("id").single();
+      open_to_sponsorship: openToSponsorship,
+    } as any).select("id").single();
 
     if (evErr || !eventData) { setError(evErr?.message || "Failed to create event."); setSubmitting(false); setSubmitMode(null); return; }
     const eventId = eventData.id;
 
-    // Tickets — Test runs use a single free "Interest" tier
-    const tierInserts = isTest
-      ? [{ event_id: eventId, name: "Interested", price: 0, quantity: 1000, description: "Tap RSVP if you'd come to this event." }]
-      : tiers.map((t) => ({
+    // Tickets
+    let tierInserts: any[];
+    if (isTest && !testHasPaidTiers) {
+      tierInserts = [{ event_id: eventId, name: "Interested", price: 0, quantity: 1000, description: "Tap RSVP if you'd come to this event.", test_fee_percent: 0 }];
+    } else if (isTest) {
+      // Test run with partial fee per tier
+      tierInserts = tiers.map((t) => {
+        const pct = Math.min(100, Math.max(0, parseFloat(t.test_fee_percent) || 0));
+        const fullPrice = parseFloat(t.price) || 0;
+        const testPrice = +(fullPrice * (pct / 100)).toFixed(2);
+        return {
           event_id: eventId,
-          name: t.name.trim(),
-          price: settings.is_paid ? (parseFloat(t.price) || 0) : 0,
+          name: `${t.name.trim()} (Test ${pct}%)`,
+          price: testPrice,
           quantity: parseInt(t.quantity) || 100,
-          description: t.description.trim() || null,
-        }));
+          description: t.description.trim() || `Test-run pricing — ${pct}% of full price`,
+          test_fee_percent: pct,
+        };
+      });
+    } else {
+      tierInserts = tiers.map((t) => ({
+        event_id: eventId,
+        name: t.name.trim(),
+        price: settings.is_paid ? (parseFloat(t.price) || 0) : 0,
+        quantity: parseInt(t.quantity) || 100,
+        description: t.description.trim() || null,
+        test_fee_percent: 0,
+      }));
+    }
     await supabase.from("ticket_tiers").insert(tierInserts);
 
     // Performers
