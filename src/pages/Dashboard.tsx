@@ -26,6 +26,7 @@ interface Event {
   venue: string;
   category: string;
   status: string;
+  visibility?: string;
   image_url: string | null;
   created_at: string;
 }
