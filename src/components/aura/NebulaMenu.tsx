@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Grid3x3, Search, Sparkles, LayoutGrid, Rows3 } from "lucide-react";
+import { Grid3x3, Search, Orbit, LayoutGrid, Rows3 } from "lucide-react";
 import { AURA_PRODUCTS, type AuraProduct } from "@/lib/auraProducts";
 import { useAuraLinks } from "@/hooks/useAuraLinks";
 import { useAuth } from "@/contexts/AuthContext";
@@ -88,7 +88,7 @@ const NebulaMenu = () => {
           <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-xl border-b border-white/5 px-3 py-2.5 sm:px-5 sm:py-4">
             <div className="flex items-center justify-between gap-2 mb-2 sm:mb-3">
               <div className="flex items-center gap-2 min-w-0">
-                <Sparkles className="h-4 w-4 text-primary shrink-0" />
+                <Orbit className="h-4 w-4 text-primary shrink-0" />
                 <h3 className="text-sm sm:text-base font-extrabold tracking-tight truncate">Your iBloov Orbit</h3>
               </div>
               <div className="flex items-center gap-0.5 rounded-full bg-secondary/60 p-0.5 shrink-0">
