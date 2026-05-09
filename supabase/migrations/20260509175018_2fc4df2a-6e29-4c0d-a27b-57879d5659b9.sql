@@ -1,0 +1,2 @@
+ALTER TABLE public.events ADD COLUMN IF NOT EXISTS open_to_sponsorship boolean NOT NULL DEFAULT false;
+ALTER TABLE public.ticket_tiers ADD COLUMN IF NOT EXISTS test_fee_percent numeric NOT NULL DEFAULT 0;
