@@ -454,9 +454,36 @@ const CreateEvent = () => {
                       <Input type="number" min="1" value={tier.quantity} onChange={(e) => updateTier(i, "quantity", e.target.value)} placeholder="Qty" className="rounded-xl h-10 bg-secondary border-border text-sm" />
                     </div>
                     <Input value={tier.description} onChange={(e) => updateTier(i, "description", e.target.value)} placeholder="What's included? (comma separated)" className="rounded-xl h-10 bg-secondary border-border text-sm" maxLength={300} />
+                    {settings.is_paid && parseFloat(tier.price) > 0 && (
+                      <div className="flex items-center gap-3 p-3 rounded-xl bg-amber-500/5 border border-amber-500/20">
+                        <FlaskConical className="h-4 w-4 text-amber-600 shrink-0" />
+                        <div className="flex-1">
+                          <label className="text-xs font-semibold text-amber-700 block">Test-run fee %</label>
+                          <p className="text-[10px] text-muted-foreground">Charged when you launch a Test Run. 0 = free RSVP.</p>
+                        </div>
+                        <div className="relative w-24">
+                          <Input type="number" min="0" max="100" step="1" value={tier.test_fee_percent} onChange={(e) => updateTier(i, "test_fee_percent", e.target.value)} className="rounded-xl pr-7 h-9 bg-background border-border text-sm" />
+                          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-muted-foreground">%</span>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
+            </div>
+
+            <div className="p-4 rounded-2xl border border-border bg-card flex items-start gap-3">
+              <input
+                id="sponsorship-toggle"
+                type="checkbox"
+                checked={openToSponsorship}
+                onChange={(e) => setOpenToSponsorship(e.target.checked)}
+                className="mt-1 h-4 w-4 rounded accent-primary"
+              />
+              <label htmlFor="sponsorship-toggle" className="flex-1 cursor-pointer">
+                <span className="text-sm font-semibold block">Open to sponsorship & brand deals</span>
+                <span className="text-xs text-muted-foreground">List this event to brands looking to sponsor — works for Test Runs and live events.</span>
+              </label>
             </div>
 
             <PromoInvitesStep
