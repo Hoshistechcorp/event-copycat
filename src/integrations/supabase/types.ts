@@ -107,6 +107,72 @@ export type Database = {
           },
         ]
       }
+      brands: {
+        Row: {
+          budget_max: number
+          budget_min: number
+          created_at: string
+          currency: string
+          description: string | null
+          hq_city: string | null
+          hq_country: string | null
+          id: string
+          industry: string | null
+          is_published: boolean
+          logo_url: string | null
+          name: string
+          owner_user_id: string
+          preferred_locations: string[]
+          preferred_styles: string[]
+          target_audience: string[]
+          target_event_types: string[]
+          updated_at: string
+          website: string | null
+        }
+        Insert: {
+          budget_max?: number
+          budget_min?: number
+          created_at?: string
+          currency?: string
+          description?: string | null
+          hq_city?: string | null
+          hq_country?: string | null
+          id?: string
+          industry?: string | null
+          is_published?: boolean
+          logo_url?: string | null
+          name: string
+          owner_user_id: string
+          preferred_locations?: string[]
+          preferred_styles?: string[]
+          target_audience?: string[]
+          target_event_types?: string[]
+          updated_at?: string
+          website?: string | null
+        }
+        Update: {
+          budget_max?: number
+          budget_min?: number
+          created_at?: string
+          currency?: string
+          description?: string | null
+          hq_city?: string | null
+          hq_country?: string | null
+          id?: string
+          industry?: string | null
+          is_published?: boolean
+          logo_url?: string | null
+          name?: string
+          owner_user_id?: string
+          preferred_locations?: string[]
+          preferred_styles?: string[]
+          target_audience?: string[]
+          target_event_types?: string[]
+          updated_at?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
       event_ideas: {
         Row: {
           audience_type: string | null
@@ -422,6 +488,111 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      sponsorship_listings: {
+        Row: {
+          asking_amount: number
+          audience_size: number
+          city: string | null
+          country: string | null
+          created_at: string
+          currency: string
+          demographics: Json
+          description: string | null
+          event_id: string | null
+          event_type: string | null
+          hero_image_url: string | null
+          host_id: string
+          id: string
+          perks: string[]
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          asking_amount?: number
+          audience_size?: number
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          currency?: string
+          demographics?: Json
+          description?: string | null
+          event_id?: string | null
+          event_type?: string | null
+          hero_image_url?: string | null
+          host_id: string
+          id?: string
+          perks?: string[]
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          asking_amount?: number
+          audience_size?: number
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          currency?: string
+          demographics?: Json
+          description?: string | null
+          event_id?: string | null
+          event_type?: string | null
+          hero_image_url?: string | null
+          host_id?: string
+          id?: string
+          perks?: string[]
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      sponsorship_offers: {
+        Row: {
+          amount: number
+          brand_id: string
+          brand_owner_id: string
+          created_at: string
+          currency: string
+          event_id: string | null
+          host_id: string
+          id: string
+          listing_id: string | null
+          message: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          amount?: number
+          brand_id: string
+          brand_owner_id: string
+          created_at?: string
+          currency?: string
+          event_id?: string | null
+          host_id: string
+          id?: string
+          listing_id?: string | null
+          message?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          brand_id?: string
+          brand_owner_id?: string
+          created_at?: string
+          currency?: string
+          event_id?: string | null
+          host_id?: string
+          id?: string
+          listing_id?: string | null
+          message?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       ticket_purchases: {
         Row: {

@@ -6,13 +6,14 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Loader2, Plus, LayoutDashboard, BarChart3, Wallet, Megaphone, CalendarDays, Store, ArrowRight, Inbox } from "lucide-react";
+import { Loader2, Plus, LayoutDashboard, BarChart3, Wallet, Megaphone, CalendarDays, Store, ArrowRight, Inbox, Building2 } from "lucide-react";
 import DashboardOverview from "@/components/dashboard/DashboardOverview";
 import DashboardAnalytics from "@/components/dashboard/DashboardAnalytics";
 import DashboardWallet from "@/components/dashboard/DashboardWallet";
 import DashboardPromotions from "@/components/dashboard/DashboardPromotions";
 import DashboardEventsList from "@/components/dashboard/DashboardEventsList";
 import DashboardBookings from "@/components/dashboard/DashboardBookings";
+import DashboardSponsorships from "@/components/dashboard/DashboardSponsorships";
 
 interface Event {
   id: string;
@@ -25,12 +26,13 @@ interface Event {
   created_at: string;
 }
 
-type Tab = "overview" | "events" | "bookings" | "analytics" | "wallet" | "promotions" | "service";
+type Tab = "overview" | "events" | "bookings" | "sponsorships" | "analytics" | "wallet" | "promotions" | "service";
 
 const tabs: { key: Tab; label: string; icon: React.ReactNode }[] = [
   { key: "overview", label: "Overview", icon: <LayoutDashboard className="h-4 w-4" /> },
   { key: "events", label: "My Events", icon: <CalendarDays className="h-4 w-4" /> },
   { key: "bookings", label: "Bookings", icon: <Inbox className="h-4 w-4" /> },
+  { key: "sponsorships", label: "Sponsorships", icon: <Building2 className="h-4 w-4" /> },
   { key: "analytics", label: "Analytics", icon: <BarChart3 className="h-4 w-4" /> },
   { key: "wallet", label: "Wallet", icon: <Wallet className="h-4 w-4" /> },
   { key: "promotions", label: "Promote", icon: <Megaphone className="h-4 w-4" /> },
@@ -134,6 +136,7 @@ const Dashboard = () => {
             <DashboardEventsList events={events} loading={loading} onEventsChange={setEvents} />
           )}
           {activeTab === "bookings" && <DashboardBookings />}
+          {activeTab === "sponsorships" && <DashboardSponsorships />}
           {activeTab === "analytics" && <DashboardAnalytics />}
           {activeTab === "wallet" && <DashboardWallet />}
           {activeTab === "promotions" && <DashboardPromotions events={events} />}

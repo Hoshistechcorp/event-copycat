@@ -7,7 +7,6 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate, useLocation } from "react-router-dom";
 import mainLogo from "@/assets/mainlogo.png";
-import CurrencySelector from "@/components/CurrencySelector";
 
 const navLinkClass = (isActive: boolean) =>
   `text-sm font-medium transition-colors ${isActive ? "text-primary font-semibold" : "text-muted-foreground hover:text-foreground"}`;
@@ -57,6 +56,12 @@ const Navbar = () => {
             <a href="/bloov-service" className={navLinkClass(location.pathname.startsWith("/bloov-service"))}>
               Bloov Service
             </a>
+            <a href="/event-planner" className={navLinkClass(location.pathname.startsWith("/event-planner"))}>
+              Event Planner
+            </a>
+            <a href="/sponsorships" className={navLinkClass(location.pathname.startsWith("/sponsorships"))}>
+              Sponsorships
+            </a>
             {isHost ? (
               <a href="/dashboard" className={navLinkClass(location.pathname === "/dashboard")}>
                 Dashboard
@@ -81,7 +86,6 @@ const Navbar = () => {
         </div>
 
         <div className="flex items-center gap-3">
-          <CurrencySelector />
           {!isHost && (
             <a href="/my-tickets" className={`hidden md:inline-flex ${navLinkClass(location.pathname === "/my-tickets")}`}>
               Find my tickets
@@ -201,6 +205,12 @@ const Navbar = () => {
                   </a>
                   <a href="/bloov-service" className={mobileNavLinkClass(location.pathname.startsWith("/bloov-service"))}>
                     Bloov Service
+                  </a>
+                  <a href="/event-planner" className={mobileNavLinkClass(location.pathname.startsWith("/event-planner"))}>
+                    Event Planner
+                  </a>
+                  <a href="/sponsorships" className={mobileNavLinkClass(location.pathname.startsWith("/sponsorships"))}>
+                    Sponsorships
                   </a>
                   <button onClick={handleCreateEvents} className={`text-left ${mobileNavLinkClass(location.pathname === "/create-event")}`}>
                     Create Events
