@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,16 +18,21 @@ interface Props {
   basePrice: number;
   vendorId?: string;
   packageId?: string;
+  prefilledNotes?: string;
 }
 
-const BookingDialog = ({ open, onOpenChange, title, basePrice, vendorId, packageId }: Props) => {
+const BookingDialog = ({ open, onOpenChange, title, basePrice, vendorId, packageId, prefilledNotes }: Props) => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { formatPrice } = useCurrency();
   const [eventDate, setEventDate] = useState("");
-  const [notes, setNotes] = useState("");
+  const [notes, setNotes] = useState(prefilledNotes ?? "");
   const create = useCreateBooking();
   const deposit = Math.round(basePrice * 0.2);
+
+  useEffect(() => {
+    if (prefilledNotes !== undefined) setNotes(prefilledNotes);
+  }, [prefilledNotes]);
 
   const handleSubmit = async () => {
     if (!user) {
