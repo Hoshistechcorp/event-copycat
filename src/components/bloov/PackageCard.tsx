@@ -41,7 +41,7 @@ const PackageCard = ({ pkg }: Props) => {
         <div className="flex items-end justify-between">
           <div>
             <p className="text-white/60 text-[10px] uppercase tracking-wider font-semibold">From</p>
-            <p className="text-white text-xl font-extrabold">{formatPrice(pkg.base_price)}</p>
+            <p className="text-white text-xl font-extrabold">{formatPrice(String(pkg.base_price))}</p>
           </div>
           <span className="flex items-center gap-1 text-white/90 text-xs font-semibold">
             <Sparkles className="h-3.5 w-3.5" /> {pkg.included_vendor_categories.length} services

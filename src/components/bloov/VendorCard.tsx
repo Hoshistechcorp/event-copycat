@@ -51,7 +51,7 @@ const VendorCard = ({ vendor }: Props) => {
             </span>
           )}
           <span className="text-xs font-bold text-primary">
-            from {formatPrice(vendor.base_price)}
+            from {formatPrice(String(vendor.base_price))}
           </span>
         </div>
       </div>

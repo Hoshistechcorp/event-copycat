@@ -47,7 +47,7 @@ const EventIdeaCard = ({ idea }: Props) => {
         </div>
         {idea.est_ticket_price !== null && (
           <p className="text-xs font-bold text-primary">
-            Ticket ~ {formatPrice(idea.est_ticket_price)}
+            Ticket ~ {formatPrice(String(idea.est_ticket_price))}
           </p>
         )}
       </div>
