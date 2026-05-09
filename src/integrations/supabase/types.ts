@@ -254,6 +254,42 @@ export type Database = {
         }
         Relationships: []
       }
+      event_invites: {
+        Row: {
+          created_at: string
+          email: string
+          event_id: string
+          id: string
+          invite_token: string
+          name: string | null
+          sent_at: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          event_id: string
+          id?: string
+          invite_token?: string
+          name?: string | null
+          sent_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          event_id?: string
+          id?: string
+          invite_token?: string
+          name?: string | null
+          sent_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       event_packages: {
         Row: {
           base_price: number
@@ -369,47 +405,77 @@ export type Database = {
         Row: {
           category: string | null
           created_at: string
+          currency: string
           date: string
           description: string | null
           end_date: string | null
+          event_format: string
           host_id: string
           id: string
           image_url: string | null
+          is_paid: boolean
+          location_reveal: string
+          online_url: string | null
+          qr_secret: string
+          requires_rsvp: boolean
+          reveal_hours_before: number
+          slug: string | null
           status: string
           title: string
           updated_at: string
-          venue: string
+          venue: string | null
           venue_address: string | null
+          visibility: string
         }
         Insert: {
           category?: string | null
           created_at?: string
+          currency?: string
           date: string
           description?: string | null
           end_date?: string | null
+          event_format?: string
           host_id: string
           id?: string
           image_url?: string | null
+          is_paid?: boolean
+          location_reveal?: string
+          online_url?: string | null
+          qr_secret?: string
+          requires_rsvp?: boolean
+          reveal_hours_before?: number
+          slug?: string | null
           status?: string
           title: string
           updated_at?: string
-          venue: string
+          venue?: string | null
           venue_address?: string | null
+          visibility?: string
         }
         Update: {
           category?: string | null
           created_at?: string
+          currency?: string
           date?: string
           description?: string | null
           end_date?: string | null
+          event_format?: string
           host_id?: string
           id?: string
           image_url?: string | null
+          is_paid?: boolean
+          location_reveal?: string
+          online_url?: string | null
+          qr_secret?: string
+          requires_rsvp?: boolean
+          reveal_hours_before?: number
+          slug?: string | null
           status?: string
           title?: string
           updated_at?: string
-          venue?: string
+          venue?: string | null
           venue_address?: string | null
+          visibility?: string
         }
         Relationships: []
       }
@@ -478,6 +544,48 @@ export type Database = {
         }
         Relationships: []
       }
+      promo_codes: {
+        Row: {
+          active: boolean
+          code: string
+          created_at: string
+          discount_type: string
+          event_id: string
+          expires_at: string | null
+          id: string
+          max_uses: number | null
+          updated_at: string
+          used_count: number
+          value: number
+        }
+        Insert: {
+          active?: boolean
+          code: string
+          created_at?: string
+          discount_type?: string
+          event_id: string
+          expires_at?: string | null
+          id?: string
+          max_uses?: number | null
+          updated_at?: string
+          used_count?: number
+          value?: number
+        }
+        Update: {
+          active?: boolean
+          code?: string
+          created_at?: string
+          discount_type?: string
+          event_id?: string
+          expires_at?: string | null
+          id?: string
+          max_uses?: number | null
+          updated_at?: string
+          used_count?: number
+          value?: number
+        }
+        Relationships: []
+      }
       promotions: {
         Row: {
           amount_paid: number
@@ -521,6 +629,48 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      rsvps: {
+        Row: {
+          created_at: string
+          email: string | null
+          event_id: string
+          id: string
+          invite_id: string | null
+          name: string | null
+          plus_ones: number
+          responded_at: string
+          status: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          event_id: string
+          id?: string
+          invite_id?: string | null
+          name?: string | null
+          plus_ones?: number
+          responded_at?: string
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          event_id?: string
+          id?: string
+          invite_id?: string | null
+          name?: string | null
+          plus_ones?: number
+          responded_at?: string
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
       }
       sponsorship_listings: {
         Row: {
@@ -632,9 +782,13 @@ export type Database = {
           buyer_email: string
           buyer_name: string | null
           buyer_user_id: string | null
+          checked_in_at: string | null
           created_at: string
+          discount_amount: number
           event_id: string
           id: string
+          promo_code_id: string | null
+          qr_token: string
           quantity: number
           status: string
           ticket_tier_id: string
@@ -645,9 +799,13 @@ export type Database = {
           buyer_email: string
           buyer_name?: string | null
           buyer_user_id?: string | null
+          checked_in_at?: string | null
           created_at?: string
+          discount_amount?: number
           event_id: string
           id?: string
+          promo_code_id?: string | null
+          qr_token?: string
           quantity?: number
           status?: string
           ticket_tier_id: string
@@ -658,9 +816,13 @@ export type Database = {
           buyer_email?: string
           buyer_name?: string | null
           buyer_user_id?: string | null
+          checked_in_at?: string | null
           created_at?: string
+          discount_amount?: number
           event_id?: string
           id?: string
+          promo_code_id?: string | null
+          qr_token?: string
           quantity?: number
           status?: string
           ticket_tier_id?: string
@@ -916,7 +1078,20 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_invite_by_token: {
+        Args: { _token: string }
+        Returns: {
+          email: string
+          event_date: string
+          event_format: string
+          event_id: string
+          event_title: string
+          event_venue: string
+          id: string
+          name: string
+          status: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
