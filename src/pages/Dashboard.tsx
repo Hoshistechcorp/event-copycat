@@ -16,6 +16,7 @@ import DashboardBookings from "@/components/dashboard/DashboardBookings";
 import DashboardSponsorships from "@/components/dashboard/DashboardSponsorships";
 import DashboardPlans from "@/components/dashboard/DashboardPlans";
 import DashboardHomeHero from "@/components/dashboard/DashboardHomeHero";
+import DashboardBento from "@/components/dashboard/DashboardBento";
 
 interface Event {
   id: string;
