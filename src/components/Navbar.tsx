@@ -7,6 +7,9 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate, useLocation } from "react-router-dom";
 import mainLogo from "@/assets/mainlogo.png";
+import NebulaMenu from "@/components/aura/NebulaMenu";
+import { useAuraLinks } from "@/hooks/useAuraLinks";
+import { getProduct } from "@/lib/auraProducts";
 
 const navLinkClass = (isActive: boolean) =>
   `text-sm font-medium transition-colors ${isActive ? "text-primary font-semibold" : "text-muted-foreground hover:text-foreground"}`;
