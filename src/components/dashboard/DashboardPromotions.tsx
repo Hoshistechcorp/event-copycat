@@ -91,6 +91,8 @@ const statusBadge = (status: string, endDate: string) => {
 const DashboardPromotions = ({ events }: DashboardPromotionsProps) => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const { formatPrice } = useCurrency();
+  const plans = buildPlans(formatPrice);
   const [selectedEvent, setSelectedEvent] = useState<string>("");
   const [promoting, setPromoting] = useState(false);
   const [promotions, setPromotions] = useState<Promotion[]>([]);
