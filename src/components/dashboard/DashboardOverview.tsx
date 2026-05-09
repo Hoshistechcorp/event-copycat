@@ -44,6 +44,7 @@ interface DashboardOverviewProps {
 
 const DashboardOverview = ({ totalEvents, publishedEvents }: DashboardOverviewProps) => {
   const { user } = useAuth();
+  const { formatPrice } = useCurrency();
   const [totalRevenue, setTotalRevenue] = useState(0);
   const [ticketsSold, setTicketsSold] = useState(0);
 
