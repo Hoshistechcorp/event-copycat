@@ -167,24 +167,50 @@ const CreateEvent = () => {
   const removeTier = (i: number) => { if (tiers.length <= 1) return; setTiers(tiers.filter((_, idx) => idx !== i)); };
   const updateTier = (i: number, field: keyof TicketTier, value: string) => { const u = [...tiers]; u[i] = { ...u[i], [field]: value }; setTiers(u); };
 
-  const handleSubmit = async (status: "draft" | "published") => {
-    const e = validateStep(step); if (e) { setError(e); return; }
-    setError(""); setSubmitting(true);
+  const handleSaveLater = () => {
+    // Local-only save (autosave already covers it; this is the explicit confirmation).
+    if (!draftKey) return;
+    const snap = {
+      step, title, description, category, imagePreview,
+      date, endDate, location, settings, invites,
+      performers: performers.map((p) => ({ name: p.name, role: p.role, imagePreview: p.imagePreview })),
+      tiers, promoCodes, savedAt: new Date().toISOString(),
+    };
+    try { localStorage.setItem(draftKey, JSON.stringify(snap)); } catch {}
+    toast({ title: "Saved", description: "Your draft is safe — come back anytime to finish." });
+    navigate("/dashboard?tab=events");
+  };
+
+  const handleSubmit = async (mode: "draft" | "published" | "test") => {
+    // Drafts: skip strict validation, but require a title at minimum
+    if (mode !== "draft") {
+      const e = validateStep(step); if (e) { setError(e); return; }
+    } else if (!title.trim()) {
+      setError("Add a title before saving as draft.");
+      return;
+    }
+    setError(""); setSubmitting(true); setSubmitMode(mode);
 
     let imageUrl: string | null = null;
     if (imageFile) {
       const ext = imageFile.name.split(".").pop();
       const path = `${user.id}/${crypto.randomUUID()}.${ext}`;
       const { error: upErr } = await supabase.storage.from("event-images").upload(path, imageFile);
-      if (upErr) { setError("Image upload failed: " + upErr.message); setSubmitting(false); return; }
+      if (upErr) { setError("Image upload failed: " + upErr.message); setSubmitting(false); setSubmitMode(null); return; }
       imageUrl = supabase.storage.from("event-images").getPublicUrl(path).data.publicUrl;
     }
 
+    const isTest = mode === "test";
+    const status = mode === "draft" ? "draft" : "published";
+    // Test runs publish unlisted (only people with the link see it) so creators can validate demand.
+    const visibility = isTest ? "unlisted" : settings.visibility;
+    const finalDate = date || new Date(Date.now() + 7 * 24 * 3600 * 1000).toISOString();
+
     const { data: eventData, error: evErr } = await supabase.from("events").insert({
       host_id: user.id,
-      title: title.trim(),
+      title: isTest ? `[Test Run] ${title.trim()}` : title.trim(),
       description: description.trim() || null,
-      date,
+      date: finalDate,
       end_date: endDate || null,
       venue: location.venue.trim() || (location.event_format === "online" ? "Online" : ""),
       venue_address: location.venue_address.trim() || null,
@@ -195,23 +221,25 @@ const CreateEvent = () => {
       online_url: location.online_url.trim() || null,
       location_reveal: location.location_reveal,
       reveal_hours_before: location.reveal_hours_before,
-      visibility: settings.visibility,
-      requires_rsvp: settings.requires_rsvp,
-      is_paid: settings.is_paid,
+      visibility,
+      requires_rsvp: isTest ? true : settings.requires_rsvp,
+      is_paid: isTest ? false : settings.is_paid,
       currency: settings.currency,
     }).select("id").single();
 
-    if (evErr || !eventData) { setError(evErr?.message || "Failed to create event."); setSubmitting(false); return; }
+    if (evErr || !eventData) { setError(evErr?.message || "Failed to create event."); setSubmitting(false); setSubmitMode(null); return; }
     const eventId = eventData.id;
 
-    // Tickets
-    const tierInserts = tiers.map((t) => ({
-      event_id: eventId,
-      name: t.name.trim(),
-      price: settings.is_paid ? (parseFloat(t.price) || 0) : 0,
-      quantity: parseInt(t.quantity) || 100,
-      description: t.description.trim() || null,
-    }));
+    // Tickets — Test runs use a single free "Interest" tier
+    const tierInserts = isTest
+      ? [{ event_id: eventId, name: "Interested", price: 0, quantity: 1000, description: "Tap RSVP if you'd come to this event." }]
+      : tiers.map((t) => ({
+          event_id: eventId,
+          name: t.name.trim(),
+          price: settings.is_paid ? (parseFloat(t.price) || 0) : 0,
+          quantity: parseInt(t.quantity) || 100,
+          description: t.description.trim() || null,
+        }));
     await supabase.from("ticket_tiers").insert(tierInserts);
 
     // Performers
@@ -230,30 +258,42 @@ const CreateEvent = () => {
       await supabase.from("performers").insert(perfInserts);
     }
 
-    // Promo codes
-    const validPromos = promoCodes.filter((p) => p.code.trim());
-    if (validPromos.length > 0) {
-      await supabase.from("promo_codes").insert(validPromos.map((p) => ({
-        event_id: eventId,
-        code: p.code.trim().toUpperCase(),
-        discount_type: p.discount_type,
-        value: parseFloat(p.value) || 0,
-        max_uses: p.max_uses ? parseInt(p.max_uses) : null,
-        active: true,
-      })));
+    // Promo codes (skip on test)
+    if (!isTest) {
+      const validPromos = promoCodes.filter((p) => p.code.trim());
+      if (validPromos.length > 0) {
+        await supabase.from("promo_codes").insert(validPromos.map((p) => ({
+          event_id: eventId,
+          code: p.code.trim().toUpperCase(),
+          discount_type: p.discount_type,
+          value: parseFloat(p.value) || 0,
+          max_uses: p.max_uses ? parseInt(p.max_uses) : null,
+          active: true,
+        })));
+      }
+
+      // CSV invites
+      const validInvites = invites.filter((i) => i.email.trim());
+      if (validInvites.length > 0) {
+        await supabase.from("event_invites").insert(validInvites.map((i) => ({
+          event_id: eventId,
+          email: i.email.trim().toLowerCase(),
+          name: i.name.trim() || null,
+        })));
+      }
     }
 
-    // CSV invites
-    const validInvites = invites.filter((i) => i.email.trim());
-    if (validInvites.length > 0) {
-      await supabase.from("event_invites").insert(validInvites.map((i) => ({
-        event_id: eventId,
-        email: i.email.trim().toLowerCase(),
-        name: i.name.trim() || null,
-      })));
-    }
+    if (draftKey) localStorage.removeItem(draftKey);
 
-    navigate("/events/" + eventId);
+    if (mode === "draft") {
+      toast({ title: "Draft saved", description: "Find it under My Events to finish later." });
+      navigate("/dashboard?tab=events");
+    } else if (isTest) {
+      toast({ title: "Test run live!", description: "Share the link to see who would attend." });
+      navigate("/events/" + eventId);
+    } else {
+      navigate("/events/" + eventId);
+    }
   };
 
   const renderStep = () => {
