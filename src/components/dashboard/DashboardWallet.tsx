@@ -51,6 +51,8 @@ const DashboardWallet = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { formatPrice, currency } = useCurrency();
+  const fmt = (n: number) => formatPrice(String(n));
 
   const [bankAccounts, setBankAccounts] = useState<BankAccount[]>([]);
   const [withdrawals, setWithdrawals] = useState<Withdrawal[]>([]);
