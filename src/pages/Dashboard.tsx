@@ -15,6 +15,7 @@ import DashboardEventsList from "@/components/dashboard/DashboardEventsList";
 import DashboardBookings from "@/components/dashboard/DashboardBookings";
 import DashboardSponsorships from "@/components/dashboard/DashboardSponsorships";
 import DashboardPlans from "@/components/dashboard/DashboardPlans";
+import DashboardHomeHero from "@/components/dashboard/DashboardHomeHero";
 
 interface Event {
   id: string;
@@ -133,6 +134,7 @@ const Dashboard = () => {
         <motion.div key={activeTab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }}>
           {activeTab === "overview" && (
             <div className="space-y-8">
+              <DashboardHomeHero events={events} isHost={user?.user_metadata?.account_type === "host"} />
               <DashboardOverview totalEvents={events.length} publishedEvents={publishedCount} />
               <div>
                 <h2 className="text-lg font-bold text-foreground mb-4">Recent Events</h2>
