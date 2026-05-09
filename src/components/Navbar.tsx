@@ -16,7 +16,7 @@ const navLinkClass = (isActive: boolean) =>
   `text-sm font-medium transition-colors whitespace-nowrap ${isActive ? "text-primary font-semibold" : "text-muted-foreground hover:text-foreground"}`;
 
 const mobileNavLinkClass = (isActive: boolean) =>
-  `flex items-center gap-3 min-h-[44px] px-3 rounded-lg text-[15px] font-medium transition-colors ${
+  `flex items-center gap-3 min-h-[44px] px-3 rounded-lg text-[15px] font-medium transition-colors min-w-0 w-full ${
     isActive ? "bg-primary/10 text-primary font-semibold" : "text-foreground hover:bg-secondary"
   }`;
 
