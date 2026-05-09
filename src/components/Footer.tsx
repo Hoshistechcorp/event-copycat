@@ -13,78 +13,93 @@ const TikTokIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
+const linkGroups: { title: string; links: { label: string; href: string }[] }[] = [
+  {
+    title: "Product",
+    links: [
+      { label: "Discover events", href: "/events" },
+      { label: "Bloov Service", href: "/bloov-service" },
+      { label: "Sponsorships", href: "/sponsorships" },
+      { label: "Orbit", href: "https://orbit-connect-joy.lovable.app/aura" },
+    ],
+  },
+  {
+    title: "Company",
+    links: [
+      { label: "About", href: "/about" },
+      { label: "Contact", href: "/contact" },
+      { label: "FAQs", href: "/faq" },
+    ],
+  },
+  {
+    title: "Legal",
+    links: [
+      { label: "Privacy", href: "/privacy" },
+      { label: "Terms", href: "/terms" },
+    ],
+  },
+];
+
 const Footer = () => {
   return (
-    <footer className="bg-secondary/50 pt-16 pb-6">
-      <div className="container px-4 md:px-8">
-        <div className="bg-background rounded-2xl border border-border p-8 md:p-12 mb-8">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
-            {/* Brand column */}
-            <div className="lg:col-span-1">
-              <div className="flex items-center gap-2 mb-4">
-                <img src={mainLogo} alt="iBLOOV logo" className="h-14 w-auto" />
-                <span className="bg-accent text-accent-foreground text-[10px] font-bold px-1.5 py-0.5 rounded">BETA</span>
-              </div>
-              <p className="text-sm text-muted-foreground leading-relaxed mb-5">
-                Technology that makes you smile.
-              </p>
-              <div className="flex items-center gap-2 mb-5">
-                <a href="#" className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-all duration-200 hover:scale-110">
-                  <XIcon className="w-3.5 h-3.5" />
-                </a>
-                <a href="#" className="w-8 h-8 rounded-full bg-accent text-accent-foreground flex items-center justify-center transition-all duration-200 hover:scale-110 hover:shadow-md">
-                  <Instagram className="w-3.5 h-3.5" />
-                </a>
-                <a href="#" className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-all duration-200 hover:scale-110">
-                  <Linkedin className="w-3.5 h-3.5" />
-                </a>
-                <a href="#" className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-all duration-200 hover:scale-110">
-                  <TikTokIcon className="w-3.5 h-3.5" />
-                </a>
-              </div>
-              <div className="inline-flex items-center gap-2 bg-secondary rounded-full px-3 py-1.5 text-xs font-medium text-foreground">
-                <span className="w-2 h-2 rounded-full bg-green-500" />
-                Platform Is Live
-              </div>
+    <footer className="border-t border-border bg-secondary/30">
+      <div className="container max-w-6xl px-4 py-10">
+        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-8">
+          {/* Brand */}
+          <div className="max-w-xs">
+            <div className="flex items-center gap-2 mb-3">
+              <img src={mainLogo} alt="iBloov logo" className="h-9 w-auto" />
+              <span className="bg-accent text-accent-foreground text-[9px] font-bold px-1.5 py-0.5 rounded">
+                BETA
+              </span>
             </div>
+            <p className="text-xs text-muted-foreground leading-relaxed mb-4">
+              Technology that makes you smile.
+            </p>
+            <div className="flex items-center gap-2">
+              {[
+                { Icon: XIcon, href: "#" },
+                { Icon: Instagram, href: "#" },
+                { Icon: Linkedin, href: "#" },
+                { Icon: TikTokIcon, href: "#" },
+              ].map(({ Icon, href }, i) => (
+                <a
+                  key={i}
+                  href={href}
+                  className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-muted-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
+                >
+                  <Icon className="w-3.5 h-3.5" />
+                </a>
+              ))}
+            </div>
+          </div>
 
-            {/* Products */}
-            <div>
-              <h4 className="font-bold text-sm text-foreground uppercase tracking-wide mb-4">Products</h4>
-              <ul className="space-y-2.5 text-sm text-muted-foreground">
-                <li><a href="https://orbit-connect-joy.lovable.app/aura" className="hover:text-foreground transition-colors">View the Orbit</a></li>
-              </ul>
-            </div>
-
-            {/* Company */}
-            <div>
-              <h4 className="font-bold text-sm text-foreground uppercase tracking-wide mb-4">Company</h4>
-              <ul className="space-y-2.5 text-sm text-muted-foreground">
-                <li><a href="/about" className="hover:text-foreground transition-colors">About iBloov</a></li>
-                <li><a href="#creators" className="hover:text-foreground transition-colors">Careers</a></li>
-                <li><a href="#testimonials" className="hover:text-foreground transition-colors">Blog</a></li>
-              </ul>
-            </div>
-
-            {/* Support */}
-            <div>
-              <h4 className="font-bold text-sm text-foreground uppercase tracking-wide mb-4">Support</h4>
-              <ul className="space-y-2.5 text-sm text-muted-foreground">
-                <li><a href="/contact" className="hover:text-foreground transition-colors">Contact Us</a></li>
-                <li><a href="/faq" className="hover:text-foreground transition-colors">FAQs</a></li>
-                <li><a href="/privacy" className="hover:text-foreground transition-colors">Privacy Policy</a></li>
-                <li><a href="/terms" className="hover:text-foreground transition-colors">Terms of Service</a></li>
-              </ul>
-            </div>
+          {/* Link groups */}
+          <div className="grid grid-cols-3 gap-8 md:gap-12">
+            {linkGroups.map((g) => (
+              <div key={g.title}>
+                <h4 className="font-bold text-[11px] text-foreground uppercase tracking-wider mb-3">
+                  {g.title}
+                </h4>
+                <ul className="space-y-2 text-sm text-muted-foreground">
+                  {g.links.map((l) => (
+                    <li key={l.label}>
+                      <a href={l.href} className="hover:text-foreground transition-colors">
+                        {l.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-muted-foreground">
-          <p>© 2026 iBloov — Technology that makes you smile.</p>
-          <div className="flex items-center gap-6">
-            <a href="/privacy" className="hover:text-foreground transition-colors">Privacy Policy</a>
-            <a href="/terms" className="hover:text-foreground transition-colors">Terms</a>
-            <a href="/contact" className="hover:text-foreground transition-colors">Contact</a>
+        <div className="mt-8 pt-5 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-muted-foreground">
+          <p>© 2026 iBloov. All rights reserved.</p>
+          <div className="inline-flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+            Platform is live
           </div>
         </div>
       </div>
