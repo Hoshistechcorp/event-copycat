@@ -40,6 +40,7 @@ import BrandSetup from "./pages/BrandSetup";
 import EventPlanner from "./pages/EventPlanner";
 import AuraStub from "./pages/AuraStub";
 import MobileTabBar from "./components/MobileTabBar";
+import RsvpInvite from "./pages/RsvpInvite";
 import { getProduct } from "./lib/auraProducts";
 
 const queryClient = new QueryClient();
@@ -88,6 +89,7 @@ const App = () => (
             <Route path="/profile" element={<Profile />} />
             <Route path="/my-tickets" element={<MyTickets />} />
             <Route path="/my-tickets/:ticketId" element={<TicketDetail />} />
+            <Route path="/rsvp/:token" element={<RsvpInvite />} />
             <Route path="/signin" element={<SignIn />} />
             <Route path="/signup" element={<SignUp />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />

@@ -1,13 +1,24 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Ticket, Calendar, MapPin, ArrowLeft, Search, Mail } from "lucide-react";
+import { Ticket, Calendar, MapPin, ArrowLeft, Loader2 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { allEvents, type EventItem } from "@/data/events";
-import { useDbEvents } from "@/hooks/useDbEvents";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+
+interface PurchaseRow {
+  id: string;
+  event_id: string;
+  ticket_tier_id: string;
+  quantity: number;
+  unit_price: number;
+  total_amount: number;
+  created_at: string;
+  events?: { title: string; date: string; venue: string; image_url: string | null; currency: string } | null;
+  ticket_tiers?: { name: string } | null;
+}
 
 export interface PurchasedTicket {
   id: string;
@@ -21,155 +32,89 @@ export interface PurchasedTicket {
 }
 
 const MyTickets = () => {
-  const [email, setEmail] = useState("");
-  const [searchedEmail, setSearchedEmail] = useState("");
-  const [tickets, setTickets] = useState<PurchasedTicket[]>([]);
-  const [hasSearched, setHasSearched] = useState(false);
-  const { data: dbEvents = [] } = useDbEvents();
+  const { user, loading: authLoading } = useAuth();
+  const [purchases, setPurchases] = useState<PurchaseRow[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const findEvent = (eventId: number | string): EventItem | undefined => {
-    const fromDb = dbEvents.find((e) => e.id === eventId);
-    if (fromDb) return fromDb;
-    return allEvents.find((e) => e.id === eventId);
-  };
+  useEffect(() => {
+    if (!user) { setLoading(false); return; }
+    (async () => {
+      const { data } = await supabase
+        .from("ticket_purchases")
+        .select("id, event_id, ticket_tier_id, quantity, unit_price, total_amount, created_at, events(title, date, venue, image_url, currency), ticket_tiers(name)")
+        .eq("buyer_user_id", user.id)
+        .order("created_at", { ascending: false });
+      setPurchases((data as any) || []);
+      setLoading(false);
+    })();
+  }, [user]);
 
-  const lookupTickets = (lookupEmail: string) => {
-    const stored = localStorage.getItem("purchased_tickets");
-    if (!stored) {
-      setTickets([]);
-      setHasSearched(true);
-      setSearchedEmail(lookupEmail);
-      return;
-    }
-    const all: PurchasedTicket[] = JSON.parse(stored);
-    const matched = all.filter(
-      (t) => t.email.toLowerCase().trim() === lookupEmail.toLowerCase().trim()
+  if (authLoading || loading) {
+    return <div className="min-h-screen flex items-center justify-center bg-background"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <div className="container px-4 py-20 text-center">
+          <Ticket className="w-16 h-16 text-muted-foreground/30 mx-auto mb-4" />
+          <h2 className="text-lg font-bold mb-2">Sign in to view your tickets</h2>
+          <Button className="rounded-full mt-3" asChild><Link to="/signin">Sign In</Link></Button>
+        </div>
+        <Footer />
+      </div>
     );
-    setTickets(matched);
-    setHasSearched(true);
-    setSearchedEmail(lookupEmail);
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email.trim()) return;
-    lookupTickets(email.trim());
-  };
+  }
 
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <section className="container px-4 md:px-8 py-12">
+      <section className="container px-4 md:px-8 py-12 max-w-5xl mx-auto">
         <div className="flex items-center gap-3 mb-8">
           <Button variant="ghost" size="icon" className="rounded-full" asChild>
             <Link to="/events"><ArrowLeft className="w-4 h-4" /></Link>
           </Button>
           <div>
-            <h1 className="text-2xl font-extrabold text-foreground">Find My Tickets</h1>
-            <p className="text-sm text-muted-foreground">Enter the email you used to purchase</p>
+            <h1 className="text-2xl font-extrabold">My Tickets</h1>
+            <p className="text-sm text-muted-foreground">{purchases.length} ticket{purchases.length !== 1 ? "s" : ""}</p>
           </div>
         </div>
 
-        {/* Email lookup form */}
-        <motion.form
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          onSubmit={handleSubmit}
-          className="max-w-lg mx-auto mb-10"
-        >
-          <div className="bg-card rounded-2xl border border-border p-6 shadow-sm">
-            <div className="flex items-center gap-2 mb-4">
-              <Mail className="w-5 h-5 text-primary" />
-              <h2 className="text-sm font-bold text-card-foreground">Look up your tickets</h2>
-            </div>
-            <p className="text-xs text-muted-foreground mb-4">
-              Enter the email address you used when purchasing your tickets to view them.
-            </p>
-            <div className="flex gap-2">
-              <Input
-                type="email"
-                placeholder="your@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="rounded-xl flex-1"
-                required
-              />
-              <Button type="submit" className="rounded-xl gap-2 px-5" disabled={!email.trim()}>
-                <Search className="w-4 h-4" />
-                Search
-              </Button>
-            </div>
-          </div>
-        </motion.form>
-
-        {/* Results */}
-        {hasSearched && tickets.length === 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center py-16"
-          >
+        {purchases.length === 0 ? (
+          <div className="text-center py-16">
             <Ticket className="w-16 h-16 text-muted-foreground/30 mx-auto mb-4" />
-            <h2 className="text-lg font-bold text-foreground mb-2">No tickets found</h2>
-            <p className="text-sm text-muted-foreground mb-6">
-              No tickets were found for <span className="font-semibold text-foreground">{searchedEmail}</span>
-            </p>
-            <Button className="rounded-full" asChild>
-              <Link to="/events">Browse Events</Link>
-            </Button>
-          </motion.div>
-        )}
-
-        {tickets.length > 0 && (
-          <div>
-            <p className="text-sm text-muted-foreground mb-4">
-              Showing {tickets.length} ticket{tickets.length !== 1 ? "s" : ""} for{" "}
-              <span className="font-semibold text-foreground">{searchedEmail}</span>
-            </p>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {tickets.map((ticket, i) => {
-                const event = findEvent(ticket.eventId);
-                if (!event) return null;
-                return (
-                  <motion.div
-                    key={ticket.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.05 }}
-                  >
-                    <Link
-                      to={`/my-tickets/${ticket.id}`}
-                      className="block bg-card rounded-2xl border border-border overflow-hidden shadow-sm hover:shadow-md transition-shadow"
-                    >
-                      <img src={event.image} alt={event.title} className="w-full h-36 object-cover" />
-                      <div className="p-4">
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-primary/10 text-primary">
-                            {ticket.ticketType}
-                          </span>
-                          <span className="text-xs font-bold text-primary">{ticket.price}</span>
-                        </div>
-                        <h3 className="text-sm font-bold text-card-foreground mb-2">{event.title}</h3>
-                        <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-1">
-                          <Calendar className="w-3 h-3" />
-                          {event.fullDate} · {event.time}
-                        </div>
-                        <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-3">
-                          <MapPin className="w-3 h-3" />
-                          {event.venue}, {event.location}
-                        </div>
-                        <div className="pt-3 border-t border-border flex items-center justify-between">
-                          <span className="text-[10px] text-muted-foreground">Qty: {ticket.quantity}</span>
-                          <span className="text-[10px] text-muted-foreground">
-                            {new Date(ticket.purchasedAt).toLocaleDateString()}
-                          </span>
-                        </div>
+            <h2 className="text-lg font-bold mb-2">No tickets yet</h2>
+            <Button className="rounded-full mt-2" asChild><Link to="/events">Browse Events</Link></Button>
+          </div>
+        ) : (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {purchases.map((p, i) => {
+              const ev = p.events;
+              const dt = ev ? new Date(ev.date) : null;
+              return (
+                <motion.div key={p.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
+                  <Link to={`/my-tickets/${p.id}`} className="block bg-card rounded-2xl border border-border overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+                    <img src={ev?.image_url || "/placeholder.svg"} alt={ev?.title} className="w-full h-36 object-cover" />
+                    <div className="p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-primary/10 text-primary">{p.ticket_tiers?.name}</span>
+                        <span className="text-xs font-bold text-primary">{p.unit_price === 0 ? "Free" : `${ev?.currency || "USD"} ${p.unit_price}`}</span>
                       </div>
-                    </Link>
-                  </motion.div>
-                );
-              })}
-            </div>
+                      <h3 className="text-sm font-bold mb-2 line-clamp-1">{ev?.title}</h3>
+                      <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-1">
+                        <Calendar className="w-3 h-3" />{dt?.toLocaleDateString()} · {dt?.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}
+                      </div>
+                      <div className="flex items-center gap-1.5 text-xs text-muted-foreground"><MapPin className="w-3 h-3" />{ev?.venue}</div>
+                      <div className="pt-3 mt-3 border-t border-border flex items-center justify-between text-[10px] text-muted-foreground">
+                        <span>Qty: {p.quantity}</span>
+                        <span>{new Date(p.created_at).toLocaleDateString()}</span>
+                      </div>
+                    </div>
+                  </Link>
+                </motion.div>
+              );
+            })}
           </div>
         )}
       </section>
