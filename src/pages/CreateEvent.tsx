@@ -9,9 +9,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { currencies } from "@/contexts/CurrencyContext";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import EventSettingsStep, { type EventSettings, defaultSettings } from "@/components/event-create/EventSettingsStep";
+import EventSettingsStep, { type EventSettings, defaultSettings, type InviteRow } from "@/components/event-create/EventSettingsStep";
 import LocationStep, { type LocationFields, defaultLocation } from "@/components/event-create/LocationStep";
-import PromoInvitesStep, { type PromoCode, type InviteRow } from "@/components/event-create/PromoInvitesStep";
+import PromoInvitesStep, { type PromoCode } from "@/components/event-create/PromoInvitesStep";
 import {
   CalendarDays, MapPin, Plus, Trash2, Loader2, ImagePlus,
   Ticket, Type, Music, ChevronLeft, ChevronRight, Check, Users, Clock,
