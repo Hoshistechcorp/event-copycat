@@ -90,7 +90,29 @@ const Navbar = () => {
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 md:gap-3">
+          {/* Pinned AURA products */}
+          {user && pinnedProducts.length > 0 && (
+            <div className="hidden md:flex items-center gap-1 pr-1 border-r border-border mr-1">
+              {pinnedProducts.map((p) => {
+                const Icon = p!.icon;
+                return (
+                  <button
+                    key={p!.id}
+                    onClick={() => navigate(p!.route)}
+                    title={p!.name}
+                    className={`h-8 w-8 rounded-lg bg-secondary/50 hover:bg-secondary flex items-center justify-center transition-colors ${p!.color}`}
+                  >
+                    <Icon className="h-4 w-4" />
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Nebula 9-dot menu */}
+          {user && <NebulaMenu />}
+
           {!isHost && (
             <a href="/my-tickets" className={`hidden md:inline-flex ${navLinkClass(location.pathname === "/my-tickets")}`}>
               Find my tickets
