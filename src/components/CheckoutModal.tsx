@@ -92,8 +92,6 @@ const CheckoutModal = ({ open, onOpenChange, event, selectedTicketIndex }: Check
     }
 
     if (promoApplied) {
-      await supabase.rpc("update_updated_at_column"); // no-op, just to silence linter
-      // Increment used_count
       const { data: pc } = await supabase.from("promo_codes").select("used_count").eq("id", promoApplied.id).single();
       if (pc) await supabase.from("promo_codes").update({ used_count: (pc.used_count || 0) + 1 }).eq("id", promoApplied.id);
     }
