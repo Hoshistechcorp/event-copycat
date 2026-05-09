@@ -122,7 +122,7 @@ const PackageDetail = () => {
                   <label className="text-xs font-semibold text-muted-foreground mb-2 flex items-center gap-1.5">
                     <MapPin className="h-3.5 w-3.5" /> City
                   </label>
-                  <Input value={city} onChange={(e) => setCity(e.target.value)} placeholder="Lagos, Abuja..." />
+                  <Input value={city} onChange={(e) => setCity(e.target.value)} placeholder="Your city — anywhere in the world" />
                 </div>
                 <div>
                   <label className="text-xs font-semibold text-muted-foreground mb-2 flex items-center gap-1.5">
