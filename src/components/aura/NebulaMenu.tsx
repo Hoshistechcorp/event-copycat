@@ -86,9 +86,31 @@ const NebulaMenu = () => {
         >
           {/* Sticky header */}
           <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-xl border-b border-white/5 px-3 py-2.5 sm:px-5 sm:py-4">
-            <div className="flex items-center gap-2 mb-2 sm:mb-3">
-              <Sparkles className="h-4 w-4 text-primary" />
-              <h3 className="text-sm sm:text-base font-extrabold tracking-tight">Your iBloov Orbit</h3>
+            <div className="flex items-center justify-between gap-2 mb-2 sm:mb-3">
+              <div className="flex items-center gap-2 min-w-0">
+                <Sparkles className="h-4 w-4 text-primary shrink-0" />
+                <h3 className="text-sm sm:text-base font-extrabold tracking-tight truncate">Your iBloov Orbit</h3>
+              </div>
+              <div className="flex items-center gap-0.5 rounded-full bg-secondary/60 p-0.5 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setDensity("comfortable")}
+                  className={`h-7 w-7 rounded-full flex items-center justify-center transition-colors ${density === "comfortable" ? "bg-background text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                  title="Comfortable"
+                  aria-label="Comfortable density"
+                >
+                  <Rows3 className="h-3.5 w-3.5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setDensity("compact")}
+                  className={`h-7 w-7 rounded-full flex items-center justify-center transition-colors ${density === "compact" ? "bg-background text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                  title="Compact"
+                  aria-label="Compact density"
+                >
+                  <LayoutGrid className="h-3.5 w-3.5" />
+                </button>
+              </div>
             </div>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
@@ -110,7 +132,9 @@ const NebulaMenu = () => {
             <>
               <DndContext collisionDetection={closestCenter} onDragEnd={onDragEnd}>
                 <SortableContext items={orderedProducts.filter((p) => !p.alwaysLinked).map((p) => p.id)} strategy={rectSortingStrategy}>
-                  <div className="grid grid-cols-3 gap-2.5 sm:gap-4 p-3 sm:p-5">
+                  <div
+                    className={`grid ${density === "compact" ? "grid-cols-4 gap-1.5 sm:gap-2 p-2 sm:p-3" : "grid-cols-3 gap-2 sm:gap-3 p-2.5 sm:p-4"} [container-type:inline-size]`}
+                  >
                     {orderedProducts.map((p) => (
                       <AuraTile
                         key={p.id}
@@ -120,6 +144,7 @@ const NebulaMenu = () => {
                         onOpen={() => handleTileClick(p)}
                         onTogglePin={() => handleTogglePin(p)}
                         draggable={!p.alwaysLinked}
+                        density={density}
                       />
                     ))}
                   </div>
