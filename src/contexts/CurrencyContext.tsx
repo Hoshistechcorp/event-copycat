@@ -34,7 +34,16 @@ interface CurrencyContextType {
 const CurrencyContext = createContext<CurrencyContextType | undefined>(undefined);
 
 export const CurrencyProvider = ({ children }: { children: ReactNode }) => {
-  const [currency, setCurrency] = useState<Currency>(currencies[0]);
+  const [currency, setCurrency] = useState<Currency>(() => {
+    if (typeof window === "undefined") return currencies[0];
+    const saved = localStorage.getItem("ibloov_currency");
+    return currencies.find((c) => c.code === saved) ?? currencies[0];
+  });
+
+  const setAndPersist = (c: Currency) => {
+    setCurrency(c);
+    if (typeof window !== "undefined") localStorage.setItem("ibloov_currency", c.code);
+  };
 
   const convertAmount = (ngnAmount: number): number => {
     return Math.round(ngnAmount * currency.rate * 100) / 100;
