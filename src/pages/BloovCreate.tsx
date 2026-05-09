@@ -2,10 +2,11 @@ import { motion } from "framer-motion";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { Sparkles, TrendingUp, Megaphone, ArrowRight, Wand2 } from "lucide-react";
+import { Sparkles, TrendingUp, ArrowRight, Wand2, Megaphone } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useEventIdeas } from "@/hooks/useEventIdeas";
 import EventIdeaCard from "@/components/bloov/EventIdeaCard";
+import AmbientGlow from "@/components/ui/AmbientGlow";
 
 const BloovCreate = () => {
   const navigate = useNavigate();
@@ -17,27 +18,23 @@ const BloovCreate = () => {
 
       {/* Hero */}
       <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/20 to-transparent pointer-events-none" />
-        <div className="absolute -top-20 -right-20 w-96 h-96 rounded-full bg-primary/20 blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-20 -left-20 w-96 h-96 rounded-full bg-accent/20 blur-3xl pointer-events-none" />
+        <AmbientGlow />
 
-        <div className="container relative max-w-6xl px-4 py-16 md:py-24">
+        <div className="container relative max-w-6xl px-4 py-14 md:py-24">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 backdrop-blur text-primary text-xs font-bold mb-5">
-              <Sparkles className="h-3.5 w-3.5" /> BLOOV CREATE · BETA
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass-panel text-primary text-[11px] font-bold uppercase tracking-wider mb-5">
+              <Sparkles className="h-3.5 w-3.5" /> Bloov Create · Beta
             </div>
-            <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-foreground leading-[0.95] mb-5">
-              Dream it. <br />
-              <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
-                Launch it. Sell it out.
-              </span>
+            <h1 className="text-6xl sm:text-7xl md:text-8xl font-extrabold tracking-tight text-foreground leading-[0.92] mb-6">
+              Create<br />
+              <span className="text-gradient-brand">the vibe.</span>
             </h1>
-            <p className="text-muted-foreground text-lg max-w-xl mb-8">
-              The creator-first event idea engine. Turn an idea into a sold-out experience —
+            <p className="text-muted-foreground text-base sm:text-lg max-w-xl mb-8">
+              Engineer your next high-impact experience. Turn an idea into a sold-out event —
               from concept to checkout in one flow.
             </p>
             <div className="flex flex-wrap gap-3">
-              <Button size="lg" className="rounded-xl font-bold gap-2" onClick={() => navigate("/bloov-create/wizard")}>
+              <Button size="lg" className="rounded-xl btn-gradient-brand font-bold gap-2 border-0" onClick={() => navigate("/bloov-create/wizard")}>
                 <Wand2 className="h-4 w-4" /> Create New Event Idea
               </Button>
               <Button size="lg" variant="outline" className="rounded-xl font-bold" onClick={() => navigate("/bloov-service")}>
