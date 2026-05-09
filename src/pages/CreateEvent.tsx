@@ -73,7 +73,7 @@ const CreateEvent = () => {
 
   // Step 4
   const [tiers, setTiers] = useState<TicketTier[]>([
-    { name: "General Admission", price: "0", quantity: "100", description: "" },
+    { name: "General Admission", price: "0", quantity: "100", description: "", test_fee_percent: "0" },
   ]);
   const [promoCodes, setPromoCodes] = useState<PromoCode[]>([]);
 
