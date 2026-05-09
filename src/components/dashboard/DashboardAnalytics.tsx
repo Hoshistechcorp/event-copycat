@@ -32,6 +32,7 @@ const categoryData = [
 
 const DashboardAnalytics = () => {
   const { toast } = useToast();
+  const { currency, formatPrice } = useCurrency();
   const [dateRange, setDateRange] = useState<"7d" | "30d" | "90d" | "12m" | "custom">("12m");
   const [category, setCategory] = useState<string>("all");
   const [startDate, setStartDate] = useState("");
