@@ -14,7 +14,13 @@ export interface Booking {
   currency: string;
   notes: string | null;
   created_at: string;
+  requester_user_id?: string;
 }
+
+type BookingWithJoins = Booking & {
+  vendors?: { business_name: string; avatar_url: string | null } | null;
+  event_packages?: { title: string; hero_image_url: string | null; base_price: number } | null;
+};
 
 export const useMyBookings = () => {
   const { user } = useAuth();
@@ -24,14 +30,35 @@ export const useMyBookings = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("bookings")
-        .select("*, vendors(business_name, avatar_url), event_packages(title, hero_image_url)")
+        .select("*, vendors(business_name, avatar_url), event_packages(title, hero_image_url, base_price)")
         .eq("requester_user_id", user!.id)
         .order("created_at", { ascending: false });
       if (error) throw error;
-      return data as (Booking & {
-        vendors?: { business_name: string; avatar_url: string | null } | null;
-        event_packages?: { title: string; hero_image_url: string | null } | null;
-      })[];
+      return data as BookingWithJoins[];
+    },
+  });
+};
+
+// Bookings *received* by the current user as a vendor owner.
+export const useIncomingBookings = () => {
+  const { user } = useAuth();
+  return useQuery({
+    queryKey: ["incoming-bookings", user?.id],
+    enabled: !!user,
+    queryFn: async () => {
+      const { data: ownedVendors } = await supabase
+        .from("vendors")
+        .select("id")
+        .eq("owner_user_id", user!.id);
+      const ids = (ownedVendors ?? []).map((v) => v.id);
+      if (ids.length === 0) return [] as BookingWithJoins[];
+      const { data, error } = await supabase
+        .from("bookings")
+        .select("*, vendors(business_name, avatar_url), event_packages(title, hero_image_url, base_price)")
+        .in("vendor_id", ids)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data as BookingWithJoins[];
     },
   });
 };
@@ -70,6 +97,29 @@ export const useCreateBooking = () => {
       if (error) throw error;
       return data;
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["my-bookings"] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["my-bookings"] });
+      qc.invalidateQueries({ queryKey: ["incoming-bookings"] });
+    },
+  });
+};
+
+export const useUpdateBookingStatus = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, status }: { id: string; status: "confirmed" | "declined" | "completed" | "cancelled" }) => {
+      const { data, error } = await supabase
+        .from("bookings")
+        .update({ status })
+        .eq("id", id)
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["incoming-bookings"] });
+      qc.invalidateQueries({ queryKey: ["my-bookings"] });
+    },
   });
 };
