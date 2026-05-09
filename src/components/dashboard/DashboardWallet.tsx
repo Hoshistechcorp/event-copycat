@@ -208,8 +208,13 @@ const DashboardWallet = () => {
   return (
     <div className="space-y-6">
       {/* Top row: title + withdraw button */}
-      <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold text-foreground">Wallet</h2>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div>
+          <h2 className="text-xl font-bold text-foreground">Wallet</h2>
+          <p className="text-xs text-muted-foreground mt-1">
+            Balances shown in <span className="font-bold text-foreground">{currency.code}</span>. Payouts via Stripe Connect, Paystack, Flutterwave & Wise — switch in profile.
+          </p>
+        </div>
         <Button className="rounded-xl font-bold text-sm" onClick={openWithdrawModal}>
           <ArrowUpRight className="h-4 w-4 mr-2" />
           Withdraw Funds
