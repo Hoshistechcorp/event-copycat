@@ -27,6 +27,7 @@ interface TicketTier {
   price: string;
   quantity: string;
   description: string;
+  test_fee_percent: string;
 }
 interface Performer {
   name: string;
