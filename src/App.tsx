@@ -24,6 +24,11 @@ import Contact from "./pages/Contact";
 import FAQ from "./pages/FAQ";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import Terms from "./pages/Terms";
+import BloovCreate from "./pages/BloovCreate";
+import BloovService from "./pages/BloovService";
+import BloovServiceCategory from "./pages/BloovServiceCategory";
+import VendorProfile from "./pages/VendorProfile";
+import PackageDetail from "./pages/PackageDetail";
 
 const queryClient = new QueryClient();
 
@@ -42,6 +47,11 @@ const App = () => (
             <Route path="/faq" element={<FAQ />} />
             <Route path="/privacy" element={<PrivacyPolicy />} />
             <Route path="/terms" element={<Terms />} />
+            <Route path="/bloov-create" element={<BloovCreate />} />
+            <Route path="/bloov-service" element={<BloovService />} />
+            <Route path="/bloov-service/category/:slug" element={<BloovServiceCategory />} />
+            <Route path="/bloov-service/vendors/:id" element={<VendorProfile />} />
+            <Route path="/bloov-service/packages/:id" element={<PackageDetail />} />
             <Route path="/events" element={<Events />} />
             <Route path="/events/:id" element={<EventDetail />} />
             <Route path="/create-event" element={<CreateEvent />} />
