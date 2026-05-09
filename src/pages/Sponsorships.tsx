@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import Navbar from "@/components/Navbar";
@@ -6,7 +6,8 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Sparkles, Building2, Plus, Users, MapPin, ArrowRight, Megaphone } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Sparkles, Building2, Plus, Users, MapPin, ArrowRight, Megaphone, Search, Filter } from "lucide-react";
 import { useSponsorshipListings } from "@/hooks/useSponsorships";
 import { useBrands } from "@/hooks/useBrands";
 import { useCurrency } from "@/contexts/CurrencyContext";
@@ -14,16 +15,47 @@ import LocationPicker from "@/components/LocationPicker";
 
 const EVENT_TYPES = ["Concert", "Wedding", "Festival", "Conference", "Nightlife", "Sports", "Brunch", "Tech"];
 
+const AUDIENCE_BUCKETS = [
+  { label: "Any size", min: 0, max: Infinity },
+  { label: "<100", min: 0, max: 100 },
+  { label: "100–500", min: 100, max: 500 },
+  { label: "500–2k", min: 500, max: 2000 },
+  { label: "2k–10k", min: 2000, max: 10000 },
+  { label: "10k+", min: 10000, max: Infinity },
+];
+
+type Sort = "newest" | "budget" | "audience";
+
 const Sponsorships = () => {
   const navigate = useNavigate();
   const { formatPrice } = useCurrency();
   const [eventType, setEventType] = useState<string>("");
   const [loc, setLoc] = useState({ country: "", city: "" });
+  const [search, setSearch] = useState("");
+  const [audienceIdx, setAudienceIdx] = useState(0);
+  const [sort, setSort] = useState<Sort>("newest");
   const { data: listings = [], isLoading } = useSponsorshipListings({
     eventType: eventType || undefined,
     city: loc.city || undefined,
   });
   const { data: brands = [] } = useBrands();
+
+  const filtered = useMemo(() => {
+    const bucket = AUDIENCE_BUCKETS[audienceIdx];
+    let l = listings.filter((x) => x.audience_size >= bucket.min && x.audience_size < bucket.max);
+    if (search) {
+      const q = search.toLowerCase();
+      l = l.filter((x) =>
+        x.title.toLowerCase().includes(q) ||
+        (x.event_type || "").toLowerCase().includes(q) ||
+        (x.description || "").toLowerCase().includes(q)
+      );
+    }
+    if (loc.country) l = l.filter((x) => (x.country || "").toLowerCase().includes(loc.country.toLowerCase()));
+    if (sort === "budget") l = [...l].sort((a, b) => Number(b.asking_amount) - Number(a.asking_amount));
+    if (sort === "audience") l = [...l].sort((a, b) => b.audience_size - a.audience_size);
+    return l;
+  }, [listings, audienceIdx, search, loc.country, sort]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -43,8 +75,20 @@ const Sponsorships = () => {
               </span>
             </h1>
             <p className="text-muted-foreground text-lg max-w-xl mb-7">
-              Hosts list sponsorship opportunities. Brands tell us the events, audiences and budgets they want — we match.
+              Search opportunities by event type, location, and audience size. Brands and hosts find each other in seconds.
             </p>
+
+            {/* Big search */}
+            <div className="relative max-w-2xl mb-4">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search opportunities, event types, brand fit…"
+                className="pl-11 h-12 rounded-2xl bg-card/80 backdrop-blur border-border text-sm"
+              />
+            </div>
+
             <div className="flex flex-wrap gap-3">
               <Button className="rounded-xl font-bold" onClick={() => navigate("/brand/setup")}>
                 <Building2 className="h-4 w-4 mr-2" /> I'm a Brand
@@ -59,42 +103,85 @@ const Sponsorships = () => {
 
       {/* Filters */}
       <section className="container max-w-6xl px-4 py-6">
-        <div className="grid md:grid-cols-2 gap-3 mb-4">
-          <LocationPicker country={loc.country} city={loc.city} onChange={setLoc} />
-          <div className="flex flex-wrap gap-2">
-            <button
-              onClick={() => setEventType("")}
-              className={`px-3 py-1.5 rounded-full text-xs font-bold border ${!eventType ? "bg-primary text-primary-foreground border-primary" : "border-border text-muted-foreground"}`}
-            >All</button>
-            {EVENT_TYPES.map((t) => (
+        <div className="rounded-3xl bg-card/60 backdrop-blur border border-border p-4 md:p-5 space-y-4">
+          <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground">
+            <Filter className="h-3.5 w-3.5" /> FILTERS
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-3">
+            <div>
+              <label className="text-[10px] font-bold text-muted-foreground uppercase mb-1 block">Location</label>
+              <LocationPicker country={loc.country} city={loc.city} onChange={setLoc} />
+            </div>
+            <div>
+              <label className="text-[10px] font-bold text-muted-foreground uppercase mb-1 block">Audience size</label>
+              <Select value={String(audienceIdx)} onValueChange={(v) => setAudienceIdx(Number(v))}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {AUDIENCE_BUCKETS.map((b, i) => (
+                    <SelectItem key={b.label} value={String(i)}>{b.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <label className="text-[10px] font-bold text-muted-foreground uppercase mb-1 block">Sort by</label>
+              <Select value={sort} onValueChange={(v) => setSort(v as Sort)}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="newest">Newest</SelectItem>
+                  <SelectItem value="budget">Highest budget</SelectItem>
+                  <SelectItem value="audience">Largest audience</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div>
+            <label className="text-[10px] font-bold text-muted-foreground uppercase mb-2 block">Event type</label>
+            <div className="flex flex-wrap gap-2">
               <button
-                key={t}
-                onClick={() => setEventType(t)}
-                className={`px-3 py-1.5 rounded-full text-xs font-bold border ${eventType === t ? "bg-primary text-primary-foreground border-primary" : "border-border text-muted-foreground hover:bg-secondary"}`}
-              >{t}</button>
-            ))}
+                onClick={() => setEventType("")}
+                className={`px-3 py-1.5 rounded-full text-xs font-bold border ${!eventType ? "bg-primary text-primary-foreground border-primary" : "border-border text-muted-foreground"}`}
+              >All</button>
+              {EVENT_TYPES.map((t) => (
+                <button
+                  key={t}
+                  onClick={() => setEventType(t)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-bold border ${eventType === t ? "bg-primary text-primary-foreground border-primary" : "border-border text-muted-foreground hover:bg-secondary"}`}
+                >{t}</button>
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
       {/* Listings grid */}
       <section className="container max-w-6xl px-4 py-4">
-        <h2 className="text-2xl font-extrabold mb-4">Open sponsorship opportunities</h2>
+        <div className="flex items-end justify-between mb-4">
+          <h2 className="text-2xl font-extrabold">Open opportunities</h2>
+          <span className="text-xs text-muted-foreground">{filtered.length} result{filtered.length === 1 ? "" : "s"}</span>
+        </div>
         {isLoading ? (
-          <p className="text-sm text-muted-foreground">Loading…</p>
-        ) : listings.length === 0 ? (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[0,1,2,3,4,5].map((i) => (
+              <div key={i} className="rounded-2xl bg-card border border-border h-64 animate-pulse" />
+            ))}
+          </div>
+        ) : filtered.length === 0 ? (
           <div className="rounded-3xl border border-dashed border-border p-10 text-center">
             <Sparkles className="h-8 w-8 mx-auto mb-3 text-primary" />
-            <p className="text-sm text-muted-foreground">No matching listings yet. Be the first to publish one.</p>
+            <p className="text-sm text-muted-foreground mb-3">No matching listings yet.</p>
+            <Button variant="outline" onClick={() => navigate("/dashboard?tab=sponsorships")}>Create a listing</Button>
           </div>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {listings.map((l) => (
+            {filtered.map((l) => (
               <motion.button
                 key={l.id}
                 whileHover={{ y: -3 }}
                 onClick={() => navigate(`/sponsorships/listings/${l.id}`)}
-                className="text-left rounded-2xl bg-card border border-border overflow-hidden"
+                className="text-left rounded-2xl bg-card border border-border overflow-hidden hover:border-primary/50 transition-colors"
               >
                 {l.hero_image_url && <img src={l.hero_image_url} alt={l.title} className="w-full h-40 object-cover" />}
                 <div className="p-4 space-y-2">

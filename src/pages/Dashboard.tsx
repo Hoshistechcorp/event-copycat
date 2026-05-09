@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Loader2, Plus, LayoutDashboard, BarChart3, Wallet, Megaphone, CalendarDays, Store, ArrowRight, Inbox, Building2 } from "lucide-react";
+import { Loader2, Plus, LayoutDashboard, BarChart3, Wallet, Megaphone, CalendarDays, Store, ArrowRight, Inbox, Building2, ListChecks } from "lucide-react";
 import DashboardOverview from "@/components/dashboard/DashboardOverview";
 import DashboardAnalytics from "@/components/dashboard/DashboardAnalytics";
 import DashboardWallet from "@/components/dashboard/DashboardWallet";
@@ -14,6 +14,7 @@ import DashboardPromotions from "@/components/dashboard/DashboardPromotions";
 import DashboardEventsList from "@/components/dashboard/DashboardEventsList";
 import DashboardBookings from "@/components/dashboard/DashboardBookings";
 import DashboardSponsorships from "@/components/dashboard/DashboardSponsorships";
+import DashboardPlans from "@/components/dashboard/DashboardPlans";
 
 interface Event {
   id: string;
@@ -26,11 +27,12 @@ interface Event {
   created_at: string;
 }
 
-type Tab = "overview" | "events" | "bookings" | "sponsorships" | "analytics" | "wallet" | "promotions" | "service";
+type Tab = "overview" | "events" | "plans" | "bookings" | "sponsorships" | "analytics" | "wallet" | "promotions" | "service";
 
 const tabs: { key: Tab; label: string; icon: React.ReactNode }[] = [
   { key: "overview", label: "Overview", icon: <LayoutDashboard className="h-4 w-4" /> },
   { key: "events", label: "My Events", icon: <CalendarDays className="h-4 w-4" /> },
+  { key: "plans", label: "My Plans", icon: <ListChecks className="h-4 w-4" /> },
   { key: "bookings", label: "Bookings", icon: <Inbox className="h-4 w-4" /> },
   { key: "sponsorships", label: "Sponsorships", icon: <Building2 className="h-4 w-4" /> },
   { key: "analytics", label: "Analytics", icon: <BarChart3 className="h-4 w-4" /> },
@@ -42,9 +44,15 @@ const tabs: { key: Tab; label: string; icon: React.ReactNode }[] = [
 const Dashboard = () => {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
+  const [params] = useSearchParams();
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<Tab>("overview");
+  const initialTab = (params.get("tab") as Tab) || "overview";
+  const [activeTab, setActiveTab] = useState<Tab>(initialTab);
+  useEffect(() => {
+    const t = params.get("tab") as Tab | null;
+    if (t) setActiveTab(t);
+  }, [params]);
 
   const fetchEvents = async () => {
     if (!user) return;
@@ -135,6 +143,7 @@ const Dashboard = () => {
           {activeTab === "events" && (
             <DashboardEventsList events={events} loading={loading} onEventsChange={setEvents} />
           )}
+          {activeTab === "plans" && <DashboardPlans />}
           {activeTab === "bookings" && <DashboardBookings />}
           {activeTab === "sponsorships" && <DashboardSponsorships />}
           {activeTab === "analytics" && <DashboardAnalytics />}

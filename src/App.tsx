@@ -38,6 +38,8 @@ import Brands from "./pages/Brands";
 import BrandProfile from "./pages/BrandProfile";
 import BrandSetup from "./pages/BrandSetup";
 import EventPlanner from "./pages/EventPlanner";
+import AuraStub from "./pages/AuraStub";
+import { getProduct } from "./lib/auraProducts";
 
 const queryClient = new QueryClient();
 
@@ -69,6 +71,13 @@ const App = () => (
             <Route path="/sponsorships/brands/:id" element={<BrandProfile />} />
             <Route path="/brand/setup" element={<BrandSetup />} />
             <Route path="/event-planner" element={<EventPlanner />} />
+            <Route path="/tribemint" element={<AuraStub product={getProduct("tribemint")!} />} />
+            <Route path="/vibesgigs" element={<AuraStub product={getProduct("vibesgigs")!} />} />
+            <Route path="/flexit" element={<AuraStub product={getProduct("flexit")!} />} />
+            <Route path="/sportmate" element={<AuraStub product={getProduct("sportmate")!} />} />
+            <Route path="/pov" element={<AuraStub product={getProduct("pov")!} />} />
+            <Route path="/spark" element={<AuraStub product={getProduct("spark")!} />} />
+            <Route path="/kia-travel" element={<AuraStub product={getProduct("kiatravel")!} />} />
             <Route path="/events" element={<Events />} />
             <Route path="/events/:id" element={<EventDetail />} />
             <Route path="/create-event" element={<CreateEvent />} />

@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      aura_product_links: {
+        Row: {
+          created_at: string
+          id: string
+          linked_at: string
+          pinned: boolean
+          product_id: string
+          sort_index: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          linked_at?: string
+          pinned?: boolean
+          product_id: string
+          sort_index?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          linked_at?: string
+          pinned?: boolean
+          product_id?: string
+          sort_index?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       bank_accounts: {
         Row: {
           account_name: string
