@@ -76,7 +76,7 @@ const CreateEvent = () => {
     { name: "General Admission", price: "0", quantity: "100", description: "", test_fee_percent: "0" },
   ]);
   const [promoCodes, setPromoCodes] = useState<PromoCode[]>([]);
-
+  const [openToSponsorship, setOpenToSponsorship] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitMode, setSubmitMode] = useState<"draft" | "published" | "test" | null>(null);
   const [error, setError] = useState("");
