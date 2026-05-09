@@ -115,10 +115,16 @@ const BloovExperiences = () => {
             </div>
             <div>
               <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2 flex items-center gap-1.5">
-                <MapPin className="h-3.5 w-3.5" /> City
+                <MapPin className="h-3.5 w-3.5" /> City — anywhere in the world
               </label>
+              <Input
+                value={city === "All" ? "" : city}
+                onChange={(e) => setCity(e.target.value || "All")}
+                placeholder="Type your city (e.g. Berlin, Bali, Mexico City)"
+                className="mb-2"
+              />
               <div className="flex flex-wrap gap-1.5">
-                {CITIES.map((c) => (
+                {POPULAR_CITIES.map((c) => (
                   <button
                     key={c}
                     onClick={() => setCity(c)}
