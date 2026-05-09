@@ -6,7 +6,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Loader2, Plus, LayoutDashboard, BarChart3, Wallet, Megaphone, CalendarDays } from "lucide-react";
+import { Loader2, Plus, LayoutDashboard, BarChart3, Wallet, Megaphone, CalendarDays, Store, ArrowRight } from "lucide-react";
 import DashboardOverview from "@/components/dashboard/DashboardOverview";
 import DashboardAnalytics from "@/components/dashboard/DashboardAnalytics";
 import DashboardWallet from "@/components/dashboard/DashboardWallet";
@@ -24,7 +24,7 @@ interface Event {
   created_at: string;
 }
 
-type Tab = "overview" | "events" | "analytics" | "wallet" | "promotions";
+type Tab = "overview" | "events" | "analytics" | "wallet" | "promotions" | "service";
 
 const tabs: { key: Tab; label: string; icon: React.ReactNode }[] = [
   { key: "overview", label: "Overview", icon: <LayoutDashboard className="h-4 w-4" /> },
@@ -32,6 +32,7 @@ const tabs: { key: Tab; label: string; icon: React.ReactNode }[] = [
   { key: "analytics", label: "Analytics", icon: <BarChart3 className="h-4 w-4" /> },
   { key: "wallet", label: "Wallet", icon: <Wallet className="h-4 w-4" /> },
   { key: "promotions", label: "Promote", icon: <Megaphone className="h-4 w-4" /> },
+  { key: "service", label: "Bloov Service", icon: <Store className="h-4 w-4" /> },
 ];
 
 const Dashboard = () => {
@@ -133,6 +134,22 @@ const Dashboard = () => {
           {activeTab === "analytics" && <DashboardAnalytics />}
           {activeTab === "wallet" && <DashboardWallet />}
           {activeTab === "promotions" && <DashboardPromotions events={events} />}
+          {activeTab === "service" && (
+            <div className="rounded-3xl bg-gradient-to-br from-primary/15 to-accent/15 border border-border p-8 md:p-12">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold mb-4">
+                <Store className="h-3.5 w-3.5" /> BLOOV SERVICE
+              </div>
+              <h2 className="text-3xl md:text-4xl font-extrabold text-foreground mb-3 max-w-xl">
+                Hire venues, planners, decor and more — straight from your dashboard.
+              </h2>
+              <p className="text-muted-foreground max-w-lg mb-6">
+                Browse 16 vendor categories, book pre-made event packages, and manage everything alongside your ticket sales.
+              </p>
+              <Button className="rounded-xl font-bold gap-2" onClick={() => navigate("/bloov-service")}>
+                Open Bloov Service <ArrowRight className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
         </motion.div>
       </div>
 

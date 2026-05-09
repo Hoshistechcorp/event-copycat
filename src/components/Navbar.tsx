@@ -51,15 +51,16 @@ const Navbar = () => {
             <a href="/events" className={navLinkClass(location.pathname === "/events")}>
               Find Events
             </a>
+            <a href="/bloov-create" className={navLinkClass(location.pathname.startsWith("/bloov-create"))}>
+              Bloov Create
+            </a>
+            <a href="/bloov-service" className={navLinkClass(location.pathname.startsWith("/bloov-service"))}>
+              Bloov Service
+            </a>
             {isHost ? (
-              <>
-                <button onClick={handleCreateEvents} className={navLinkClass(location.pathname === "/create-event")}>
-                  Create Events
-                </button>
-                <a href="/dashboard" className={navLinkClass(location.pathname === "/dashboard")}>
-                  Dashboard
-                </a>
-              </>
+              <a href="/dashboard" className={navLinkClass(location.pathname === "/dashboard")}>
+                Dashboard
+              </a>
             ) : (
               <button onClick={handleCreateEvents} className={navLinkClass(location.pathname === "/create-event")}>
                 Create Events
@@ -194,6 +195,12 @@ const Navbar = () => {
                 <nav className="flex flex-col gap-4">
                   <a href="/events" className={mobileNavLinkClass(location.pathname === "/events")}>
                     Find Events
+                  </a>
+                  <a href="/bloov-create" className={mobileNavLinkClass(location.pathname.startsWith("/bloov-create"))}>
+                    Bloov Create
+                  </a>
+                  <a href="/bloov-service" className={mobileNavLinkClass(location.pathname.startsWith("/bloov-service"))}>
+                    Bloov Service
                   </a>
                   <button onClick={handleCreateEvents} className={`text-left ${mobileNavLinkClass(location.pathname === "/create-event")}`}>
                     Create Events
