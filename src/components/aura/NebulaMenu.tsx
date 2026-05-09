@@ -75,13 +75,13 @@ const NebulaMenu = () => {
         <PopoverContent
           align="end"
           sideOffset={8}
-          className="w-[440px] sm:w-[520px] p-0 bg-background/70 backdrop-blur-xl border-white/10 shadow-2xl rounded-3xl overflow-hidden"
+          className="w-[92vw] max-w-[520px] p-0 bg-background/70 backdrop-blur-xl border-white/10 shadow-2xl rounded-2xl sm:rounded-3xl overflow-hidden"
         >
           {/* Sticky header */}
-          <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-xl border-b border-white/5 px-5 py-4">
-            <div className="flex items-center gap-2 mb-3">
+          <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-xl border-b border-white/5 px-3 py-2.5 sm:px-5 sm:py-4">
+            <div className="flex items-center gap-2 mb-2 sm:mb-3">
               <Sparkles className="h-4 w-4 text-primary" />
-              <h3 className="text-base font-extrabold tracking-tight">Your iBloov Orbit</h3>
+              <h3 className="text-sm sm:text-base font-extrabold tracking-tight">Your iBloov Orbit</h3>
             </div>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
@@ -103,7 +103,7 @@ const NebulaMenu = () => {
             <>
               <DndContext collisionDetection={closestCenter} onDragEnd={onDragEnd}>
                 <SortableContext items={orderedProducts.filter((p) => !p.alwaysLinked).map((p) => p.id)} strategy={rectSortingStrategy}>
-                  <div className="grid grid-cols-3 gap-4 p-5">
+                  <div className="grid grid-cols-3 gap-2.5 sm:gap-4 p-3 sm:p-5">
                     {orderedProducts.map((p) => (
                       <AuraTile
                         key={p.id}
