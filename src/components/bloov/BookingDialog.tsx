@@ -10,6 +10,8 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import { useCurrency } from "@/contexts/CurrencyContext";
+import { routeGateway } from "@/lib/paymentRouter";
+import { Badge } from "@/components/ui/badge";
 
 interface Props {
   open: boolean;
@@ -24,7 +26,8 @@ interface Props {
 const BookingDialog = ({ open, onOpenChange, title, basePrice, vendorId, packageId, prefilledNotes }: Props) => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { formatPrice } = useCurrency();
+  const { formatPrice, currency } = useCurrency();
+  const gw = routeGateway(currency.code);
   const [eventDate, setEventDate] = useState("");
   const [notes, setNotes] = useState(prefilledNotes ?? "");
   const create = useCreateBooking();
@@ -81,6 +84,10 @@ const BookingDialog = ({ open, onOpenChange, title, basePrice, vendorId, package
               placeholder="Guest count, theme, special requests..."
               maxLength={500}
             />
+          </div>
+          <div className="rounded-xl bg-secondary/40 px-3 py-2 flex items-center justify-between">
+            <span className="text-xs text-muted-foreground">Payment routed via</span>
+            <Badge variant="outline" className="text-[10px] font-bold">{gw.label}</Badge>
           </div>
         </div>
         <DialogFooter>

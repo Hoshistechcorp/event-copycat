@@ -16,6 +16,7 @@ import ProfileBankAccounts from "@/components/profile/ProfileBankAccounts";
 import ProfileWithdrawalPin from "@/components/profile/ProfileWithdrawalPin";
 import ProfileSecurity from "@/components/profile/ProfileSecurity";
 import ProfileNotifications from "@/components/profile/ProfileNotifications";
+import ProfileCurrency from "@/components/profile/ProfileCurrency";
 
 type AccountType = "attendee" | "host";
 
@@ -239,6 +240,11 @@ const Profile = () => {
               />
             </motion.div>
           )}
+
+          {/* Display currency */}
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }}>
+            <ProfileCurrency />
+          </motion.div>
 
           {/* Notifications */}
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>

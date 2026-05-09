@@ -32,6 +32,12 @@ import BloovExperiences from "./pages/BloovExperiences";
 import BloovServiceCategory from "./pages/BloovServiceCategory";
 import VendorProfile from "./pages/VendorProfile";
 import PackageDetail from "./pages/PackageDetail";
+import Sponsorships from "./pages/Sponsorships";
+import SponsorshipListingDetail from "./pages/SponsorshipListingDetail";
+import Brands from "./pages/Brands";
+import BrandProfile from "./pages/BrandProfile";
+import BrandSetup from "./pages/BrandSetup";
+import EventPlanner from "./pages/EventPlanner";
 
 const queryClient = new QueryClient();
 
@@ -57,6 +63,12 @@ const App = () => (
             <Route path="/bloov-service/category/:slug" element={<BloovServiceCategory />} />
             <Route path="/bloov-service/vendors/:id" element={<VendorProfile />} />
             <Route path="/bloov-service/packages/:id" element={<PackageDetail />} />
+            <Route path="/sponsorships" element={<Sponsorships />} />
+            <Route path="/sponsorships/listings/:id" element={<SponsorshipListingDetail />} />
+            <Route path="/sponsorships/brands" element={<Brands />} />
+            <Route path="/sponsorships/brands/:id" element={<BrandProfile />} />
+            <Route path="/brand/setup" element={<BrandSetup />} />
+            <Route path="/event-planner" element={<EventPlanner />} />
             <Route path="/events" element={<Events />} />
             <Route path="/events/:id" element={<EventDetail />} />
             <Route path="/create-event" element={<CreateEvent />} />
