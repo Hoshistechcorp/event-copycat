@@ -6,7 +6,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Loader2, Plus, LayoutDashboard, BarChart3, Wallet, Megaphone, CalendarDays, Store, ArrowRight, Inbox, Building2, ListChecks } from "lucide-react";
+import { Loader2, Plus, LayoutDashboard, BarChart3, Wallet, Megaphone, CalendarDays, Store, ArrowRight, Inbox, Building2, ListChecks, Users } from "lucide-react";
 import DashboardOverview from "@/components/dashboard/DashboardOverview";
 import DashboardAnalytics from "@/components/dashboard/DashboardAnalytics";
 import DashboardWallet from "@/components/dashboard/DashboardWallet";
@@ -17,6 +17,7 @@ import DashboardSponsorships from "@/components/dashboard/DashboardSponsorships"
 import DashboardPlans from "@/components/dashboard/DashboardPlans";
 import DashboardHomeHero from "@/components/dashboard/DashboardHomeHero";
 import DashboardBento from "@/components/dashboard/DashboardBento";
+import DashboardGuests from "@/components/dashboard/DashboardGuests";
 
 interface Event {
   id: string;
@@ -29,11 +30,12 @@ interface Event {
   created_at: string;
 }
 
-type Tab = "overview" | "events" | "plans" | "bookings" | "sponsorships" | "analytics" | "wallet" | "promotions" | "service";
+type Tab = "overview" | "events" | "guests" | "plans" | "bookings" | "sponsorships" | "analytics" | "wallet" | "promotions" | "service";
 
 const tabs: { key: Tab; label: string; icon: React.ReactNode }[] = [
   { key: "overview", label: "Overview", icon: <LayoutDashboard className="h-4 w-4" /> },
   { key: "events", label: "My Events", icon: <CalendarDays className="h-4 w-4" /> },
+  { key: "guests", label: "Guests", icon: <Users className="h-4 w-4" /> },
   { key: "plans", label: "My Plans", icon: <ListChecks className="h-4 w-4" /> },
   { key: "bookings", label: "Bookings", icon: <Inbox className="h-4 w-4" /> },
   { key: "sponsorships", label: "Sponsorships", icon: <Building2 className="h-4 w-4" /> },
@@ -147,6 +149,7 @@ const Dashboard = () => {
           {activeTab === "events" && (
             <DashboardEventsList events={events} loading={loading} onEventsChange={setEvents} />
           )}
+          {activeTab === "guests" && <DashboardGuests />}
           {activeTab === "plans" && <DashboardPlans />}
           {activeTab === "bookings" && <DashboardBookings />}
           {activeTab === "sponsorships" && <DashboardSponsorships />}
