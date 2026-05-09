@@ -303,35 +303,35 @@ const Navbar = () => {
               {/* Main nav */}
               <nav className="flex-1 overflow-y-auto px-2 py-2 space-y-0.5">
                 <button onClick={() => handleNavigate("/events")} className={`w-full text-left ${mobileNavLinkClass(location.pathname === "/events")}`}>
-                  <Search className="h-4 w-4" /> Find Events
+                  <Search className="h-4 w-4 shrink-0" /> <span className="truncate">Find Events</span>
                 </button>
                 <button onClick={() => handleNavigate("/bloov-create")} className={`w-full text-left ${mobileNavLinkClass(location.pathname.startsWith("/bloov-create"))}`}>
-                  <Plus className="h-4 w-4" /> Bloov Create
+                  <Plus className="h-4 w-4 shrink-0" /> <span className="truncate">Bloov Create</span>
                 </button>
                 <button onClick={() => handleNavigate("/bloov-service")} className={`w-full text-left ${mobileNavLinkClass(location.pathname.startsWith("/bloov-service"))}`}>
-                  <Megaphone className="h-4 w-4" /> Bloov Service
+                  <Megaphone className="h-4 w-4 shrink-0" /> <span className="truncate">Bloov Service</span>
                 </button>
                 <button onClick={() => handleNavigate("/event-planner")} className={`w-full text-left ${mobileNavLinkClass(location.pathname.startsWith("/event-planner"))}`}>
-                  <LayoutDashboard className="h-4 w-4" /> Event Planner
+                  <LayoutDashboard className="h-4 w-4 shrink-0" /> <span className="truncate">Event Planner</span>
                 </button>
                 <button onClick={() => handleNavigate("/sponsorships")} className={`w-full text-left ${mobileNavLinkClass(location.pathname.startsWith("/sponsorships"))}`}>
-                  <Megaphone className="h-4 w-4" /> Sponsorships
+                  <Megaphone className="h-4 w-4 shrink-0" /> <span className="truncate">Sponsorships</span>
                 </button>
                 <button onClick={handleCreateEvents} className={`w-full text-left ${mobileNavLinkClass(location.pathname === "/create-event")}`}>
-                  <Plus className="h-4 w-4" /> Create Events
+                  <Plus className="h-4 w-4 shrink-0" /> <span className="truncate">Create Events</span>
                 </button>
                 <button onClick={() => handleNavigate("/my-tickets")} className={`w-full text-left ${mobileNavLinkClass(location.pathname === "/my-tickets")}`}>
-                  <Ticket className="h-4 w-4" /> My Tickets
+                  <Ticket className="h-4 w-4 shrink-0" /> <span className="truncate">My Tickets</span>
                 </button>
 
                 {isHost && (
                   <>
                     <div className="pt-3 pb-1 px-3 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Host</div>
                     <button onClick={() => handleNavigate("/dashboard?tab=wallet")} className={`w-full text-left ${mobileNavLinkClass(false)}`}>
-                      <Wallet className="h-4 w-4" /> Wallet
+                      <Wallet className="h-4 w-4 shrink-0" /> <span className="truncate">Wallet</span>
                     </button>
                     <button onClick={() => handleNavigate("/dashboard?tab=promotions")} className={`w-full text-left ${mobileNavLinkClass(false)}`}>
-                      <Megaphone className="h-4 w-4" /> Promotions
+                      <Megaphone className="h-4 w-4 shrink-0" /> <span className="truncate">Promotions</span>
                     </button>
                   </>
                 )}
@@ -344,7 +344,7 @@ const Navbar = () => {
                     onClick={handleSignOut}
                     className="flex items-center gap-3 w-full min-h-[44px] px-3 rounded-lg text-[15px] font-medium text-destructive hover:bg-destructive/10 transition-colors"
                   >
-                    <LogOut className="h-4 w-4" /> Sign out
+                    <LogOut className="h-4 w-4 shrink-0" /> <span className="truncate">Sign out</span>
                   </button>
                 ) : (
                   <Button className="w-full rounded-full font-semibold h-11" onClick={() => handleNavigate("/signin")}>
