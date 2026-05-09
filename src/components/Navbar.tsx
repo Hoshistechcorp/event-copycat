@@ -21,6 +21,8 @@ const Navbar = () => {
   const { user, loading, signOut } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const { pinnedIds } = useAuraLinks();
+  const pinnedProducts = pinnedIds.map((id) => getProduct(id)).filter(Boolean);
 
   const isHost = user?.user_metadata?.account_type === "host";
 
