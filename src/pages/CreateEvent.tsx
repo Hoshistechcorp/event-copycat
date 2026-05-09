@@ -123,6 +123,7 @@ const CreateEvent = () => {
       if (snap.performers) setPerformers(snap.performers.map((p: any) => ({ ...p, imageFile: null })));
       if (snap.tiers) setTiers(snap.tiers);
       if (snap.promoCodes) setPromoCodes(snap.promoCodes);
+      if (typeof snap.openToSponsorship === "boolean") setOpenToSponsorship(snap.openToSponsorship);
       if (typeof snap.step === "number") setStep(snap.step);
       toast({ title: "Draft restored", description: "Picked up where you left off." });
     } catch {}
