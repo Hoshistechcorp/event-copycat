@@ -6,7 +6,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Loader2, Plus, LayoutDashboard, BarChart3, Wallet, Megaphone, CalendarDays } from "lucide-react";
+import { Loader2, Plus, LayoutDashboard, BarChart3, Wallet, Megaphone, CalendarDays, Store, ArrowRight } from "lucide-react";
 import DashboardOverview from "@/components/dashboard/DashboardOverview";
 import DashboardAnalytics from "@/components/dashboard/DashboardAnalytics";
 import DashboardWallet from "@/components/dashboard/DashboardWallet";
@@ -24,7 +24,7 @@ interface Event {
   created_at: string;
 }
 
-type Tab = "overview" | "events" | "analytics" | "wallet" | "promotions";
+type Tab = "overview" | "events" | "analytics" | "wallet" | "promotions" | "service";
 
 const tabs: { key: Tab; label: string; icon: React.ReactNode }[] = [
   { key: "overview", label: "Overview", icon: <LayoutDashboard className="h-4 w-4" /> },
@@ -32,6 +32,7 @@ const tabs: { key: Tab; label: string; icon: React.ReactNode }[] = [
   { key: "analytics", label: "Analytics", icon: <BarChart3 className="h-4 w-4" /> },
   { key: "wallet", label: "Wallet", icon: <Wallet className="h-4 w-4" /> },
   { key: "promotions", label: "Promote", icon: <Megaphone className="h-4 w-4" /> },
+  { key: "service", label: "Bloov Service", icon: <Store className="h-4 w-4" /> },
 ];
 
 const Dashboard = () => {
