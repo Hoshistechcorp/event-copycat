@@ -1,101 +1,86 @@
+## Goal
 
-# Plan: Event Planner Polish + Sponsorship Marketplace + AURA App Launcher
+Adopt the strongest patterns from the Stitch upload (glassmorphism cards, mobile bottom tab bar, bento dashboard, oversized gradient hero) **without** changing iBloov's brand. We keep Plus Jakarta Sans, blue/amber primary, dark theme. We reject the purple/pink/cyan palette, "Bloov Workspace / Upgrade to VIP" surface, Material Symbols font, and all hardcoded mock numbers.
 
-Three focused workstreams. All visual work uses existing semantic tokens (dark theme, blue/amber primary, Plus Jakarta Sans), spring/fade animations, and global currency via `formatPrice()`.
-
----
-
-## 1. Event Planner Draft Flow (`/event-planner`)
-
-Make the wizard editable, auto-build a timeline preview, and persist drafts to the dashboard.
-
-- **Editable draft panel**: After Step 1, show a sticky "Draft summary" card (event name, type, date, location, guests, budget, vibe). Each field has an inline pencil to jump back to that step. Use `LocationPicker` for global cities.
-- **Auto-generated timeline preview** (Step 4): Compute `scheduled_at` offsets per selected vendor category (Venue −8h, Decor −6h, Catering −3h, Photo −2h, DJ −1h, Planner all-day) and render a vertical timeline with drag-to-reorder. User can edit duration/notes inline before saving.
-- **Save Draft action**: New `status: 'draft'` on `events` rows. Two CTAs at the end:
-  - **Save Draft** → inserts event + assignments with `status='draft'`, toast "Saved to dashboard", routes to `/dashboard?tab=drafts`.
-  - **Generate & Publish Plan** → existing flow (status `planned`, redirects to `/events/:id/timeline`).
-- **Dashboard "My Plans" tab**: New `DashboardPlans.tsx` listing draft + planned events with Resume / Delete / Open Timeline. Added to `Dashboard.tsx` tabs.
-- **Resume editing**: `/event-planner?draft=:id` rehydrates the wizard from the saved row.
-
-**DB**: migration adds `status` column to `events` (`draft|planned|live|done`, default `draft`) if not present, and an index on `(user_id, status)`.
+Work is split into 4 small phases so each is shippable on its own.
 
 ---
 
-## 2. Public Sponsorship Marketplace (`/sponsorships`)
+## Phase 1 — Reusable glass + glow utilities
 
-Upgrade the existing `Sponsorships.tsx` from a basic list into a discoverable, filterable marketplace (no auth required to browse).
+Add design tokens once so every later phase can reuse them.
 
-- **Hero + search bar**: Headline, sub-copy, prominent search input (matches against listing title, event type, brand fit).
-- **Filter rail** (sticky on desktop, drawer on mobile):
-  - Event type (multi-select chips: Concert, Conference, Wedding, Festival, Sports, Workshop, Other)
-  - Location (uses `LocationPicker` — country + city)
-  - Audience size (slider buckets: <100, 100–500, 500–2k, 2k–10k, 10k+)
-  - Budget range (uses `formatPrice` — currency-aware)
-  - Sort: Newest, Highest budget, Largest audience
-- **Result grid**: Card per `sponsorship_listings` row showing event banner, host, location flag, audience badge, budget range, "View opportunity" CTA → existing `/sponsorships/listings/:id`.
-- **Empty/loading states**: skeleton cards + friendly empty message with CTA "Create a listing".
-- **Hooks**: extend `useSponsorships.ts` with `useFilteredListings(filters)` (client-side filter on the existing query — no schema change needed; listing already has event_type, location, audience_size, budget fields per prior migration).
+- Add CSS utilities to `src/index.css`:
+  - `.glass-panel` — translucent fill + 1px border + 20px backdrop blur (themed with `--card` / `--border`, not white).
+  - `.glass-active` — adds a soft inner glow using `--primary` and outer drop shadow using `--accent`.
+  - `.divider-glow` — 1px horizontal gradient that fades to transparent.
+  - `.text-gradient-brand` — `--primary` → `--accent` text gradient (replaces the manual gradient currently inlined in 5+ places).
+  - `.btn-gradient-brand` — primary→accent gradient with subtle inner top highlight.
+- Add a tiny ambient-glow helper component `src/components/ui/AmbientGlow.tsx` (two blurred radial blobs, themed via tokens) to drop into hero sections.
 
----
-
-## 3. AURA "Nebula Menu" — 9-Dot App Launcher
-
-A universal product switcher accessible from the navbar across the app.
-
-### Phase 1 — Trigger & Drawer
-- New `src/components/aura/NebulaMenu.tsx` mounted in `Navbar.tsx` (right side, before avatar). 9-dot `Grid3x3` icon button.
-- Opens a `Popover` (desktop) / `Sheet` bottom-drawer (mobile) with **glassmorphism** panel: `bg-background/60 backdrop-blur-xl border border-white/10`, neon ring glow.
-- Sticky header: "Your iBloov Orbit" + search input that filters tiles in real time.
-
-### Phase 2 — Product Grid
-- Responsive grid: `grid-cols-3 md:grid-cols-3 xl:grid-cols-4`, square aspect tiles.
-- Each tile: vector Lucide icon + product name + hover lift (`hover:-translate-y-1`) + colored glow ring matching brand.
-- Product registry in `src/lib/auraProducts.ts`:
-
-| Product | Color | Icon | Route |
-|---|---|---|---|
-| AuraLink | teal | UserCircle | `/profile` |
-| Bloov | purple | Sparkles | `/events` |
-| TribeMint | pink | Users | `/tribemint` (new stub) |
-| VibesGigs | green | Briefcase | `/vibesgigs` (stub) |
-| Flex-it | emerald | Wallet | `/flexit` (stub) |
-| Sportmate | orange | Trophy | `/sportmate` (stub) |
-| iBloov POV | yellow | Camera | `/pov` (stub) |
-| Spark | blue | Award | `/spark` (stub) |
-| Kia Travel | cyan | Plane | `/kia-travel` (stub) |
-
-Each stub page = simple "Coming soon" landing with brand color hero (placeholders so links don't 404).
-
-### Phase 3 — Linked / Unlinked State
-- New table `aura_product_links` (`user_id`, `product_id`, `linked_at`, `pinned`). RLS: owner-only.
-- Hook `useAuraLinks()` returns `{ links, link(productId), unlink(productId), togglePin(productId) }`.
-- Tile rendering:
-  - **Linked** → full color, click routes to product.
-  - **Unlinked** → desaturated (`grayscale-[60%] opacity-70`) + glowing "Set Up" badge top-right.
-- **Setup modal** (`AuraSetupDialog.tsx`): "Initialize [Product]", lists data shared ("Identity, Flex-it Wallet, Reputation Score"), single "1-Click Sync via AuraLink" button → inserts row into `aura_product_links`, toast, navigate to product.
-- AuraLink itself is implicitly always linked (the identity root).
-
-### Phase 4 — Drag-and-Drop & Pin to Nav
-- Use `@dnd-kit/core` + `@dnd-kit/sortable` (add dependency) to reorder tiles. Order persisted in `aura_product_links.sort_index` (added via same migration).
-- Hover reveals a "Pin to Nav" pin icon. Toggling sets `pinned=true`. Max 3 pinned.
-- `Navbar.tsx` renders pinned product icons inline (between main links and avatar) as quick-access buttons with their brand color.
-
-### Migration
-Single migration adds:
-- `events.status` text column (default `'draft'`)
-- `aura_product_links` table (`id`, `user_id`, `product_id text`, `linked_at`, `pinned bool`, `sort_index int`) with RLS policies (select/insert/update/delete where `auth.uid() = user_id`) and a unique `(user_id, product_id)` constraint.
+No visual change yet beyond what later phases consume.
 
 ---
 
-## Out of Scope
-- Real OAuth/SSO between AURA products (sync is simulated — just a link record).
-- Server-side filtering / full-text search for sponsorships (client-side is enough at current data volume).
-- Building out actual TribeMint / Flex-it / Sportmate features — only stub landing pages so the launcher routes resolve.
+## Phase 2 — Mobile bottom tab bar (biggest UX win)
 
-## Files
+Today on mobile users only have a hamburger. Add a persistent bottom tab bar so the app feels native.
 
-**New**: `src/components/aura/NebulaMenu.tsx`, `src/components/aura/AuraTile.tsx`, `src/components/aura/AuraSetupDialog.tsx`, `src/lib/auraProducts.ts`, `src/hooks/useAuraLinks.ts`, `src/components/dashboard/DashboardPlans.tsx`, `src/pages/aura/{TribeMint,VibesGigs,Flexit,Sportmate,POV,Spark,KiaTravel}.tsx`, plus migration.
+- New component `src/components/MobileTabBar.tsx`, fixed bottom, `lg:hidden`, safe-area padding, glass-panel styling.
+- Tabs (signed-in): **Home** (`/`), **Discover** (`/events`), **Create** (host → `/create-event`, attendee → `/bloov-create`), **Tickets** (`/my-tickets`), **Profile** (`/profile`).
+- Tabs (signed-out): **Home**, **Discover**, **Sign in**, with the Create slot pointing to `/signin`.
+- Active state: filled icon + brand color + small pill background, using Lucide (no Material Symbols).
+- Mounted globally in `src/App.tsx` so it appears on every route.
+- Add `pb-20 lg:pb-0` spacer to page wrappers (or a global `body` rule) so content isn't hidden behind the bar.
+- Keep the hamburger Sheet — it stays for the long tail of links (Sponsorships, Bloov Service, Settings, Sign out). Bottom bar covers the top 5 destinations.
 
-**Edited**: `src/pages/EventPlanner.tsx`, `src/pages/Sponsorships.tsx`, `src/hooks/useSponsorships.ts`, `src/components/Navbar.tsx`, `src/pages/Dashboard.tsx`, `src/App.tsx`.
+---
 
-**Dependency added**: `@dnd-kit/core`, `@dnd-kit/sortable`.
+## Phase 3 — Bento dashboard overview
+
+Restructure the `/dashboard` overview tab from "4 equal stat cards" into a bento grid that leads with one big hero card.
+
+- Replace the current `DashboardOverview` 4-card grid with a 12-col bento on `lg`, single column on mobile:
+  - **8-col hero card** — featured upcoming event (image background, scrim, title, date/venue, "Manage event" CTA). If no upcoming event: a "Create your first event" empty state with the brand gradient CTA.
+  - **4-col stack** — two cards:
+    - "Projected payout" card using *real* data: sum of `ticket_purchases.total_amount` for the host's published events, minus 5% commission, formatted via `formatPrice()`. No fake "+14% MoM" — show real change vs previous 30 days, or hide the delta if no history.
+    - "Top city" card driven by the host's own published events (most common venue city). No fabricated demand percentages.
+- Keep the existing 4 stat cards, but move them *below* the bento as a secondary row.
+- Apply `.glass-panel` styling to all cards.
+- Pinned AURA products row stays where `DashboardHomeHero` already puts it.
+
+No new tables — everything reads from existing `events` and `ticket_purchases`.
+
+---
+
+## Phase 4 — Bloov Create hero refresh
+
+Tighten the `/bloov-create` hero with the upload's poster-style headline, in iBloov colors.
+
+- Replace the current hero block in `src/pages/BloovCreate.tsx`:
+  - Oversized headline: "Create" / `<span class="text-gradient-brand">the vibe.</span>` — `text-6xl md:text-8xl`, tighter tracking, two lines.
+  - Subhead kept short and punchy.
+  - Primary CTA: `.btn-gradient-brand` "Create New Event Idea" (keeps existing route).
+  - Replace inline blurred blob divs with the new `<AmbientGlow />` component.
+- No copy changes referencing nightlife, VIP, or "warehouse" — keep iBloov's global, neutral tone.
+
+---
+
+## Explicitly out of scope
+
+- Purple/pink/cyan palette, Syne / Hanken Grotesk / Space Grotesk fonts, Material Symbols icon font.
+- "Bloov Workspace" sidebar, "Upgrade to VIP" CTA, paid tier surface.
+- Desktop left sidebar (we already have a top Navbar — only one nav model).
+- Any hardcoded mock numbers ($42.8k, +89% Surging Demand, +24 creators, etc.).
+- Renaming `/bloov-service` or building a new "Service Operating System" page — the upload's filename was misleading; the actual content is a Create dashboard.
+
+---
+
+## Technical notes
+
+- All new colors stay HSL via existing `--primary`, `--accent`, `--card`, `--border`, `--background` tokens. No raw hex in components.
+- Reuse `useDbEvents`, the existing `aura_product_links` query in `useAuraLinks`, and `formatPrice()` from `CurrencyContext`.
+- Animations stay on framer-motion with the existing spring presets.
+- Each phase is independently revertable: Phase 1 only adds CSS; Phase 2 only adds one component + one App.tsx mount; Phase 3 edits Dashboard overview only; Phase 4 edits BloovCreate hero only.
+
+Ship Phase 1+2 together (foundation + biggest UX win), then 3, then 4.
