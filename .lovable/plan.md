@@ -1,86 +1,64 @@
-## Goal
+# Phase 5 — Bloov Service refresh
 
-Adopt the strongest patterns from the Stitch upload (glassmorphism cards, mobile bottom tab bar, bento dashboard, oversized gradient hero) **without** changing iBloov's brand. We keep Plus Jakarta Sans, blue/amber primary, dark theme. We reject the purple/pink/cyan palette, "Bloov Workspace / Upgrade to VIP" surface, Material Symbols font, and all hardcoded mock numbers.
+Adopt the strongest editorial patterns from the second Stitch upload into `/bloov-service`, in iBloov's own brand (blue/amber, Plus Jakarta Sans, Lucide). No purple/cyan, no Material Symbols, no fake vendor numbers.
 
-Work is split into 4 small phases so each is shippable on its own.
-
----
-
-## Phase 1 — Reusable glass + glow utilities
-
-Add design tokens once so every later phase can reuse them.
-
-- Add CSS utilities to `src/index.css`:
-  - `.glass-panel` — translucent fill + 1px border + 20px backdrop blur (themed with `--card` / `--border`, not white).
-  - `.glass-active` — adds a soft inner glow using `--primary` and outer drop shadow using `--accent`.
-  - `.divider-glow` — 1px horizontal gradient that fades to transparent.
-  - `.text-gradient-brand` — `--primary` → `--accent` text gradient (replaces the manual gradient currently inlined in 5+ places).
-  - `.btn-gradient-brand` — primary→accent gradient with subtle inner top highlight.
-- Add a tiny ambient-glow helper component `src/components/ui/AmbientGlow.tsx` (two blurred radial blobs, themed via tokens) to drop into hero sections.
-
-No visual change yet beyond what later phases consume.
+Three small, independently revertable changes.
 
 ---
 
-## Phase 2 — Mobile bottom tab bar (biggest UX win)
+## 5A — Search-led hero on `/bloov-service`
 
-Today on mobile users only have a hamburger. Add a persistent bottom tab bar so the app feels native.
+Replace the current "Two ways to plan" intro block with a focused vendor search hero.
 
-- New component `src/components/MobileTabBar.tsx`, fixed bottom, `lg:hidden`, safe-area padding, glass-panel styling.
-- Tabs (signed-in): **Home** (`/`), **Discover** (`/events`), **Create** (host → `/create-event`, attendee → `/bloov-create`), **Tickets** (`/my-tickets`), **Profile** (`/profile`).
-- Tabs (signed-out): **Home**, **Discover**, **Sign in**, with the Create slot pointing to `/signin`.
-- Active state: filled icon + brand color + small pill background, using Lucide (no Material Symbols).
-- Mounted globally in `src/App.tsx` so it appears on every route.
-- Add `pb-20 lg:pb-0` spacer to page wrappers (or a global `body` rule) so content isn't hidden behind the bar.
-- Keep the hamburger Sheet — it stays for the long tail of links (Sponsorships, Bloov Service, Settings, Sign out). Bottom bar covers the top 5 destinations.
+- New layout in `src/pages/BloovService.tsx` hero section:
+  - Eyebrow chip "BLOOV SERVICE" (kept).
+  - Oversized headline: "Curate your" / `<span class="text-gradient-brand">event lineup.</span>` — `text-5xl md:text-7xl`, two lines.
+  - One short subhead.
+  - **Glass search bar** (`.glass-panel`, rounded-2xl, h-16): left search icon, input, inline `Filters` ghost button, `.btn-gradient-brand` Search button. Submits filter the vendor list below in-place (state already exists).
+  - **Category chip row** directly under the search bar — horizontally scrollable on mobile (`overflow-x-auto`, `snap-x`), wraps on `md`. Selecting a chip filters the same vendor list (and clears with an "All" chip). Driven by `useVendorCategories()`.
+  - `<AmbientGlow />` behind the hero (replaces the manual gradient div).
+- The two big "Hire & Book" / "Pre-built" cards move down one section, becoming a smaller secondary "Two ways to plan" row below the vendor grid (still discoverable, no longer the first thing you see).
 
----
+## 5B — Bento "Featured vendors" grid
 
-## Phase 3 — Bento dashboard overview
+Replace the uniform 4-col grid in the "Featured vendors" section with a bento layout, on `lg`. Mobile/tablet stay as the current responsive grid.
 
-Restructure the `/dashboard` overview tab from "4 equal stat cards" into a bento grid that leads with one big hero card.
+- New component `src/components/bloov/VendorBento.tsx`:
+  - 12-col grid, 2 rows on `lg`.
+  - Cell 1 (col-span-6, row-span-2): **Hero vendor card** — top-rated published vendor. Full-bleed `cover_url`, dark scrim, name + tagline + city + `from {formatPrice(base_price)}`, Verified badge if applicable, "View profile" CTA. All from real `useVendors()` data.
+  - Cells 2 & 3 (col-span-3, row-span-1 each): standard `VendorCard` reused.
+  - Cell 4 (col-span-3, row-span-2): **Tall vendor card** — second-highest rated, portrait crop.
+  - Cell 5 (col-span-3, row-span-1): standard `VendorCard`.
+  - Cell 6 (col-span-3, row-span-1): **"Request a custom package"** CTA tile — `.glass-panel` + `.glass-active`, brand gradient icon, headline "Can't find the right fit?", subhead, button routing to `/contact` (existing route).
+- Empty state: if fewer than 5 published vendors, fall back to the current `VendorCard` grid so the bento never renders half-empty.
+- Wire into `BloovService.tsx` "Featured vendors" section — the existing search/category state already filters `vendors`; bento receives filtered list.
 
-- Replace the current `DashboardOverview` 4-card grid with a 12-col bento on `lg`, single column on mobile:
-  - **8-col hero card** — featured upcoming event (image background, scrim, title, date/venue, "Manage event" CTA). If no upcoming event: a "Create your first event" empty state with the brand gradient CTA.
-  - **4-col stack** — two cards:
-    - "Projected payout" card using *real* data: sum of `ticket_purchases.total_amount` for the host's published events, minus 5% commission, formatted via `formatPrice()`. No fake "+14% MoM" — show real change vs previous 30 days, or hide the delta if no history.
-    - "Top city" card driven by the host's own published events (most common venue city). No fabricated demand percentages.
-- Keep the existing 4 stat cards, but move them *below* the bento as a secondary row.
-- Apply `.glass-panel` styling to all cards.
-- Pinned AURA products row stays where `DashboardHomeHero` already puts it.
+## 5C — Reusable `CategoryChipRow`
 
-No new tables — everything reads from existing `events` and `ticket_purchases`.
+Extract the chip row so it can be reused on `/events` later without duplication.
 
----
-
-## Phase 4 — Bloov Create hero refresh
-
-Tighten the `/bloov-create` hero with the upload's poster-style headline, in iBloov colors.
-
-- Replace the current hero block in `src/pages/BloovCreate.tsx`:
-  - Oversized headline: "Create" / `<span class="text-gradient-brand">the vibe.</span>` — `text-6xl md:text-8xl`, tighter tracking, two lines.
-  - Subhead kept short and punchy.
-  - Primary CTA: `.btn-gradient-brand` "Create New Event Idea" (keeps existing route).
-  - Replace inline blurred blob divs with the new `<AmbientGlow />` component.
-- No copy changes referencing nightlife, VIP, or "warehouse" — keep iBloov's global, neutral tone.
+- New component `src/components/bloov/CategoryChipRow.tsx`:
+  - Props: `categories`, `activeSlug`, `onSelect(slug | null)`.
+  - Renders an "All" chip + one chip per category. Active chip uses `.glass-active` + `text-primary`; inactive uses `.glass-panel` + `text-muted-foreground`.
+  - Horizontal scroll with snap on mobile, wrap on `md+`.
+  - Lucide icon per category from `cat.icon_name` (same lookup pattern as `CategoryGrid`).
+- Used by 5A in the hero. (Not wired into `/events` in this phase — extraction only, so a future phase can drop it in.)
 
 ---
 
-## Explicitly out of scope
+## Out of scope (same rejections as prior phases)
 
-- Purple/pink/cyan palette, Syne / Hanken Grotesk / Space Grotesk fonts, Material Symbols icon font.
-- "Bloov Workspace" sidebar, "Upgrade to VIP" CTA, paid tier surface.
-- Desktop left sidebar (we already have a top Navbar — only one nav model).
-- Any hardcoded mock numbers ($42.8k, +89% Surging Demand, +24 creators, etc.).
-- Renaming `/bloov-service` or building a new "Service Operating System" page — the upload's filename was misleading; the actual content is a Create dashboard.
+- Purple / pink / cyan palette, Syne / Hanken Grotesk, Material Symbols.
+- "VIP concierge", "Obsidian Loft", "$5k/night", 4.9★ counts, or any hardcoded vendor data.
+- New tables, schema changes, or edits to `BloovServiceCategory` / `VendorProfile` detail pages.
+- Touching `/events` filter UI (chip row is extracted but not yet adopted there).
 
 ---
 
 ## Technical notes
 
-- All new colors stay HSL via existing `--primary`, `--accent`, `--card`, `--border`, `--background` tokens. No raw hex in components.
-- Reuse `useDbEvents`, the existing `aura_product_links` query in `useAuraLinks`, and `formatPrice()` from `CurrencyContext`.
-- Animations stay on framer-motion with the existing spring presets.
-- Each phase is independently revertable: Phase 1 only adds CSS; Phase 2 only adds one component + one App.tsx mount; Phase 3 edits Dashboard overview only; Phase 4 edits BloovCreate hero only.
-
-Ship Phase 1+2 together (foundation + biggest UX win), then 3, then 4.
+- All styling via existing tokens + Phase 1 utilities (`.glass-panel`, `.glass-active`, `.text-gradient-brand`, `.btn-gradient-brand`, `<AmbientGlow />`). No raw hex.
+- Data sources unchanged: `useVendorCategories()`, `useVendors()`, `formatPrice()` from `CurrencyContext`.
+- Filtering logic in `BloovService.tsx` extends current `search` state with an `activeCategory` slug; both apply to the same `filteredVendors` array consumed by the bento.
+- Animations stay on framer-motion with existing spring presets.
+- Files touched: `src/pages/BloovService.tsx` (edit). Files added: `src/components/bloov/VendorBento.tsx`, `src/components/bloov/CategoryChipRow.tsx`. No DB, no routes, no auth changes.
