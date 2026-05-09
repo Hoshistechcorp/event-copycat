@@ -39,6 +39,7 @@ import BrandProfile from "./pages/BrandProfile";
 import BrandSetup from "./pages/BrandSetup";
 import EventPlanner from "./pages/EventPlanner";
 import AuraStub from "./pages/AuraStub";
+import MobileTabBar from "./components/MobileTabBar";
 import { getProduct } from "./lib/auraProducts";
 
 const queryClient = new QueryClient();
