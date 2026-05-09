@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -7,14 +7,19 @@ import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { currencies } from "@/contexts/CurrencyContext";
+import { toast } from "@/hooks/use-toast";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import EventSettingsStep, { type EventSettings, defaultSettings, type InviteRow } from "@/components/event-create/EventSettingsStep";
 import LocationStep, { type LocationFields, defaultLocation } from "@/components/event-create/LocationStep";
 import PromoInvitesStep, { type PromoCode } from "@/components/event-create/PromoInvitesStep";
 import {
-  CalendarDays, MapPin, Plus, Trash2, Loader2, ImagePlus,
-  Ticket, Type, Music, ChevronLeft, ChevronRight, Check, Users, Clock,
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
+  CalendarDays, MapPin, Plus, Trash2, Loader2, ImagePlus, Save,
+  Ticket, Type, Music, ChevronLeft, ChevronRight, Check, Users, Clock, FlaskConical,
 } from "lucide-react";
 
 interface TicketTier {
@@ -72,7 +77,61 @@ const CreateEvent = () => {
   const [promoCodes, setPromoCodes] = useState<PromoCode[]>([]);
 
   const [submitting, setSubmitting] = useState(false);
+  const [submitMode, setSubmitMode] = useState<"draft" | "published" | "test" | null>(null);
   const [error, setError] = useState("");
+  const [restoreOpen, setRestoreOpen] = useState(false);
+  const draftLoadedRef = useRef(false);
+
+  const draftKey = user ? `ibloov_draft_event_${user.id}` : null;
+
+  // Restore prompt on mount
+  useEffect(() => {
+    if (!draftKey || draftLoadedRef.current) return;
+    const raw = localStorage.getItem(draftKey);
+    if (raw) setRestoreOpen(true);
+    draftLoadedRef.current = true;
+  }, [draftKey]);
+
+  // Auto-save (debounced) — text/JSON state only, not File blobs
+  useEffect(() => {
+    if (!draftKey) return;
+    const t = setTimeout(() => {
+      const snap = {
+        step, title, description, category, imagePreview,
+        date, endDate, location, settings, invites, performers: performers.map((p) => ({ name: p.name, role: p.role, imagePreview: p.imagePreview })),
+        tiers, promoCodes, savedAt: new Date().toISOString(),
+      };
+      try { localStorage.setItem(draftKey, JSON.stringify(snap)); } catch {}
+    }, 600);
+    return () => clearTimeout(t);
+  }, [draftKey, step, title, description, category, imagePreview, date, endDate, location, settings, invites, performers, tiers, promoCodes]);
+
+  const restoreDraft = () => {
+    if (!draftKey) return;
+    try {
+      const snap = JSON.parse(localStorage.getItem(draftKey) || "{}");
+      if (snap.title !== undefined) setTitle(snap.title);
+      if (snap.description !== undefined) setDescription(snap.description);
+      if (snap.category) setCategory(snap.category);
+      if (snap.imagePreview) setImagePreview(snap.imagePreview);
+      if (snap.date) setDate(snap.date);
+      if (snap.endDate) setEndDate(snap.endDate);
+      if (snap.location) setLocation(snap.location);
+      if (snap.settings) setSettings(snap.settings);
+      if (snap.invites) setInvites(snap.invites);
+      if (snap.performers) setPerformers(snap.performers.map((p: any) => ({ ...p, imageFile: null })));
+      if (snap.tiers) setTiers(snap.tiers);
+      if (snap.promoCodes) setPromoCodes(snap.promoCodes);
+      if (typeof snap.step === "number") setStep(snap.step);
+      toast({ title: "Draft restored", description: "Picked up where you left off." });
+    } catch {}
+    setRestoreOpen(false);
+  };
+
+  const discardDraft = () => {
+    if (draftKey) localStorage.removeItem(draftKey);
+    setRestoreOpen(false);
+  };
 
   if (authLoading) return <div className="min-h-screen flex items-center justify-center bg-background"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
   if (!user) { navigate("/signin"); return null; }
