@@ -61,6 +61,33 @@ export const useAddAssignment = () => {
   });
 };
 
+export const useUpdateAssignment = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({
+      id,
+      ...updates
+    }: {
+      id: string;
+      scheduled_at?: string | null;
+      duration_minutes?: number;
+      notes?: string | null;
+      status?: string;
+      sort_order?: number;
+    }) => {
+      const { data, error } = await supabase
+        .from("event_vendor_assignments")
+        .update(updates)
+        .eq("id", id)
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["event-assignments"] }),
+  });
+};
+
 export const useRemoveAssignment = () => {
   const qc = useQueryClient();
   return useMutation({
