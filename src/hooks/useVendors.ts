@@ -27,6 +27,12 @@ export interface Vendor {
   review_count: number;
   is_verified: boolean;
   is_published: boolean;
+  email: string | null;
+  phone: string | null;
+  website: string | null;
+  instagram_url: string | null;
+  tiktok_url: string | null;
+  twitter_url: string | null;
 }
 
 export const useVendorCategories = () =>
