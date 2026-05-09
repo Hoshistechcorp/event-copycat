@@ -51,7 +51,7 @@ const Navbar = () => {
           <a href="/" className="flex items-center gap-2">
             <img src={mainLogo} alt="iBLOOV logo" className="h-5 w-auto" />
           </a>
-          <div className="hidden md:flex items-center gap-6">
+          <div className="hidden lg:flex items-center gap-5 xl:gap-6">
             <a href="/events" className={navLinkClass(location.pathname === "/events")}>
               Find Events
             </a>
@@ -79,7 +79,7 @@ const Navbar = () => {
           </div>
         </div>
 
-        <div className="hidden md:flex items-center flex-1 max-w-md mx-8">
+        <div className="hidden lg:flex items-center flex-1 max-w-md mx-6 xl:mx-8">
           <div className="relative w-full">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <input
@@ -93,7 +93,7 @@ const Navbar = () => {
         <div className="flex items-center gap-2 md:gap-3">
           {/* Pinned AURA products */}
           {user && pinnedProducts.length > 0 && (
-            <div className="hidden md:flex items-center gap-1 pr-1 border-r border-border mr-1">
+            <div className="hidden lg:flex items-center gap-1 pr-1 border-r border-border mr-1">
               {pinnedProducts.map((p) => {
                 const Icon = p!.icon;
                 return (
@@ -114,7 +114,7 @@ const Navbar = () => {
           {user && <NebulaMenu />}
 
           {!isHost && (
-            <a href="/my-tickets" className={`hidden md:inline-flex ${navLinkClass(location.pathname === "/my-tickets")}`}>
+            <a href="/my-tickets" className={`hidden lg:inline-flex ${navLinkClass(location.pathname === "/my-tickets")}`}>
               Find my tickets
             </a>
           )}
@@ -126,7 +126,7 @@ const Navbar = () => {
                   {isHost && (
                     <Button
                       size="sm"
-                      className="hidden md:inline-flex rounded-full px-4 font-semibold text-xs gap-1.5"
+                      className="hidden lg:inline-flex rounded-full px-4 font-semibold text-xs gap-1.5"
                       onClick={() => navigate("/create-event")}
                     >
                       <Plus className="h-3.5 w-3.5" /> New Event
@@ -134,7 +134,7 @@ const Navbar = () => {
                   )}
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="hidden md:flex items-center gap-2 rounded-full px-2 h-9">
+                      <Button variant="ghost" className="hidden lg:flex items-center gap-2 rounded-full px-2 h-9">
                         <Avatar className="h-7 w-7">
                           <AvatarFallback className="text-[10px] font-bold bg-primary/10 text-primary">
                             {initials}
@@ -189,7 +189,7 @@ const Navbar = () => {
                   </DropdownMenu>
                 </>
               ) : (
-                <Button size="sm" className="hidden md:inline-flex rounded-full px-5 font-semibold" asChild>
+                <Button size="sm" className="hidden lg:inline-flex rounded-full px-5 font-semibold" asChild>
                   <a href="/signin">Sign in</a>
                 </Button>
               )}
@@ -199,7 +199,7 @@ const Navbar = () => {
           {/* Mobile hamburger */}
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="md:hidden">
+              <Button variant="ghost" size="icon" className="lg:hidden">
                 <Menu className="h-5 w-5" />
                 <span className="sr-only">Open menu</span>
               </Button>
