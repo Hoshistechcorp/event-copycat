@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Search, Sparkles, Heart, Bot, Store, ArrowRight, Layers, SlidersHorizontal } from "lucide-react";
+import { Search, Sparkles, Heart, Bot, Store, ArrowRight, Layers } from "lucide-react";
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
@@ -11,11 +11,16 @@ import VendorBento from "@/components/bloov/VendorBento";
 import CategoryChipRow from "@/components/bloov/CategoryChipRow";
 import PackageCard from "@/components/bloov/PackageCard";
 import AmbientGlow from "@/components/ui/AmbientGlow";
+import VendorFiltersPopover, {
+  defaultVendorFilters,
+  type VendorFilters,
+} from "@/components/bloov/VendorFiltersPopover";
 
 const BloovService = () => {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [filters, setFilters] = useState<VendorFilters>(defaultVendorFilters);
   const { data: categories = [] } = useVendorCategories();
   const { data: vendors = [] } = useVendors();
   const { data: packages = [] } = usePackages();
@@ -37,8 +42,12 @@ const BloovService = () => {
         `${v.business_name} ${v.tagline ?? ""} ${v.city ?? ""}`.toLowerCase().includes(q),
       );
     }
+    if (filters.city) list = list.filter((v) => v.city === filters.city);
+    if (filters.minRating > 0) list = list.filter((v) => v.rating >= filters.minRating);
+    if (filters.maxPrice !== null)
+      list = list.filter((v) => Number(v.base_price) <= (filters.maxPrice as number));
     return list;
-  }, [vendors, search, activeCategory, categoryIdBySlug]);
+  }, [vendors, search, activeCategory, categoryIdBySlug, filters]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -72,14 +81,11 @@ const BloovService = () => {
                   className="w-full h-12 px-3 bg-transparent text-foreground placeholder:text-muted-foreground outline-none text-sm md:text-base"
                 />
               </div>
-              <Button
-                variant="ghost"
-                className="hidden sm:inline-flex h-12 rounded-xl font-bold text-muted-foreground"
-                onClick={() => setActiveCategory(null)}
-              >
-                <SlidersHorizontal className="h-4 w-4 mr-1.5" />
-                Filters
-              </Button>
+              <VendorFiltersPopover
+                vendors={vendors}
+                filters={filters}
+                onChange={setFilters}
+              />
               <Button className="btn-gradient-brand h-12 rounded-xl font-bold px-5 text-primary-foreground border-0">
                 Search
               </Button>
