@@ -416,6 +416,7 @@ export type Database = {
           is_paid: boolean
           location_reveal: string
           online_url: string | null
+          open_to_sponsorship: boolean
           qr_secret: string
           requires_rsvp: boolean
           reveal_hours_before: number
@@ -441,6 +442,7 @@ export type Database = {
           is_paid?: boolean
           location_reveal?: string
           online_url?: string | null
+          open_to_sponsorship?: boolean
           qr_secret?: string
           requires_rsvp?: boolean
           reveal_hours_before?: number
@@ -466,6 +468,7 @@ export type Database = {
           is_paid?: boolean
           location_reveal?: string
           online_url?: string | null
+          open_to_sponsorship?: boolean
           qr_secret?: string
           requires_rsvp?: boolean
           reveal_hours_before?: number
@@ -855,6 +858,7 @@ export type Database = {
           name: string
           price: number
           quantity: number
+          test_fee_percent: number
         }
         Insert: {
           created_at?: string
@@ -864,6 +868,7 @@ export type Database = {
           name: string
           price?: number
           quantity?: number
+          test_fee_percent?: number
         }
         Update: {
           created_at?: string
@@ -873,6 +878,7 @@ export type Database = {
           name?: string
           price?: number
           quantity?: number
+          test_fee_percent?: number
         }
         Relationships: [
           {

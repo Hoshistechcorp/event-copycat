@@ -27,6 +27,7 @@ interface TicketTier {
   price: string;
   quantity: string;
   description: string;
+  test_fee_percent: string;
 }
 interface Performer {
   name: string;
@@ -72,10 +73,10 @@ const CreateEvent = () => {
 
   // Step 4
   const [tiers, setTiers] = useState<TicketTier[]>([
-    { name: "General Admission", price: "0", quantity: "100", description: "" },
+    { name: "General Admission", price: "0", quantity: "100", description: "", test_fee_percent: "0" },
   ]);
   const [promoCodes, setPromoCodes] = useState<PromoCode[]>([]);
-
+  const [openToSponsorship, setOpenToSponsorship] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitMode, setSubmitMode] = useState<"draft" | "published" | "test" | null>(null);
   const [error, setError] = useState("");
@@ -99,7 +100,7 @@ const CreateEvent = () => {
       const snap = {
         step, title, description, category, imagePreview,
         date, endDate, location, settings, invites, performers: performers.map((p) => ({ name: p.name, role: p.role, imagePreview: p.imagePreview })),
-        tiers, promoCodes, savedAt: new Date().toISOString(),
+        tiers, promoCodes, openToSponsorship, savedAt: new Date().toISOString(),
       };
       try { localStorage.setItem(draftKey, JSON.stringify(snap)); } catch {}
     }, 600);
@@ -122,6 +123,7 @@ const CreateEvent = () => {
       if (snap.performers) setPerformers(snap.performers.map((p: any) => ({ ...p, imageFile: null })));
       if (snap.tiers) setTiers(snap.tiers);
       if (snap.promoCodes) setPromoCodes(snap.promoCodes);
+      if (typeof snap.openToSponsorship === "boolean") setOpenToSponsorship(snap.openToSponsorship);
       if (typeof snap.step === "number") setStep(snap.step);
       toast({ title: "Draft restored", description: "Picked up where you left off." });
     } catch {}
@@ -163,7 +165,7 @@ const CreateEvent = () => {
     const file = e.target.files?.[0]; if (file) { const u = [...performers]; u[i] = { ...u[i], imageFile: file, imagePreview: URL.createObjectURL(file) }; setPerformers(u); }
   };
 
-  const addTier = () => { if (tiers.length >= 5) return; setTiers([...tiers, { name: "", price: settings.is_paid ? "10" : "0", quantity: "50", description: "" }]); };
+  const addTier = () => { if (tiers.length >= 5) return; setTiers([...tiers, { name: "", price: settings.is_paid ? "10" : "0", quantity: "50", description: "", test_fee_percent: "0" }]); };
   const removeTier = (i: number) => { if (tiers.length <= 1) return; setTiers(tiers.filter((_, idx) => idx !== i)); };
   const updateTier = (i: number, field: keyof TicketTier, value: string) => { const u = [...tiers]; u[i] = { ...u[i], [field]: value }; setTiers(u); };
 
@@ -206,6 +208,9 @@ const CreateEvent = () => {
     const visibility = isTest ? "unlisted" : settings.visibility;
     const finalDate = date || new Date(Date.now() + 7 * 24 * 3600 * 1000).toISOString();
 
+    // If any tier has a test fee %, the test run becomes paid (creator collects fraction of normal price)
+    const testHasPaidTiers = isTest && tiers.some((t) => (parseFloat(t.test_fee_percent) || 0) > 0 && (parseFloat(t.price) || 0) > 0);
+
     const { data: eventData, error: evErr } = await supabase.from("events").insert({
       host_id: user.id,
       title: isTest ? `[Test Run] ${title.trim()}` : title.trim(),
@@ -222,24 +227,44 @@ const CreateEvent = () => {
       location_reveal: location.location_reveal,
       reveal_hours_before: location.reveal_hours_before,
       visibility,
-      requires_rsvp: isTest ? true : settings.requires_rsvp,
-      is_paid: isTest ? false : settings.is_paid,
+      requires_rsvp: isTest && !testHasPaidTiers ? true : settings.requires_rsvp,
+      is_paid: isTest ? testHasPaidTiers : settings.is_paid,
       currency: settings.currency,
-    }).select("id").single();
+      open_to_sponsorship: openToSponsorship,
+    } as any).select("id").single();
 
     if (evErr || !eventData) { setError(evErr?.message || "Failed to create event."); setSubmitting(false); setSubmitMode(null); return; }
     const eventId = eventData.id;
 
-    // Tickets — Test runs use a single free "Interest" tier
-    const tierInserts = isTest
-      ? [{ event_id: eventId, name: "Interested", price: 0, quantity: 1000, description: "Tap RSVP if you'd come to this event." }]
-      : tiers.map((t) => ({
+    // Tickets
+    let tierInserts: any[];
+    if (isTest && !testHasPaidTiers) {
+      tierInserts = [{ event_id: eventId, name: "Interested", price: 0, quantity: 1000, description: "Tap RSVP if you'd come to this event.", test_fee_percent: 0 }];
+    } else if (isTest) {
+      // Test run with partial fee per tier
+      tierInserts = tiers.map((t) => {
+        const pct = Math.min(100, Math.max(0, parseFloat(t.test_fee_percent) || 0));
+        const fullPrice = parseFloat(t.price) || 0;
+        const testPrice = +(fullPrice * (pct / 100)).toFixed(2);
+        return {
           event_id: eventId,
-          name: t.name.trim(),
-          price: settings.is_paid ? (parseFloat(t.price) || 0) : 0,
+          name: `${t.name.trim()} (Test ${pct}%)`,
+          price: testPrice,
           quantity: parseInt(t.quantity) || 100,
-          description: t.description.trim() || null,
-        }));
+          description: t.description.trim() || `Test-run pricing — ${pct}% of full price`,
+          test_fee_percent: pct,
+        };
+      });
+    } else {
+      tierInserts = tiers.map((t) => ({
+        event_id: eventId,
+        name: t.name.trim(),
+        price: settings.is_paid ? (parseFloat(t.price) || 0) : 0,
+        quantity: parseInt(t.quantity) || 100,
+        description: t.description.trim() || null,
+        test_fee_percent: 0,
+      }));
+    }
     await supabase.from("ticket_tiers").insert(tierInserts);
 
     // Performers
@@ -429,9 +454,36 @@ const CreateEvent = () => {
                       <Input type="number" min="1" value={tier.quantity} onChange={(e) => updateTier(i, "quantity", e.target.value)} placeholder="Qty" className="rounded-xl h-10 bg-secondary border-border text-sm" />
                     </div>
                     <Input value={tier.description} onChange={(e) => updateTier(i, "description", e.target.value)} placeholder="What's included? (comma separated)" className="rounded-xl h-10 bg-secondary border-border text-sm" maxLength={300} />
+                    {settings.is_paid && parseFloat(tier.price) > 0 && (
+                      <div className="flex items-center gap-3 p-3 rounded-xl bg-amber-500/5 border border-amber-500/20">
+                        <FlaskConical className="h-4 w-4 text-amber-600 shrink-0" />
+                        <div className="flex-1">
+                          <label className="text-xs font-semibold text-amber-700 block">Test-run fee %</label>
+                          <p className="text-[10px] text-muted-foreground">Charged when you launch a Test Run. 0 = free RSVP.</p>
+                        </div>
+                        <div className="relative w-24">
+                          <Input type="number" min="0" max="100" step="1" value={tier.test_fee_percent} onChange={(e) => updateTier(i, "test_fee_percent", e.target.value)} className="rounded-xl pr-7 h-9 bg-background border-border text-sm" />
+                          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-muted-foreground">%</span>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
+            </div>
+
+            <div className="p-4 rounded-2xl border border-border bg-card flex items-start gap-3">
+              <input
+                id="sponsorship-toggle"
+                type="checkbox"
+                checked={openToSponsorship}
+                onChange={(e) => setOpenToSponsorship(e.target.checked)}
+                className="mt-1 h-4 w-4 rounded accent-primary"
+              />
+              <label htmlFor="sponsorship-toggle" className="flex-1 cursor-pointer">
+                <span className="text-sm font-semibold block">Open to sponsorship & brand deals</span>
+                <span className="text-xs text-muted-foreground">List this event to brands looking to sponsor — works for Test Runs and live events.</span>
+              </label>
             </div>
 
             <PromoInvitesStep
@@ -526,7 +578,7 @@ const CreateEvent = () => {
 
           {isLastStep && (
             <p className="text-[11px] text-muted-foreground text-center mt-4">
-              <span className="font-semibold text-amber-600">Test Run</span> publishes a free, unlisted event so only people with your link see it. Use it to validate demand before going live.
+              <span className="font-semibold text-amber-600">Test Run</span> publishes an unlisted event so only people with your link see it. Set a Test-run fee % per tier to collect a portion of the ticket price, or leave it at 0 for a free RSVP-only validation.
             </p>
           )}
         </motion.div>
