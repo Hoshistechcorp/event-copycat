@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import {
-  Loader2, Plus, Pencil, Trash2, Eye, CalendarDays, MapPin, MoreVertical,
+  Loader2, Plus, Pencil, Trash2, Eye, CalendarDays, MapPin, MoreVertical, ListChecks,
 } from "lucide-react";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
@@ -167,6 +167,9 @@ const DashboardEventsList = ({ events, loading, onEventsChange }: DashboardEvent
                   <DropdownMenuContent align="end" className="rounded-xl w-44">
                     <DropdownMenuItem onClick={() => navigate(`/edit-event/${event.id}`)} className="text-xs cursor-pointer">
                       <Pencil className="h-3.5 w-3.5 mr-2" /> Edit Event
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate(`/events/${event.id}/timeline`)} className="text-xs cursor-pointer">
+                      <ListChecks className="h-3.5 w-3.5 mr-2" /> Vendor Timeline
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => toggleStatus(event)} className="text-xs cursor-pointer">
                       <Eye className="h-3.5 w-3.5 mr-2" />
