@@ -14,6 +14,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 interface BankAccount {
   id: string;
@@ -50,6 +51,8 @@ const DashboardWallet = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { formatPrice, currency } = useCurrency();
+  const fmt = (n: number) => formatPrice(String(n));
 
   const [bankAccounts, setBankAccounts] = useState<BankAccount[]>([]);
   const [withdrawals, setWithdrawals] = useState<Withdrawal[]>([]);
@@ -177,7 +180,7 @@ const DashboardWallet = () => {
       toast({ title: "Withdrawal failed", description: error.message, variant: "destructive" });
     } else if (data) {
       setWithdrawals([data as unknown as Withdrawal, ...withdrawals]);
-      toast({ title: "Withdrawal submitted", description: `₦${amount.toLocaleString()} will be sent to your bank account.` });
+      toast({ title: "Withdrawal submitted", description: `${fmt(amount)} will be sent to your bank account.` });
       setModalOpen(false);
     }
     setProcessing(false);
@@ -205,8 +208,13 @@ const DashboardWallet = () => {
   return (
     <div className="space-y-6">
       {/* Top row: title + withdraw button */}
-      <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold text-foreground">Wallet</h2>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div>
+          <h2 className="text-xl font-bold text-foreground">Wallet</h2>
+          <p className="text-xs text-muted-foreground mt-1">
+            Balances shown in <span className="font-bold text-foreground">{currency.code}</span>. Payouts via Stripe Connect, Paystack, Flutterwave & Wise — switch in profile.
+          </p>
+        </div>
         <Button className="rounded-xl font-bold text-sm" onClick={openWithdrawModal}>
           <ArrowUpRight className="h-4 w-4 mr-2" />
           Withdraw Funds
@@ -219,20 +227,20 @@ const DashboardWallet = () => {
           {
             icon: Wallet,
             label: "Available Balance",
-            value: `₦${availableBalance.toLocaleString()}`,
+            value: `${fmt(availableBalance)}`,
             sub: "After 5% platform commission",
             primary: true,
           },
           {
             icon: Clock,
             label: "Pending",
-            value: `₦${pendingWithdrawals.toLocaleString()}`,
+            value: `${fmt(pendingWithdrawals)}`,
             sub: "Processing in 2-3 days",
           },
           {
             icon: CreditCard,
             label: "Total Earned",
-            value: `₦${totalEarned.toLocaleString()}`,
+            value: `${fmt(totalEarned)}`,
             sub: "All time earnings",
           },
         ].map((card, i) => (
@@ -263,15 +271,15 @@ const DashboardWallet = () => {
           <div className="space-y-2 text-xs">
             <div className="flex justify-between py-1.5 border-b border-border">
               <span className="text-muted-foreground">Gross Earnings</span>
-              <span className="font-bold text-foreground">₦{totalEarned.toLocaleString()}</span>
+              <span className="font-bold text-foreground">{fmt(totalEarned)}</span>
             </div>
             <div className="flex justify-between py-1.5 border-b border-border">
               <span className="text-muted-foreground">Platform Commission (5%)</span>
-              <span className="font-bold text-destructive">-₦{commission.toLocaleString()}</span>
+              <span className="font-bold text-destructive">-{fmt(commission)}</span>
             </div>
             <div className="flex justify-between py-1.5">
               <span className="text-muted-foreground font-semibold">Available to Withdraw</span>
-              <span className="font-extrabold text-foreground">₦{availableBalance.toLocaleString()}</span>
+              <span className="font-extrabold text-foreground">{fmt(availableBalance)}</span>
             </div>
           </div>
         </CardContent>
@@ -364,7 +372,7 @@ const DashboardWallet = () => {
                       {format(new Date(t.date), "MMM d, yyyy")}
                     </TableCell>
                     <TableCell className={`text-xs font-bold text-right ${t.type === "sale" ? "text-green-600" : "text-destructive"}`}>
-                      {t.type === "sale" ? "+" : "-"}₦{t.amount.toLocaleString()}
+                      {t.type === "sale" ? "+" : "-"}{fmt(t.amount)}
                     </TableCell>
                     <TableCell className="text-right">
                       <Badge variant="outline" className={`text-[10px] capitalize ${statusColor(t.status)}`}>
@@ -395,7 +403,7 @@ const DashboardWallet = () => {
           {step === "amount" ? (
             <div className="space-y-4">
               <div>
-                <Label className="text-xs font-semibold mb-1.5">Amount (₦)</Label>
+                <Label className="text-xs font-semibold mb-1.5">{`Amount (${currency.code})`}</Label>
                 <Input
                   type="number"
                   placeholder="Enter amount"
@@ -478,7 +486,7 @@ const DashboardWallet = () => {
               <div className="p-4 rounded-xl bg-secondary/50 space-y-2">
                 <div className="flex justify-between text-xs">
                   <span className="text-muted-foreground">Amount</span>
-                  <span className="font-bold text-foreground">₦{parseFloat(withdrawAmount).toLocaleString()}</span>
+                  <span className="font-bold text-foreground">{fmt(parseFloat(withdrawAmount))}</span>
                 </div>
                 <div className="flex justify-between text-xs">
                   <span className="text-muted-foreground">Bank</span>

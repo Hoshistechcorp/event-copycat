@@ -7,13 +7,21 @@ export interface Currency {
   rate: number; // rate relative to NGN (base)
 }
 
+// Rates are relative to NGN (the database storage base). Display currency is user-selectable.
 export const currencies: Currency[] = [
-  { code: "NGN", symbol: "₦", name: "Nigerian Naira", rate: 1 },
   { code: "USD", symbol: "$", name: "US Dollar", rate: 0.00062 },
-  { code: "GBP", symbol: "£", name: "British Pound", rate: 0.00049 },
   { code: "EUR", symbol: "€", name: "Euro", rate: 0.00057 },
+  { code: "GBP", symbol: "£", name: "British Pound", rate: 0.00049 },
+  { code: "CAD", symbol: "C$", name: "Canadian Dollar", rate: 0.00086 },
+  { code: "AUD", symbol: "A$", name: "Australian Dollar", rate: 0.00094 },
+  { code: "JPY", symbol: "¥", name: "Japanese Yen", rate: 0.094 },
+  { code: "AED", symbol: "د.إ", name: "UAE Dirham", rate: 0.0023 },
+  { code: "INR", symbol: "₹", name: "Indian Rupee", rate: 0.052 },
+  { code: "ZAR", symbol: "R", name: "South African Rand", rate: 0.011 },
+  { code: "BRL", symbol: "R$", name: "Brazilian Real", rate: 0.0034 },
   { code: "GHS", symbol: "GH₵", name: "Ghanaian Cedi", rate: 0.0093 },
   { code: "KES", symbol: "KSh", name: "Kenyan Shilling", rate: 0.08 },
+  { code: "NGN", symbol: "₦", name: "Nigerian Naira", rate: 1 },
 ];
 
 interface CurrencyContextType {
@@ -26,7 +34,16 @@ interface CurrencyContextType {
 const CurrencyContext = createContext<CurrencyContextType | undefined>(undefined);
 
 export const CurrencyProvider = ({ children }: { children: ReactNode }) => {
-  const [currency, setCurrency] = useState<Currency>(currencies[0]);
+  const [currency, setCurrency] = useState<Currency>(() => {
+    if (typeof window === "undefined") return currencies[0];
+    const saved = localStorage.getItem("ibloov_currency");
+    return currencies.find((c) => c.code === saved) ?? currencies[0];
+  });
+
+  const setAndPersist = (c: Currency) => {
+    setCurrency(c);
+    if (typeof window !== "undefined") localStorage.setItem("ibloov_currency", c.code);
+  };
 
   const convertAmount = (ngnAmount: number): number => {
     return Math.round(ngnAmount * currency.rate * 100) / 100;
@@ -42,7 +59,7 @@ export const CurrencyProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <CurrencyContext.Provider value={{ currency, setCurrency, formatPrice, convertAmount }}>
+    <CurrencyContext.Provider value={{ currency, setCurrency: setAndPersist, formatPrice, convertAmount }}>
       {children}
     </CurrencyContext.Provider>
   );

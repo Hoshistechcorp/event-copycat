@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useCurrency } from "@/contexts/CurrencyContext";
 import { motion } from "framer-motion";
 import { TrendingUp, Ticket, Eye, DollarSign } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
@@ -43,6 +44,7 @@ interface DashboardOverviewProps {
 
 const DashboardOverview = ({ totalEvents, publishedEvents }: DashboardOverviewProps) => {
   const { user } = useAuth();
+  const { formatPrice } = useCurrency();
   const [totalRevenue, setTotalRevenue] = useState(0);
   const [ticketsSold, setTicketsSold] = useState(0);
 
@@ -61,7 +63,7 @@ const DashboardOverview = ({ totalEvents, publishedEvents }: DashboardOverviewPr
   }, [user]);
 
   const stats = [
-    { label: "Total Revenue", value: `₦${totalRevenue.toLocaleString()}`, change: "+12%", icon: <DollarSign className="h-4 w-4 text-primary" /> },
+    { label: "Total Revenue", value: `${formatPrice(String(totalRevenue))}`, change: "+12%", icon: <DollarSign className="h-4 w-4 text-primary" /> },
     { label: "Tickets Sold", value: String(ticketsSold), change: "+8%", icon: <Ticket className="h-4 w-4 text-primary" /> },
     { label: "Total Views", value: "1,247", change: "+23%", icon: <Eye className="h-4 w-4 text-primary" /> },
     { label: "Active Events", value: String(publishedEvents), change: `${totalEvents} total`, icon: <TrendingUp className="h-4 w-4 text-primary" /> },

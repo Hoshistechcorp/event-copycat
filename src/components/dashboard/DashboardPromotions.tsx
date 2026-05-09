@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useCurrency } from "@/contexts/CurrencyContext";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -33,11 +34,11 @@ interface DashboardPromotionsProps {
   events: Event[];
 }
 
-const plans = [
+const buildPlans = (formatPrice: (s: string) => string) => [
   {
     name: "Banner Boost",
     placement: "banner",
-    price: "₦5,000",
+    price: formatPrice("5000"),
     priceValue: 5000,
     duration: "7 days",
     durationDays: 7,
@@ -48,7 +49,7 @@ const plans = [
   {
     name: "Hero Spotlight",
     placement: "hero",
-    price: "₦10,000",
+    price: formatPrice("10000"),
     priceValue: 10000,
     duration: "14 days",
     durationDays: 14,
@@ -60,7 +61,7 @@ const plans = [
   {
     name: "Full Promotion",
     placement: "both",
-    price: "₦12,000",
+    price: formatPrice("12000"),
     priceValue: 12000,
     duration: "14 days",
     durationDays: 14,
@@ -90,6 +91,8 @@ const statusBadge = (status: string, endDate: string) => {
 const DashboardPromotions = ({ events }: DashboardPromotionsProps) => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const { formatPrice } = useCurrency();
+  const plans = buildPlans(formatPrice);
   const [selectedEvent, setSelectedEvent] = useState<string>("");
   const [promoting, setPromoting] = useState(false);
   const [promotions, setPromotions] = useState<Promotion[]>([]);

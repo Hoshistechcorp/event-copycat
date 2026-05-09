@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useCurrency } from "@/contexts/CurrencyContext";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -31,6 +32,7 @@ const categoryData = [
 
 const DashboardAnalytics = () => {
   const { toast } = useToast();
+  const { currency, formatPrice } = useCurrency();
   const [dateRange, setDateRange] = useState<"7d" | "30d" | "90d" | "12m" | "custom">("12m");
   const [category, setCategory] = useState<string>("all");
   const [startDate, setStartDate] = useState("");
@@ -49,7 +51,7 @@ const DashboardAnalytics = () => {
   const filtered = getFilteredData();
 
   const exportToCSV = () => {
-    const headers = ["Month", "Revenue (₦)", "Tickets Sold"];
+    const headers = ["Month", `Revenue (${currency.code})`, "Tickets Sold"];
     const rows = filtered.revenue.map((r, i) => [r.month, r.revenue, filtered.tickets[i]?.sold ?? 0]);
     const csv = [headers, ...rows].map((row) => row.join(",")).join("\n");
     const blob = new Blob([csv], { type: "text/csv" });

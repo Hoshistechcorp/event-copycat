@@ -79,11 +79,11 @@ const BloovCreate = () => {
           <div className="grid md:grid-cols-3 gap-6 items-center">
             <div className="md:col-span-2">
               <h3 className="text-3xl md:text-4xl font-extrabold mb-2 leading-tight">
-                Top creators earn ₦4M+ per event
+                Top creators earn 5-figures per event — paid out worldwide
               </h3>
               <p className="text-primary-foreground/90 max-w-md">
-                We give you the tools, the audience, and the ecosystem — Bloov Service vendors,
-                Flex-it installments, and TribeMint affiliates included.
+                We give you the tools, the global audience, and the payout rails — Stripe Connect,
+                multi-currency checkout, Bloov Service vendors, and TribeMint affiliates included.
               </p>
             </div>
             <Button size="lg" variant="secondary" className="rounded-xl font-bold gap-2 justify-self-start md:justify-self-end" onClick={() => navigate("/bloov-create/wizard")}>
@@ -96,13 +96,16 @@ const BloovCreate = () => {
       {/* City trends + sponsorship teaser */}
       <section className="container max-w-6xl px-4 py-12 grid md:grid-cols-2 gap-4">
         <div className="rounded-3xl bg-card border border-border p-8">
-          <div className="text-xs font-bold text-primary mb-2">UPCOMING CITY TRENDS</div>
-          <h3 className="text-2xl font-extrabold mb-4">Lagos · Abuja · Accra</h3>
+          <div className="text-xs font-bold text-primary mb-2">TRENDING WORLDWIDE</div>
+          <h3 className="text-2xl font-extrabold mb-4">New York · London · Lagos · Tokyo</h3>
           <div className="space-y-2">
             {[
-              { city: "Lagos", tag: "Rooftop nightlife", score: 96 },
-              { city: "Abuja", tag: "Silent disco", score: 88 },
-              { city: "Accra", tag: "Creator brunches", score: 81 },
+              { city: "New York", tag: "Rooftop nightlife", score: 96 },
+              { city: "London", tag: "Underground raves", score: 92 },
+              { city: "Lagos", tag: "Afrobeats festivals", score: 90 },
+              { city: "Tokyo", tag: "Silent disco", score: 88 },
+              { city: "Dubai", tag: "Yacht parties", score: 85 },
+              { city: "Berlin", tag: "Techno warehouses", score: 83 },
             ].map((c) => (
               <div key={c.city} className="flex items-center justify-between p-3 rounded-xl bg-secondary/50">
                 <div>

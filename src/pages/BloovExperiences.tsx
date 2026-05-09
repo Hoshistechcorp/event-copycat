@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 
 const VIBES = ["luxury", "intimate", "viral", "traditional", "afrobeats", "minimal", "festival"];
-const CITIES = ["All", "Lagos", "Abuja", "Accra", "Port Harcourt", "Ibadan"];
+const POPULAR_CITIES = ["All", "New York", "London", "Paris", "Dubai", "Tokyo", "Lagos", "Mumbai", "São Paulo", "Sydney"];
 
 const BloovExperiences = () => {
   const { data: packages = [], isLoading } = usePackages();
@@ -115,10 +115,16 @@ const BloovExperiences = () => {
             </div>
             <div>
               <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2 flex items-center gap-1.5">
-                <MapPin className="h-3.5 w-3.5" /> City
+                <MapPin className="h-3.5 w-3.5" /> City — anywhere in the world
               </label>
+              <Input
+                value={city === "All" ? "" : city}
+                onChange={(e) => setCity(e.target.value || "All")}
+                placeholder="Type your city (e.g. Berlin, Bali, Mexico City)"
+                className="mb-2"
+              />
               <div className="flex flex-wrap gap-1.5">
-                {CITIES.map((c) => (
+                {POPULAR_CITIES.map((c) => (
                   <button
                     key={c}
                     onClick={() => setCity(c)}
