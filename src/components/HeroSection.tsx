@@ -9,7 +9,7 @@ import event4 from "@/assets/event-4.jpg";
 import event5 from "@/assets/event-5.jpg";
 import eventHero from "@/assets/event-hero.jpg";
 
-const cities = ["Lagos", "Accra", "Nairobi", "London", "Dubai"];
+const cities = ["New York", "London", "Paris", "Tokyo", "Dubai", "Lagos", "Sydney", "Berlin"];
 
 const heroEvents = [
   { image: eventHero, title: "Afrobeat Night Out", venue: "Eko Hotel", date: "Dec 20, 2026", id: null },
