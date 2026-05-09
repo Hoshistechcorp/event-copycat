@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { Sparkles, TrendingUp, ArrowRight, Wand2 } from "lucide-react";
+import { Sparkles, TrendingUp, ArrowRight, Wand2, Megaphone } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useEventIdeas } from "@/hooks/useEventIdeas";
 import EventIdeaCard from "@/components/bloov/EventIdeaCard";
