@@ -85,6 +85,12 @@
     @apply bg-background text-foreground font-sans antialiased;
     font-family: 'Plus Jakarta Sans', sans-serif;
   }
+
+  @media (max-width: 1023px) {
+    body {
+      padding-bottom: calc(72px + env(safe-area-inset-bottom));
+    }
+  }
 }
 
 @layer utilities {
