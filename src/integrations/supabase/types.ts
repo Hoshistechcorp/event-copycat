@@ -44,6 +44,171 @@ export type Database = {
         }
         Relationships: []
       }
+      bookings: {
+        Row: {
+          created_at: string
+          currency: string
+          deposit_amount: number
+          event_date: string | null
+          event_id: string | null
+          id: string
+          notes: string | null
+          package_id: string | null
+          requester_user_id: string
+          status: string
+          total_amount: number
+          updated_at: string
+          vendor_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          currency?: string
+          deposit_amount?: number
+          event_date?: string | null
+          event_id?: string | null
+          id?: string
+          notes?: string | null
+          package_id?: string | null
+          requester_user_id: string
+          status?: string
+          total_amount?: number
+          updated_at?: string
+          vendor_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          currency?: string
+          deposit_amount?: number
+          event_date?: string | null
+          event_id?: string | null
+          id?: string
+          notes?: string | null
+          package_id?: string | null
+          requester_user_id?: string
+          status?: string
+          total_amount?: number
+          updated_at?: string
+          vendor_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bookings_package_id_fkey"
+            columns: ["package_id"]
+            isOneToOne: false
+            referencedRelation: "event_packages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bookings_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_ideas: {
+        Row: {
+          audience_type: string | null
+          city: string | null
+          concept: string | null
+          country: string | null
+          created_at: string
+          currency: string
+          est_attendance: number | null
+          est_ticket_price: number | null
+          hero_image_url: string | null
+          id: string
+          tags: string[]
+          title: string
+          trend_score: number
+        }
+        Insert: {
+          audience_type?: string | null
+          city?: string | null
+          concept?: string | null
+          country?: string | null
+          created_at?: string
+          currency?: string
+          est_attendance?: number | null
+          est_ticket_price?: number | null
+          hero_image_url?: string | null
+          id?: string
+          tags?: string[]
+          title: string
+          trend_score?: number
+        }
+        Update: {
+          audience_type?: string | null
+          city?: string | null
+          concept?: string | null
+          country?: string | null
+          created_at?: string
+          currency?: string
+          est_attendance?: number | null
+          est_ticket_price?: number | null
+          hero_image_url?: string | null
+          id?: string
+          tags?: string[]
+          title?: string
+          trend_score?: number
+        }
+        Relationships: []
+      }
+      event_packages: {
+        Row: {
+          base_price: number
+          category: string
+          created_at: string
+          currency: string
+          description: string | null
+          gallery_urls: string[]
+          guest_capacity: number
+          hero_image_url: string | null
+          id: string
+          included_vendor_categories: string[]
+          is_published: boolean
+          slug: string
+          timeline_json: Json
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          base_price?: number
+          category?: string
+          created_at?: string
+          currency?: string
+          description?: string | null
+          gallery_urls?: string[]
+          guest_capacity?: number
+          hero_image_url?: string | null
+          id?: string
+          included_vendor_categories?: string[]
+          is_published?: boolean
+          slug: string
+          timeline_json?: Json
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          base_price?: number
+          category?: string
+          created_at?: string
+          currency?: string
+          description?: string | null
+          gallery_urls?: string[]
+          guest_capacity?: number
+          hero_image_url?: string | null
+          id?: string
+          included_vendor_categories?: string[]
+          is_published?: boolean
+          slug?: string
+          timeline_json?: Json
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       events: {
         Row: {
           category: string | null
@@ -292,6 +457,142 @@ export type Database = {
             columns: ["event_id"]
             isOneToOne: false
             referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      vendor_availability: {
+        Row: {
+          created_at: string
+          date: string
+          id: string
+          status: string
+          vendor_id: string
+        }
+        Insert: {
+          created_at?: string
+          date: string
+          id?: string
+          status?: string
+          vendor_id: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          id?: string
+          status?: string
+          vendor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vendor_availability_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      vendor_categories: {
+        Row: {
+          created_at: string
+          description: string | null
+          icon_name: string | null
+          id: string
+          name: string
+          slug: string
+          sort_order: number
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          icon_name?: string | null
+          id?: string
+          name: string
+          slug: string
+          sort_order?: number
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          icon_name?: string | null
+          id?: string
+          name?: string
+          slug?: string
+          sort_order?: number
+        }
+        Relationships: []
+      }
+      vendors: {
+        Row: {
+          avatar_url: string | null
+          base_price: number
+          bio: string | null
+          business_name: string
+          category_id: string
+          city: string | null
+          country: string | null
+          cover_url: string | null
+          created_at: string
+          currency: string
+          id: string
+          is_published: boolean
+          is_verified: boolean
+          owner_user_id: string | null
+          portfolio_urls: string[]
+          rating: number
+          review_count: number
+          tagline: string | null
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          base_price?: number
+          bio?: string | null
+          business_name: string
+          category_id: string
+          city?: string | null
+          country?: string | null
+          cover_url?: string | null
+          created_at?: string
+          currency?: string
+          id?: string
+          is_published?: boolean
+          is_verified?: boolean
+          owner_user_id?: string | null
+          portfolio_urls?: string[]
+          rating?: number
+          review_count?: number
+          tagline?: string | null
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          base_price?: number
+          bio?: string | null
+          business_name?: string
+          category_id?: string
+          city?: string | null
+          country?: string | null
+          cover_url?: string | null
+          created_at?: string
+          currency?: string
+          id?: string
+          is_published?: boolean
+          is_verified?: boolean
+          owner_user_id?: string | null
+          portfolio_urls?: string[]
+          rating?: number
+          review_count?: number
+          tagline?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vendors_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "vendor_categories"
             referencedColumns: ["id"]
           },
         ]
