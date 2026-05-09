@@ -26,6 +26,7 @@ interface Event {
   venue: string;
   category: string;
   status: string;
+  visibility?: string;
   image_url: string | null;
   created_at: string;
 }
@@ -63,7 +64,7 @@ const Dashboard = () => {
     setLoading(true);
     const { data, error } = await supabase
       .from("events")
-      .select("id, title, date, venue, category, status, image_url, created_at")
+      .select("id, title, date, venue, category, status, visibility, image_url, created_at")
       .eq("host_id", user.id)
       .order("created_at", { ascending: false });
     if (!error && data) setEvents(data);
