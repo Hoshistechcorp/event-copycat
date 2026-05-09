@@ -168,7 +168,7 @@ const EditEvent = () => {
 
     const { error: eventErr } = await supabase.from("events").update({
       title: title.trim(), description: description.trim() || null, date,
-      end_date: endDate || null, venue: venue.trim(), venue_address: venueAddress.trim() || null,
+      end_date: endDate || null, venue: venue.trim() || "Online", venue_address: venueAddress.trim() || null,
       category, image_url: imageUrl, status: newStatus,
     }).eq("id", id!);
 
