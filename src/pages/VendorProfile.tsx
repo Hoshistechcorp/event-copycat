@@ -1,17 +1,25 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
+import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Star, MapPin, BadgeCheck, MessageSquare } from "lucide-react";
+import {
+  ArrowLeft, Star, MapPin, BadgeCheck, MessageSquare, Mail, Phone, Globe,
+  Instagram, Twitter,
+} from "lucide-react";
 import { useVendor } from "@/hooks/useVendors";
+import { usePackages } from "@/hooks/usePackages";
 import { useCurrency } from "@/contexts/CurrencyContext";
-import { toast } from "@/hooks/use-toast";
+import BookingDialog from "@/components/bloov/BookingDialog";
+import PackageCard from "@/components/bloov/PackageCard";
 
 const VendorProfile = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { data: vendor, isLoading } = useVendor(id);
+  const { data: packages = [] } = usePackages();
   const { formatPrice } = useCurrency();
+  const [bookingOpen, setBookingOpen] = useState(false);
 
   if (isLoading) {
     return (
@@ -37,6 +45,15 @@ const VendorProfile = () => {
       </div>
     );
   }
+
+  const categorySlug = vendor.vendor_categories?.slug;
+  const relatedPackages = packages.filter((p) =>
+    categorySlug ? p.included_vendor_categories?.includes(categorySlug) : false
+  );
+
+  const gallery = vendor.portfolio_urls?.length
+    ? vendor.portfolio_urls
+    : [vendor.cover_url, vendor.avatar_url].filter(Boolean) as string[];
 
   return (
     <div className="min-h-screen bg-background">
@@ -73,7 +90,7 @@ const VendorProfile = () => {
               </span>
               {vendor.city && (
                 <span className="flex items-center gap-1">
-                  <MapPin className="h-4 w-4" /> {vendor.city}, {vendor.country}
+                  <MapPin className="h-4 w-4" /> {vendor.city}{vendor.country ? `, ${vendor.country}` : ""}
                 </span>
               )}
             </div>
@@ -85,9 +102,70 @@ const VendorProfile = () => {
               </div>
             )}
 
-            <div className="mt-8 p-5 rounded-2xl border border-dashed border-border text-sm text-muted-foreground">
-              Portfolio gallery, availability calendar, and reviews are coming in Phase 9.
+            {/* Portfolio gallery */}
+            <div className="mt-8">
+              <h2 className="font-bold mb-3">Portfolio</h2>
+              {gallery.length > 0 ? (
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                  {gallery.map((url, i) => (
+                    <div key={i} className="aspect-square rounded-xl overflow-hidden bg-secondary">
+                      <img src={url as string} alt={`${vendor.business_name} portfolio ${i + 1}`} className="w-full h-full object-cover hover:scale-105 transition-transform" />
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">No portfolio images yet.</p>
+              )}
             </div>
+
+            {/* Contact + social */}
+            <div className="mt-8">
+              <h2 className="font-bold mb-3">Contact & Social</h2>
+              <div className="grid sm:grid-cols-2 gap-2">
+                {vendor.email && (
+                  <a href={`mailto:${vendor.email}`} className="flex items-center gap-2 p-3 rounded-xl bg-secondary/60 hover:bg-secondary text-sm">
+                    <Mail className="h-4 w-4 text-primary" /> <span className="truncate">{vendor.email}</span>
+                  </a>
+                )}
+                {vendor.phone && (
+                  <a href={`tel:${vendor.phone}`} className="flex items-center gap-2 p-3 rounded-xl bg-secondary/60 hover:bg-secondary text-sm">
+                    <Phone className="h-4 w-4 text-primary" /> {vendor.phone}
+                  </a>
+                )}
+                {vendor.website && (
+                  <a href={vendor.website} target="_blank" rel="noreferrer" className="flex items-center gap-2 p-3 rounded-xl bg-secondary/60 hover:bg-secondary text-sm">
+                    <Globe className="h-4 w-4 text-primary" /> <span className="truncate">Website</span>
+                  </a>
+                )}
+                {vendor.instagram_url && (
+                  <a href={vendor.instagram_url} target="_blank" rel="noreferrer" className="flex items-center gap-2 p-3 rounded-xl bg-secondary/60 hover:bg-secondary text-sm">
+                    <Instagram className="h-4 w-4 text-primary" /> Instagram
+                  </a>
+                )}
+                {vendor.tiktok_url && (
+                  <a href={vendor.tiktok_url} target="_blank" rel="noreferrer" className="flex items-center gap-2 p-3 rounded-xl bg-secondary/60 hover:bg-secondary text-sm">
+                    <span className="h-4 w-4 text-primary inline-flex items-center justify-center font-extrabold text-[10px]">TT</span> TikTok
+                  </a>
+                )}
+                {vendor.twitter_url && (
+                  <a href={vendor.twitter_url} target="_blank" rel="noreferrer" className="flex items-center gap-2 p-3 rounded-xl bg-secondary/60 hover:bg-secondary text-sm">
+                    <Twitter className="h-4 w-4 text-primary" /> X / Twitter
+                  </a>
+                )}
+              </div>
+            </div>
+
+            {/* Related packages */}
+            {relatedPackages.length > 0 && (
+              <div className="mt-10">
+                <h2 className="font-bold mb-3">Featured in these packages</h2>
+                <div className="grid sm:grid-cols-2 gap-4">
+                  {relatedPackages.slice(0, 4).map((p) => (
+                    <PackageCard key={p.id} pkg={p} />
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           <aside className="md:sticky md:top-24 h-fit">
@@ -96,19 +174,25 @@ const VendorProfile = () => {
               <p className="text-3xl font-extrabold text-foreground mt-1 mb-4">
                 {formatPrice(String(vendor.base_price))}
               </p>
-              <Button
-                className="w-full rounded-xl font-bold gap-2"
-                onClick={() => toast({ title: "Booking coming soon", description: "Direct vendor bookings ship in Phase 9." })}
-              >
+              <Button className="w-full rounded-xl font-bold gap-2" onClick={() => setBookingOpen(true)}>
                 <MessageSquare className="h-4 w-4" /> Request to book
               </Button>
               <p className="text-[11px] text-muted-foreground mt-3 text-center">
-                You'll be able to chat, deposit, and pay in installments via Flex-it.
+                Track every booking from <Link to="/dashboard" className="underline">your dashboard</Link>.
               </p>
             </div>
           </aside>
         </div>
       </div>
+
+      <BookingDialog
+        open={bookingOpen}
+        onOpenChange={setBookingOpen}
+        title={vendor.business_name}
+        basePrice={Number(vendor.base_price)}
+        vendorId={vendor.id}
+      />
+
       <Footer />
     </div>
   );

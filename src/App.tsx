@@ -25,6 +25,8 @@ import FAQ from "./pages/FAQ";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import Terms from "./pages/Terms";
 import BloovCreate from "./pages/BloovCreate";
+import BloovCreateWizard from "./pages/BloovCreateWizard";
+import EventTimeline from "./pages/EventTimeline";
 import BloovService from "./pages/BloovService";
 import BloovServiceCategory from "./pages/BloovServiceCategory";
 import VendorProfile from "./pages/VendorProfile";
@@ -48,6 +50,7 @@ const App = () => (
             <Route path="/privacy" element={<PrivacyPolicy />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/bloov-create" element={<BloovCreate />} />
+            <Route path="/bloov-create/wizard" element={<BloovCreateWizard />} />
             <Route path="/bloov-service" element={<BloovService />} />
             <Route path="/bloov-service/category/:slug" element={<BloovServiceCategory />} />
             <Route path="/bloov-service/vendors/:id" element={<VendorProfile />} />
@@ -56,6 +59,7 @@ const App = () => (
             <Route path="/events/:id" element={<EventDetail />} />
             <Route path="/create-event" element={<CreateEvent />} />
             <Route path="/edit-event/:id" element={<EditEvent />} />
+            <Route path="/events/:id/timeline" element={<EventTimeline />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/my-tickets" element={<MyTickets />} />

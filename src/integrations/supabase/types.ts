@@ -209,6 +209,63 @@ export type Database = {
         }
         Relationships: []
       }
+      event_vendor_assignments: {
+        Row: {
+          category_slug: string | null
+          created_at: string
+          duration_minutes: number | null
+          event_id: string
+          id: string
+          notes: string | null
+          scheduled_at: string | null
+          sort_order: number
+          status: string
+          updated_at: string
+          vendor_id: string | null
+        }
+        Insert: {
+          category_slug?: string | null
+          created_at?: string
+          duration_minutes?: number | null
+          event_id: string
+          id?: string
+          notes?: string | null
+          scheduled_at?: string | null
+          sort_order?: number
+          status?: string
+          updated_at?: string
+          vendor_id?: string | null
+        }
+        Update: {
+          category_slug?: string | null
+          created_at?: string
+          duration_minutes?: number | null
+          event_id?: string
+          id?: string
+          notes?: string | null
+          scheduled_at?: string | null
+          sort_order?: number
+          status?: string
+          updated_at?: string
+          vendor_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_vendor_assignments_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_vendor_assignments_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       events: {
         Row: {
           category: string | null
@@ -535,15 +592,21 @@ export type Database = {
           cover_url: string | null
           created_at: string
           currency: string
+          email: string | null
           id: string
+          instagram_url: string | null
           is_published: boolean
           is_verified: boolean
           owner_user_id: string | null
+          phone: string | null
           portfolio_urls: string[]
           rating: number
           review_count: number
           tagline: string | null
+          tiktok_url: string | null
+          twitter_url: string | null
           updated_at: string
+          website: string | null
         }
         Insert: {
           avatar_url?: string | null
@@ -556,15 +619,21 @@ export type Database = {
           cover_url?: string | null
           created_at?: string
           currency?: string
+          email?: string | null
           id?: string
+          instagram_url?: string | null
           is_published?: boolean
           is_verified?: boolean
           owner_user_id?: string | null
+          phone?: string | null
           portfolio_urls?: string[]
           rating?: number
           review_count?: number
           tagline?: string | null
+          tiktok_url?: string | null
+          twitter_url?: string | null
           updated_at?: string
+          website?: string | null
         }
         Update: {
           avatar_url?: string | null
@@ -577,15 +646,21 @@ export type Database = {
           cover_url?: string | null
           created_at?: string
           currency?: string
+          email?: string | null
           id?: string
+          instagram_url?: string | null
           is_published?: boolean
           is_verified?: boolean
           owner_user_id?: string | null
+          phone?: string | null
           portfolio_urls?: string[]
           rating?: number
           review_count?: number
           tagline?: string | null
+          tiktok_url?: string | null
+          twitter_url?: string | null
           updated_at?: string
+          website?: string | null
         }
         Relationships: [
           {

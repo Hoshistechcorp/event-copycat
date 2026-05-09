@@ -1,17 +1,19 @@
 import { useParams, useNavigate } from "react-router-dom";
+import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Users, Sparkles, Check } from "lucide-react";
 import { usePackage } from "@/hooks/usePackages";
 import { useCurrency } from "@/contexts/CurrencyContext";
-import { toast } from "@/hooks/use-toast";
+import BookingDialog from "@/components/bloov/BookingDialog";
 
 const PackageDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { data: pkg, isLoading } = usePackage(id);
   const { formatPrice } = useCurrency();
+  const [bookingOpen, setBookingOpen] = useState(false);
 
   if (isLoading) {
     return (
@@ -93,12 +95,16 @@ const PackageDetail = () => {
               <p className="text-3xl font-extrabold text-foreground mt-1 mb-4">
                 {formatPrice(String(pkg.base_price))}
               </p>
-              <Button
-                className="w-full rounded-xl font-bold"
-                onClick={() => toast({ title: "Booking coming soon", description: "Package booking ships in Phase 8." })}
-              >
+              <Button className="w-full rounded-xl font-bold" onClick={() => setBookingOpen(true)}>
                 Book this package
               </Button>
+              <BookingDialog
+                open={bookingOpen}
+                onOpenChange={setBookingOpen}
+                title={pkg.title}
+                basePrice={Number(pkg.base_price)}
+                packageId={pkg.id}
+              />
               <p className="text-[11px] text-muted-foreground mt-3 text-center">
                 Pay deposit · Flex-it installments available
               </p>
