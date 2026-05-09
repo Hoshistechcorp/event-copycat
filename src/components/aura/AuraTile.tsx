@@ -35,14 +35,14 @@ const AuraTile = ({ product, linked, pinned, onOpen, onTogglePin, draggable = tr
         onClick={onOpen}
         {...(draggable ? sortable.listeners : {})}
         {...(draggable ? sortable.attributes : {})}
-        className={`relative w-full aspect-square rounded-xl sm:rounded-2xl bg-card/60 backdrop-blur-sm border-2 border-white/10 flex flex-col items-center justify-center gap-1.5 sm:gap-3 p-2.5 sm:p-4 transition-all duration-200 hover:-translate-y-1 hover:bg-card hover:border-white/20 ${linked ? `hover:${product.glow}` : "grayscale-[60%] opacity-70 hover:grayscale-0 hover:opacity-100"}`}
+        className={`relative w-full aspect-[4/3] rounded-lg sm:rounded-xl bg-card/60 backdrop-blur-sm border border-white/10 flex flex-col items-center justify-center gap-1 sm:gap-2 p-2 sm:p-3 transition-all duration-200 hover:-translate-y-0.5 hover:bg-card hover:border-white/20 ${linked ? `hover:${product.glow}` : "grayscale-[60%] opacity-70 hover:grayscale-0 hover:opacity-100"}`}
       >
-        <Icon className={`h-7 w-7 sm:h-10 sm:w-10 ${product.color}`} strokeWidth={2.25} />
-        <span className="text-[11px] sm:text-sm font-extrabold text-foreground text-center leading-tight tracking-tight">{product.name}</span>
+        <Icon className={`h-5 w-5 sm:h-7 sm:w-7 ${product.color}`} strokeWidth={1.75} />
+        <span className="text-[10px] sm:text-xs font-bold text-foreground text-center leading-tight tracking-tight">{product.name}</span>
 
         {!linked && !product.alwaysLinked && (
-          <span className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 inline-flex items-center gap-0.5 px-1.5 sm:px-2 py-0.5 rounded-full bg-primary text-primary-foreground text-[8px] sm:text-[9px] font-bold animate-pulse">
-            <Sparkles className="h-2 w-2 sm:h-2.5 sm:w-2.5" /> Set Up
+          <span className="absolute top-1 right-1 sm:top-1.5 sm:right-1.5 inline-flex items-center gap-0.5 px-1 py-px rounded-full bg-primary text-primary-foreground text-[7px] sm:text-[8px] font-bold animate-pulse">
+            <Sparkles className="h-1.5 w-1.5 sm:h-2 sm:w-2" /> Set Up
           </span>
         )}
       </button>
@@ -51,10 +51,10 @@ const AuraTile = ({ product, linked, pinned, onOpen, onTogglePin, draggable = tr
         <button
           type="button"
           onClick={(e) => { e.stopPropagation(); onTogglePin(); }}
-          className={`absolute -top-1.5 -right-1.5 h-6 w-6 rounded-full bg-background border border-white/20 flex items-center justify-center transition-colors ${pinned ? product.color : "text-muted-foreground hover:text-foreground"}`}
+          className={`absolute -top-1 -right-1 h-5 w-5 rounded-full bg-background border border-white/20 flex items-center justify-center transition-colors ${pinned ? product.color : "text-muted-foreground hover:text-foreground"}`}
           title={pinned ? "Unpin from nav" : "Pin to nav"}
         >
-          {pinned ? <PinOff className="h-3 w-3" /> : <Pin className="h-3 w-3" />}
+          {pinned ? <PinOff className="h-2.5 w-2.5" /> : <Pin className="h-2.5 w-2.5" />}
         </button>
       )}
     </div>
