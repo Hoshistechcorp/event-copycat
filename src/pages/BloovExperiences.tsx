@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 
 const VIBES = ["luxury", "intimate", "viral", "traditional", "afrobeats", "minimal", "festival"];
-const CITIES = ["All", "Lagos", "Abuja", "Accra", "Port Harcourt", "Ibadan"];
+const POPULAR_CITIES = ["All", "New York", "London", "Paris", "Dubai", "Tokyo", "Lagos", "Mumbai", "São Paulo", "Sydney"];
 
 const BloovExperiences = () => {
   const { data: packages = [], isLoading } = usePackages();
