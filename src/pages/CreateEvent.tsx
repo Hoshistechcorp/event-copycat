@@ -453,8 +453,20 @@ const CreateEvent = () => {
       <Navbar />
       <div className="container max-w-3xl px-4 py-10 md:py-16">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-          <h1 className="text-3xl font-extrabold mb-1">Create Event</h1>
-          <p className="text-muted-foreground mb-8">Step {step + 1} of {STEPS.length}</p>
+          <div className="flex items-start justify-between mb-8 gap-3">
+            <div>
+              <h1 className="text-3xl font-extrabold mb-1">Create Event</h1>
+              <p className="text-muted-foreground text-sm">Step {step + 1} of {STEPS.length} · Auto-saving as you type</p>
+            </div>
+            <Button
+              type="button" variant="outline" size="sm"
+              className="rounded-xl shrink-0 hidden sm:inline-flex"
+              onClick={handleSaveLater}
+              disabled={submitting}
+            >
+              <Save className="h-3.5 w-3.5 mr-1.5" /> Save & continue later
+            </Button>
+          </div>
 
           <div className="flex items-center gap-1 mb-8 overflow-x-auto">
             {STEPS.map((s, i) => {
@@ -481,24 +493,60 @@ const CreateEvent = () => {
             </motion.div>
           </AnimatePresence>
 
-          <div className="flex flex-col sm:flex-row gap-3 mt-10">
-            {step > 0 && <Button type="button" variant="outline" className="rounded-xl h-12 font-bold" onClick={goBack}><ChevronLeft className="h-4 w-4 mr-1" /> Back</Button>}
+          <div className="flex flex-col sm:flex-row gap-2 mt-10">
+            {step > 0 && (
+              <Button type="button" variant="outline" className="rounded-xl h-12 font-bold" onClick={goBack}>
+                <ChevronLeft className="h-4 w-4 mr-1" /> Back
+              </Button>
+            )}
+            <Button
+              type="button" variant="ghost"
+              className="rounded-xl h-12 font-bold sm:hidden justify-start"
+              onClick={handleSaveLater} disabled={submitting}
+            >
+              <Save className="h-4 w-4 mr-1.5" /> Save & continue later
+            </Button>
             <div className="flex-1" />
             {isLastStep ? (
-              <div className="flex gap-3">
+              <div className="grid grid-cols-1 sm:flex sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
                 <Button type="button" variant="outline" className="rounded-xl h-12 font-bold" disabled={submitting} onClick={() => handleSubmit("draft")}>
-                  {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Save as Draft"}
+                  {submitting && submitMode === "draft" ? <Loader2 className="h-4 w-4 animate-spin" /> : "Save as Draft"}
+                </Button>
+                <Button type="button" variant="outline" className="rounded-xl h-12 font-bold border-amber-500/40 text-amber-600 hover:bg-amber-500/10 hover:text-amber-700" disabled={submitting} onClick={() => handleSubmit("test")} title="Publish unlisted, free RSVP — share the link to gauge interest">
+                  {submitting && submitMode === "test" ? <Loader2 className="h-4 w-4 animate-spin" /> : <><FlaskConical className="h-4 w-4 mr-1.5" /> Test Run</>}
                 </Button>
                 <Button type="button" className="rounded-xl h-12 font-bold" disabled={submitting} onClick={() => handleSubmit("published")}>
-                  {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Publish Event"}
+                  {submitting && submitMode === "published" ? <Loader2 className="h-4 w-4 animate-spin" /> : "Publish Event"}
                 </Button>
               </div>
             ) : (
               <Button type="button" className="rounded-xl h-12 font-bold" onClick={goNext}>Next <ChevronRight className="h-4 w-4 ml-1" /></Button>
             )}
           </div>
+
+          {isLastStep && (
+            <p className="text-[11px] text-muted-foreground text-center mt-4">
+              <span className="font-semibold text-amber-600">Test Run</span> publishes a free, unlisted event so only people with your link see it. Use it to validate demand before going live.
+            </p>
+          )}
         </motion.div>
       </div>
+
+      <AlertDialog open={restoreOpen} onOpenChange={setRestoreOpen}>
+        <AlertDialogContent className="rounded-2xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Resume your draft?</AlertDialogTitle>
+            <AlertDialogDescription>
+              We found an event you started earlier on this device. Pick up where you left off, or start fresh.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="rounded-xl" onClick={discardDraft}>Start fresh</AlertDialogCancel>
+            <AlertDialogAction className="rounded-xl" onClick={restoreDraft}>Resume draft</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       <Footer />
     </div>
   );
