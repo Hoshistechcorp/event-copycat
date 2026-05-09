@@ -79,11 +79,11 @@ const BloovCreate = () => {
           <div className="grid md:grid-cols-3 gap-6 items-center">
             <div className="md:col-span-2">
               <h3 className="text-3xl md:text-4xl font-extrabold mb-2 leading-tight">
-                Top creators earn ₦4M+ per event
+                Top creators earn 5-figures per event — paid out worldwide
               </h3>
               <p className="text-primary-foreground/90 max-w-md">
-                We give you the tools, the audience, and the ecosystem — Bloov Service vendors,
-                Flex-it installments, and TribeMint affiliates included.
+                We give you the tools, the global audience, and the payout rails — Stripe Connect,
+                multi-currency checkout, Bloov Service vendors, and TribeMint affiliates included.
               </p>
             </div>
             <Button size="lg" variant="secondary" className="rounded-xl font-bold gap-2 justify-self-start md:justify-self-end" onClick={() => navigate("/bloov-create/wizard")}>
