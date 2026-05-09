@@ -578,7 +578,7 @@ const CreateEvent = () => {
 
           {isLastStep && (
             <p className="text-[11px] text-muted-foreground text-center mt-4">
-              <span className="font-semibold text-amber-600">Test Run</span> publishes a free, unlisted event so only people with your link see it. Use it to validate demand before going live.
+              <span className="font-semibold text-amber-600">Test Run</span> publishes an unlisted event so only people with your link see it. Set a Test-run fee % per tier to collect a portion of the ticket price, or leave it at 0 for a free RSVP-only validation.
             </p>
           )}
         </motion.div>
