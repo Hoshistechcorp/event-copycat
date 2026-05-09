@@ -37,7 +37,7 @@ const BloovCreate = () => {
               from concept to checkout in one flow.
             </p>
             <div className="flex flex-wrap gap-3">
-              <Button size="lg" className="rounded-xl font-bold gap-2" onClick={() => navigate("/create-event")}>
+              <Button size="lg" className="rounded-xl font-bold gap-2" onClick={() => navigate("/bloov-create/wizard")}>
                 <Wand2 className="h-4 w-4" /> Create New Event Idea
               </Button>
               <Button size="lg" variant="outline" className="rounded-xl font-bold" onClick={() => navigate("/bloov-service")}>
@@ -86,7 +86,7 @@ const BloovCreate = () => {
                 Flex-it installments, and TribeMint affiliates included.
               </p>
             </div>
-            <Button size="lg" variant="secondary" className="rounded-xl font-bold gap-2 justify-self-start md:justify-self-end" onClick={() => navigate("/create-event")}>
+            <Button size="lg" variant="secondary" className="rounded-xl font-bold gap-2 justify-self-start md:justify-self-end" onClick={() => navigate("/bloov-create/wizard")}>
               Start now <ArrowRight className="h-4 w-4" />
             </Button>
           </div>
