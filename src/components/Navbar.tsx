@@ -224,7 +224,7 @@ const Navbar = () => {
                 <span className="sr-only">Open menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-[300px] sm:w-[340px] p-0 flex flex-col">
+            <SheetContent side="right" className="w-[300px] sm:w-[340px] max-w-[88vw] p-0 flex flex-col overflow-hidden">
               <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
 
               {/* Header: user identity / sign-in CTA */}
