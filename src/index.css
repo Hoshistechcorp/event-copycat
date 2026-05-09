@@ -149,7 +149,6 @@
     padding-bottom: env(safe-area-inset-bottom);
   }
 }
-}
 
 @property --border-angle {
   syntax: "<angle>";
