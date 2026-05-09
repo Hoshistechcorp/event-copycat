@@ -3,16 +3,15 @@ import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { ArrowLeft, Loader2, Plus, Trash2, Sparkles, Star, Calendar } from "lucide-react";
+import { ArrowLeft, Loader2, Plus, Trash2, Sparkles, Star, Calendar, Pencil, Info } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useVendors } from "@/hooks/useVendors";
 import { useEventAssignments, useAddAssignment, useRemoveAssignment } from "@/hooks/useEventAssignments";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { toast } from "@/hooks/use-toast";
+import AssignmentEditDialog from "@/components/bloov/AssignmentEditDialog";
 
-// Same map as in the wizard
 const TYPE_RECOMMENDATIONS: Record<string, string[]> = {
   "Concert / Live Show": ["venues", "djs", "lighting", "security", "videographers", "photographers"],
   Wedding: ["planners", "decorators", "caterers", "photographers", "videographers", "djs", "mcs", "florists", "traditional", "makeup"],
@@ -23,6 +22,26 @@ const TYPE_RECOMMENDATIONS: Record<string, string[]> = {
   Music: ["venues", "djs", "lighting", "security", "videographers", "photographers"],
 };
 
+// Why each category fits an event type — surfaced beside vendor recommendations.
+const REASON_BY_CATEGORY: Record<string, string> = {
+  venues: "Sets the tone, capacity, and logistics for everything else.",
+  djs: "Drives the energy and crowd flow throughout the event.",
+  lighting: "Defines the mood and elevates every photo and video.",
+  security: "Keeps guests safe — required by most large venues.",
+  videographers: "Captures the highlights for recap content and sponsors.",
+  photographers: "Delivers shareable assets your guests and brand need.",
+  planners: "Owns the run-of-show so you can host without stress.",
+  decorators: "Transforms the space to match your concept and theme.",
+  caterers: "Handles food + drink — the #1 driver of guest reviews.",
+  mcs: "Keeps the program tight and the audience engaged.",
+  florists: "Adds signature visual moments for ceremony and reception.",
+  traditional: "Essential cultural moments — Alaga, attire, rites.",
+  makeup: "Camera-ready looks for the couple and bridal party.",
+  bartenders: "Mixes the drinks list and manages bar service speed.",
+  ushers: "Guides guests, manages seating, and keeps flow smooth.",
+  transportation: "Coordinated arrivals and departures for VIPs and guests.",
+};
+
 const EventTimeline = () => {
   const { id } = useParams<{ id: string }>();
   const { user, loading: authLoading } = useAuth();
@@ -30,6 +49,7 @@ const EventTimeline = () => {
   const { formatPrice } = useCurrency();
   const [event, setEvent] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [editing, setEditing] = useState<any>(null);
 
   const { data: vendors = [] } = useVendors();
   const { data: assignments = [] } = useEventAssignments(id);
@@ -64,6 +84,7 @@ const EventTimeline = () => {
   const usedVendorIds = new Set(assignments.map((a) => a.vendor_id));
   const grouped = recommended.map((slug) => ({
     slug,
+    reason: REASON_BY_CATEGORY[slug] ?? "Recommended for this event type.",
     vendors: vendors.filter((v) => v.vendor_categories?.slug === slug && !usedVendorIds.has(v.id)),
   }));
 
@@ -103,13 +124,19 @@ const EventTimeline = () => {
             <div className="rounded-2xl bg-secondary/50 p-4 flex items-start gap-3">
               <Sparkles className="h-5 w-5 text-primary mt-0.5" />
               <div>
-                <p className="font-bold text-sm">Recommended vendors for {event.category}</p>
-                <p className="text-xs text-muted-foreground">Click + to add a vendor to this event's execution plan.</p>
+                <p className="font-bold text-sm">Recommended for {event.category}</p>
+                <p className="text-xs text-muted-foreground">Filtered by your event type. Each category shows why it's recommended.</p>
               </div>
             </div>
             {grouped.map((g) => (
               <div key={g.slug}>
-                <h3 className="font-bold capitalize mb-2">{g.slug}</h3>
+                <div className="flex items-baseline justify-between mb-1">
+                  <h3 className="font-bold capitalize">{g.slug}</h3>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-primary">Recommended</span>
+                </div>
+                <p className="text-xs text-muted-foreground mb-2 flex items-start gap-1.5">
+                  <Info className="h-3 w-3 mt-0.5 shrink-0" /> {g.reason}
+                </p>
                 {g.vendors.length === 0 ? (
                   <p className="text-xs text-muted-foreground p-3 rounded-xl border border-dashed">All available {g.slug} vendors are already in your timeline.</p>
                 ) : (
@@ -151,8 +178,11 @@ const EventTimeline = () => {
                       <div className="flex items-center gap-2">
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-semibold truncate">{a.vendors?.business_name ?? "Vendor removed"}</p>
-                          <p className="text-[11px] text-muted-foreground capitalize">{a.category_slug}</p>
+                          <p className="text-[11px] text-muted-foreground capitalize">{a.category_slug} · {a.duration_minutes ?? 60}m</p>
                         </div>
+                        <button onClick={() => setEditing(a)} className="text-muted-foreground hover:text-foreground">
+                          <Pencil className="h-4 w-4" />
+                        </button>
                         <button onClick={() => remove.mutate(a.id)} className="text-destructive hover:opacity-70">
                           <Trash2 className="h-4 w-4" />
                         </button>
@@ -161,6 +191,7 @@ const EventTimeline = () => {
                         <Calendar className="h-3 w-3" />
                         {a.scheduled_at ? new Date(a.scheduled_at).toLocaleString() : "TBD"}
                       </p>
+                      {a.notes && <p className="text-[11px] text-muted-foreground mt-1 italic line-clamp-2">"{a.notes}"</p>}
                     </div>
                   ))}
                 </div>
@@ -172,6 +203,14 @@ const EventTimeline = () => {
           </aside>
         </div>
       </div>
+
+      <AssignmentEditDialog
+        open={!!editing}
+        onOpenChange={(v) => !v && setEditing(null)}
+        assignment={editing}
+        vendorName={editing?.vendors?.business_name}
+      />
+
       <Footer />
     </div>
   );
