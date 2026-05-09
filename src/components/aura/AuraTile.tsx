@@ -1,6 +1,6 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { Pin, PinOff, Sparkles } from "lucide-react";
+import { Pin, PinOff, Orbit } from "lucide-react";
 import type { AuraProduct } from "@/lib/auraProducts";
 import { useState } from "react";
 
@@ -55,7 +55,7 @@ const AuraTile = ({ product, linked, pinned, onOpen, onTogglePin, draggable = tr
 
         {!linked && !product.alwaysLinked && (
           <span className="absolute top-1 right-1 inline-flex items-center gap-0.5 px-1 py-px rounded-full bg-primary text-primary-foreground text-[7px] font-bold animate-pulse">
-            <Sparkles className="h-1.5 w-1.5" />
+            <Orbit className="h-1.5 w-1.5" />
           </span>
         )}
       </button>

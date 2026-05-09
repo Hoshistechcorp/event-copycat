@@ -1,4 +1,4 @@
-import { UserCircle, Sparkles, Users, Briefcase, Wallet, Trophy, Camera, Award, Plane, type LucideIcon } from "lucide-react";
+import { UserCircle, Orbit, Users, Briefcase, Wallet, Trophy, Camera, Award, Plane, type LucideIcon } from "lucide-react";
 
 export interface AuraProduct {
   id: string;
@@ -19,7 +19,7 @@ export interface AuraProduct {
 
 export const AURA_PRODUCTS: AuraProduct[] = [
   { id: "auralink", name: "AuraLink", tagline: "Digital Identity", description: "Your unified iBloov identity & dashboard.", color: "text-teal-400", glow: "shadow-[0_0_30px_-5px_rgba(45,212,191,0.5)]", icon: UserCircle, route: "/profile", alwaysLinked: true, internal: true },
-  { id: "bloov", name: "Bloov", tagline: "Venues & Discovery", description: "Discover and book unforgettable events worldwide.", color: "text-purple-400", glow: "shadow-[0_0_30px_-5px_rgba(192,132,252,0.5)]", icon: Sparkles, route: "/events", internal: true },
+  { id: "bloov", name: "Bloov", tagline: "Venues & Discovery", description: "Discover and book unforgettable events worldwide.", color: "text-purple-400", glow: "shadow-[0_0_30px_-5px_rgba(192,132,252,0.5)]", icon: Orbit, route: "/events", internal: true },
   { id: "tribemint", name: "TribeMint", tagline: "Affiliate & Creator Hub", description: "Mint your tribe — earn from referrals and creator drops.", color: "text-pink-400", glow: "shadow-[0_0_30px_-5px_rgba(244,114,182,0.5)]", icon: Users, route: "/tribemint" },
   { id: "vibesgigs", name: "VibesGigs", tagline: "Hospitality Staffing", description: "Hire vetted hospitality talent on-demand.", color: "text-green-400", glow: "shadow-[0_0_30px_-5px_rgba(74,222,128,0.5)]", icon: Briefcase, route: "/vibesgigs" },
   { id: "flexit", name: "Flex-it", tagline: "Tipping & Payments", description: "Send tips, receive payments, anywhere.", color: "text-emerald-400", glow: "shadow-[0_0_30px_-5px_rgba(52,211,153,0.5)]", icon: Wallet, route: "/flexit" },

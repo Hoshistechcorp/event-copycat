@@ -1,6 +1,6 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Sparkles, ShieldCheck, Loader2 } from "lucide-react";
+import { Orbit, ShieldCheck, Loader2 } from "lucide-react";
 import type { AuraProduct } from "@/lib/auraProducts";
 import { useAuraLinks } from "@/hooks/useAuraLinks";
 import { useNavigate } from "react-router-dom";
@@ -53,7 +53,7 @@ const AuraSetupDialog = ({ product, open, onOpenChange }: Props) => {
         </div>
 
         <Button onClick={handleSync} disabled={link.isPending} className={`w-full font-bold rounded-xl ${product.glow}`}>
-          {link.isPending ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Sparkles className="h-4 w-4 mr-2" />}
+          {link.isPending ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Orbit className="h-4 w-4 mr-2" />}
           1-Click Sync via AuraLink
         </Button>
         <p className="text-[10px] text-center text-muted-foreground">You can disconnect anytime from your AuraLink dashboard.</p>

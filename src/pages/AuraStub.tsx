@@ -4,7 +4,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Sparkles } from "lucide-react";
+import { ArrowLeft, Orbit } from "lucide-react";
 import type { AuraProduct } from "@/lib/auraProducts";
 import { useAuraLinks } from "@/hooks/useAuraLinks";
 
@@ -32,14 +32,14 @@ const AuraStub = ({ product }: Props) => {
             <p className="text-muted-foreground text-lg max-w-xl mx-auto mb-8">{product.description}</p>
 
             <div className="rounded-3xl bg-card border border-white/10 p-8 max-w-md mx-auto">
-              <Sparkles className={`h-6 w-6 mx-auto mb-2 ${product.color}`} />
+              <Orbit className={`h-6 w-6 mx-auto mb-2 ${product.color}`} />
               <h2 className="font-extrabold text-xl mb-2">Coming soon to AURA</h2>
               <p className="text-sm text-muted-foreground mb-5">
                 {product.name} is launching soon. {linked ? "You're synced — we'll notify you the moment it goes live." : "Sync with AuraLink to be first in line."}
               </p>
               {!linked && !product.alwaysLinked && (
                 <Button onClick={() => link.mutate(product.id)} className={`w-full font-bold rounded-xl ${product.glow}`}>
-                  <Sparkles className="h-4 w-4 mr-2" /> 1-Click Sync via AuraLink
+                  <Orbit className="h-4 w-4 mr-2" /> 1-Click Sync via AuraLink
                 </Button>
               )}
               {linked && (
