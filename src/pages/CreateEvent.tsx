@@ -100,7 +100,7 @@ const CreateEvent = () => {
       const snap = {
         step, title, description, category, imagePreview,
         date, endDate, location, settings, invites, performers: performers.map((p) => ({ name: p.name, role: p.role, imagePreview: p.imagePreview })),
-        tiers, promoCodes, savedAt: new Date().toISOString(),
+        tiers, promoCodes, openToSponsorship, savedAt: new Date().toISOString(),
       };
       try { localStorage.setItem(draftKey, JSON.stringify(snap)); } catch {}
     }, 600);
