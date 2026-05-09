@@ -52,6 +52,7 @@ const App = () => (
             <Route path="/bloov-create" element={<BloovCreate />} />
             <Route path="/bloov-create/wizard" element={<BloovCreateWizard />} />
             <Route path="/bloov-service" element={<BloovService />} />
+            <Route path="/bloov-service/experiences" element={<BloovExperiences />} />
             <Route path="/bloov-service/category/:slug" element={<BloovServiceCategory />} />
             <Route path="/bloov-service/vendors/:id" element={<VendorProfile />} />
             <Route path="/bloov-service/packages/:id" element={<PackageDetail />} />
