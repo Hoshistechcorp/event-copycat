@@ -164,7 +164,7 @@ const CreateEvent = () => {
     const file = e.target.files?.[0]; if (file) { const u = [...performers]; u[i] = { ...u[i], imageFile: file, imagePreview: URL.createObjectURL(file) }; setPerformers(u); }
   };
 
-  const addTier = () => { if (tiers.length >= 5) return; setTiers([...tiers, { name: "", price: settings.is_paid ? "10" : "0", quantity: "50", description: "" }]); };
+  const addTier = () => { if (tiers.length >= 5) return; setTiers([...tiers, { name: "", price: settings.is_paid ? "10" : "0", quantity: "50", description: "", test_fee_percent: "0" }]); };
   const removeTier = (i: number) => { if (tiers.length <= 1) return; setTiers(tiers.filter((_, idx) => idx !== i)); };
   const updateTier = (i: number, field: keyof TicketTier, value: string) => { const u = [...tiers]; u[i] = { ...u[i], [field]: value }; setTiers(u); };
 
