@@ -1,9 +1,9 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Grid3x3, Search, Sparkles } from "lucide-react";
+import { Grid3x3, Search, Sparkles, LayoutGrid, Rows3 } from "lucide-react";
 import { AURA_PRODUCTS, type AuraProduct } from "@/lib/auraProducts";
 import { useAuraLinks } from "@/hooks/useAuraLinks";
 import { useAuth } from "@/contexts/AuthContext";
@@ -13,6 +13,8 @@ import AuraTile from "./AuraTile";
 import AuraSetupDialog from "./AuraSetupDialog";
 import { toast } from "@/hooks/use-toast";
 
+type Density = "compact" | "comfortable";
+
 const NebulaMenu = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -20,6 +22,11 @@ const NebulaMenu = () => {
   const [search, setSearch] = useState("");
   const [setupProduct, setSetupProduct] = useState<AuraProduct | null>(null);
   const [open, setOpen] = useState(false);
+  const [density, setDensity] = useState<Density>(() => (typeof window !== "undefined" && (localStorage.getItem("aura-density") as Density)) || "comfortable");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") localStorage.setItem("aura-density", density);
+  }, [density]);
 
   // Order: user-customized order first, then unlinked products by default order
   const orderedProducts = useMemo(() => {
