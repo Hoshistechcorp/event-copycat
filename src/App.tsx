@@ -28,6 +28,7 @@ import BloovCreate from "./pages/BloovCreate";
 import BloovCreateWizard from "./pages/BloovCreateWizard";
 import EventTimeline from "./pages/EventTimeline";
 import BloovService from "./pages/BloovService";
+import BloovExperiences from "./pages/BloovExperiences";
 import BloovServiceCategory from "./pages/BloovServiceCategory";
 import VendorProfile from "./pages/VendorProfile";
 import PackageDetail from "./pages/PackageDetail";
