@@ -34,7 +34,7 @@ interface DashboardPromotionsProps {
   events: Event[];
 }
 
-const plans = [
+const buildPlans = (formatPrice: (s: string) => string) => [
   {
     name: "Banner Boost",
     placement: "banner",
