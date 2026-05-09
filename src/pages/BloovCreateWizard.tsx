@@ -168,7 +168,7 @@ const BloovCreateWizard = () => {
               <div className="space-y-5 max-w-xl">
                 <div>
                   <Label htmlFor="title">Event title</Label>
-                  <Input id="title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. Lagos Rooftop Sessions" maxLength={200} />
+                  <Input id="title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. Rooftop Sessions NYC" maxLength={200} />
                 </div>
                 <div>
                   <Label htmlFor="venue">Venue</Label>
