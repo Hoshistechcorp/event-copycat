@@ -1,4 +1,5 @@
-import { Search, Menu, LogOut, User, LayoutDashboard, Plus, Megaphone, Wallet, Ticket } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { Search, Menu, LogOut, User, LayoutDashboard, Plus, Megaphone, Wallet, Ticket, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -12,10 +13,12 @@ import { useAuraLinks } from "@/hooks/useAuraLinks";
 import { getProduct } from "@/lib/auraProducts";
 
 const navLinkClass = (isActive: boolean) =>
-  `text-sm font-medium transition-colors ${isActive ? "text-primary font-semibold" : "text-muted-foreground hover:text-foreground"}`;
+  `text-sm font-medium transition-colors whitespace-nowrap ${isActive ? "text-primary font-semibold" : "text-muted-foreground hover:text-foreground"}`;
 
 const mobileNavLinkClass = (isActive: boolean) =>
-  `text-base font-medium transition-colors ${isActive ? "text-primary font-semibold" : "text-muted-foreground hover:text-foreground"}`;
+  `flex items-center gap-3 min-h-[44px] px-3 rounded-lg text-[15px] font-medium transition-colors ${
+    isActive ? "bg-primary/10 text-primary font-semibold" : "text-foreground hover:bg-secondary"
+  }`;
 
 const Navbar = () => {
   const { user, loading, signOut } = useAuth();
@@ -23,11 +26,29 @@ const Navbar = () => {
   const location = useLocation();
   const { pinnedIds } = useAuraLinks();
   const pinnedProducts = pinnedIds.map((id) => getProduct(id)).filter(Boolean);
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const mobileSearchRef = useRef<HTMLInputElement>(null);
 
   const isHost = user?.user_metadata?.account_type === "host";
 
+  useEffect(() => {
+    if (sheetOpen) {
+      // Slight delay so the sheet animation doesn't steal focus
+      const t = setTimeout(() => mobileSearchRef.current?.focus(), 250);
+      return () => clearTimeout(t);
+    }
+  }, [sheetOpen]);
+
+  const closeSheet = () => setSheetOpen(false);
+
+  const handleNavigate = (path: string) => {
+    navigate(path);
+    closeSheet();
+  };
+
   const handleCreateEvents = (e: React.MouseEvent) => {
     e.preventDefault();
+    closeSheet();
     if (user) {
       navigate("/create-event");
     } else {
@@ -37,6 +58,7 @@ const Navbar = () => {
 
   const handleSignOut = async () => {
     await signOut();
+    closeSheet();
     navigate("/");
   };
 
@@ -46,10 +68,10 @@ const Navbar = () => {
 
   return (
     <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
-      <div className="container flex items-center justify-between h-16 px-4 md:px-8">
-        <div className="flex items-center gap-8">
-          <a href="/" className="flex items-center gap-2">
-            <img src={mainLogo} alt="iBLOOV logo" className="h-5 w-auto" />
+      <div className="container flex items-center justify-between h-16 gap-2 px-3 md:px-8 max-w-full overflow-hidden">
+        <div className="flex items-center gap-8 min-w-0 flex-shrink">
+          <a href="/" className="flex items-center gap-2 flex-shrink-0">
+            <img src={mainLogo} alt="iBLOOV logo" className="h-4 sm:h-5 w-auto max-w-[90px] sm:max-w-[120px] object-contain" />
           </a>
           <div className="hidden lg:flex items-center gap-5 xl:gap-6">
             <a href="/events" className={navLinkClass(location.pathname === "/events")}>
@@ -90,8 +112,8 @@ const Navbar = () => {
           </div>
         </div>
 
-        <div className="flex items-center gap-2 md:gap-3">
-          {/* Pinned AURA products */}
+        <div className="flex items-center gap-1.5 md:gap-3 flex-shrink-0">
+          {/* Pinned AURA products - desktop only to keep mobile clean */}
           {user && pinnedProducts.length > 0 && (
             <div className="hidden lg:flex items-center gap-1 pr-1 border-r border-border mr-1">
               {pinnedProducts.map((p) => {
@@ -156,31 +178,29 @@ const Navbar = () => {
                         )}
                       </div>
                       <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={() => navigate("/dashboard")} className="text-xs cursor-pointer">
+                        <LayoutDashboard className="w-3.5 h-3.5 mr-2" /> Dashboard
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => navigate("/profile")} className="text-xs cursor-pointer">
+                        <User className="w-3.5 h-3.5 mr-2" /> Profile
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => navigate("/profile?tab=settings")} className="text-xs cursor-pointer">
+                        <Settings className="w-3.5 h-3.5 mr-2" /> Settings
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => navigate("/my-tickets")} className="text-xs cursor-pointer">
+                        <Ticket className="w-3.5 h-3.5 mr-2" /> My Tickets
+                      </DropdownMenuItem>
                       {isHost && (
                         <>
-                          <DropdownMenuItem onClick={() => navigate("/dashboard")} className="text-xs cursor-pointer">
-                            <LayoutDashboard className="w-3.5 h-3.5 mr-2" /> Dashboard
-                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
                           <DropdownMenuItem onClick={() => navigate("/dashboard?tab=wallet")} className="text-xs cursor-pointer">
                             <Wallet className="w-3.5 h-3.5 mr-2" /> Wallet
                           </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => navigate("/dashboard?tab=promotions")} className="text-xs cursor-pointer">
                             <Megaphone className="w-3.5 h-3.5 mr-2" /> Promotions
                           </DropdownMenuItem>
-                          <DropdownMenuSeparator />
                         </>
                       )}
-                      {!isHost && (
-                        <DropdownMenuItem onClick={() => navigate("/dashboard")} className="text-xs cursor-pointer">
-                          <LayoutDashboard className="w-3.5 h-3.5 mr-2" /> Dashboard
-                        </DropdownMenuItem>
-                      )}
-                      <DropdownMenuItem onClick={() => navigate("/profile")} className="text-xs cursor-pointer">
-                        <User className="w-3.5 h-3.5 mr-2" /> Profile
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => navigate("/my-tickets")} className="text-xs cursor-pointer">
-                        <Ticket className="w-3.5 h-3.5 mr-2" /> My Tickets
-                      </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem onClick={handleSignOut} className="text-xs text-destructive cursor-pointer">
                         <LogOut className="w-3.5 h-3.5 mr-2" /> Sign out
@@ -197,77 +217,140 @@ const Navbar = () => {
           )}
 
           {/* Mobile hamburger */}
-          <Sheet>
+          <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="lg:hidden">
+              <Button variant="ghost" size="icon" className="lg:hidden h-10 w-10 flex-shrink-0">
                 <Menu className="h-5 w-5" />
                 <span className="sr-only">Open menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-[280px] pt-10">
+            <SheetContent side="right" className="w-[300px] sm:w-[340px] p-0 flex flex-col">
               <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
-              <div className="flex flex-col gap-6">
-                <a href="/" className="flex items-center gap-2 mb-4">
-                  <img src={mainLogo} alt="iBLOOV logo" className="h-5 w-auto" />
-                  {isHost && (
-                    <Badge variant="secondary" className="text-[9px] px-1.5 py-0 h-4 font-bold">HOST</Badge>
-                  )}
-                </a>
 
+              {/* Header: user identity / sign-in CTA */}
+              <div className="px-4 pt-6 pb-4 border-b border-border">
+                {user ? (
+                  <button
+                    onClick={() => handleNavigate("/profile")}
+                    className="flex items-center gap-3 w-full text-left"
+                  >
+                    <Avatar className="h-11 w-11">
+                      <AvatarFallback className="text-sm font-bold bg-primary/10 text-primary">
+                        {initials}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-semibold text-foreground truncate">
+                        {user.user_metadata?.display_name || user.email}
+                      </p>
+                      <p className="text-[11px] text-muted-foreground truncate">{user.email}</p>
+                    </div>
+                    {isHost && (
+                      <Badge variant="secondary" className="text-[9px] px-1.5 py-0 h-4 font-bold flex-shrink-0">HOST</Badge>
+                    )}
+                  </button>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <img src={mainLogo} alt="iBLOOV logo" className="h-5 w-auto" />
+                  </div>
+                )}
+              </div>
+
+              {/* Search */}
+              <div className="px-4 py-3 border-b border-border">
                 <div className="relative w-full">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <input
-                    type="text"
+                    ref={mobileSearchRef}
+                    type="search"
+                    inputMode="search"
+                    autoComplete="off"
                     placeholder="Search experiences..."
-                    className="w-full h-10 pl-10 pr-4 rounded-full bg-secondary text-sm text-foreground placeholder:text-muted-foreground border-none outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                    className="w-full h-11 pl-10 pr-4 rounded-full bg-secondary text-sm text-foreground placeholder:text-muted-foreground border-none outline-none focus:ring-2 focus:ring-primary/30 transition-all"
                   />
                 </div>
+              </div>
 
-                <nav className="flex flex-col gap-4">
-                  <a href="/events" className={mobileNavLinkClass(location.pathname === "/events")}>
-                    Find Events
-                  </a>
-                  <a href="/bloov-create" className={mobileNavLinkClass(location.pathname.startsWith("/bloov-create"))}>
-                    Bloov Create
-                  </a>
-                  <a href="/bloov-service" className={mobileNavLinkClass(location.pathname.startsWith("/bloov-service"))}>
-                    Bloov Service
-                  </a>
-                  <a href="/event-planner" className={mobileNavLinkClass(location.pathname.startsWith("/event-planner"))}>
-                    Event Planner
-                  </a>
-                  <a href="/sponsorships" className={mobileNavLinkClass(location.pathname.startsWith("/sponsorships"))}>
-                    Sponsorships
-                  </a>
-                  <button onClick={handleCreateEvents} className={`text-left ${mobileNavLinkClass(location.pathname === "/create-event")}`}>
-                    Create Events
-                  </button>
-                  {isHost && (
-                    <>
-                      <a href="/dashboard" className={mobileNavLinkClass(location.pathname === "/dashboard")}>
-                        Dashboard
-                      </a>
-                      <a href="/dashboard?tab=wallet" className={mobileNavLinkClass(false)}>
-                        Wallet
-                      </a>
-                      <a href="/dashboard?tab=promotions" className={mobileNavLinkClass(false)}>
-                        Promotions
-                      </a>
-                    </>
-                  )}
-                  <a href="/my-tickets" className={mobileNavLinkClass(location.pathname === "/my-tickets")}>
-                    Find my tickets
-                  </a>
-                  {user ? (
-                    <button onClick={handleSignOut} className="text-left text-base font-medium text-destructive hover:text-destructive/80 transition-colors">
-                      Sign out
+              {/* Quick actions for signed-in users */}
+              {user && (
+                <div className="px-3 py-2 border-b border-border">
+                  <div className="grid grid-cols-3 gap-2">
+                    <button
+                      onClick={() => handleNavigate("/dashboard")}
+                      className="flex flex-col items-center gap-1 py-2.5 rounded-lg bg-secondary/50 hover:bg-secondary transition-colors min-h-[60px]"
+                    >
+                      <LayoutDashboard className="h-4 w-4 text-primary" />
+                      <span className="text-[10px] font-medium">Dashboard</span>
                     </button>
-                  ) : (
-                    <a href="/signin" className="text-base font-medium text-muted-foreground hover:text-foreground transition-colors">
-                      Sign in
-                    </a>
-                  )}
-                </nav>
+                    <button
+                      onClick={() => handleNavigate("/profile")}
+                      className="flex flex-col items-center gap-1 py-2.5 rounded-lg bg-secondary/50 hover:bg-secondary transition-colors min-h-[60px]"
+                    >
+                      <User className="h-4 w-4 text-primary" />
+                      <span className="text-[10px] font-medium">Profile</span>
+                    </button>
+                    <button
+                      onClick={() => handleNavigate("/profile?tab=settings")}
+                      className="flex flex-col items-center gap-1 py-2.5 rounded-lg bg-secondary/50 hover:bg-secondary transition-colors min-h-[60px]"
+                    >
+                      <Settings className="h-4 w-4 text-primary" />
+                      <span className="text-[10px] font-medium">Settings</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Main nav */}
+              <nav className="flex-1 overflow-y-auto px-2 py-2 space-y-0.5">
+                <button onClick={() => handleNavigate("/events")} className={`w-full text-left ${mobileNavLinkClass(location.pathname === "/events")}`}>
+                  <Search className="h-4 w-4" /> Find Events
+                </button>
+                <button onClick={() => handleNavigate("/bloov-create")} className={`w-full text-left ${mobileNavLinkClass(location.pathname.startsWith("/bloov-create"))}`}>
+                  <Plus className="h-4 w-4" /> Bloov Create
+                </button>
+                <button onClick={() => handleNavigate("/bloov-service")} className={`w-full text-left ${mobileNavLinkClass(location.pathname.startsWith("/bloov-service"))}`}>
+                  <Megaphone className="h-4 w-4" /> Bloov Service
+                </button>
+                <button onClick={() => handleNavigate("/event-planner")} className={`w-full text-left ${mobileNavLinkClass(location.pathname.startsWith("/event-planner"))}`}>
+                  <LayoutDashboard className="h-4 w-4" /> Event Planner
+                </button>
+                <button onClick={() => handleNavigate("/sponsorships")} className={`w-full text-left ${mobileNavLinkClass(location.pathname.startsWith("/sponsorships"))}`}>
+                  <Megaphone className="h-4 w-4" /> Sponsorships
+                </button>
+                <button onClick={handleCreateEvents} className={`w-full text-left ${mobileNavLinkClass(location.pathname === "/create-event")}`}>
+                  <Plus className="h-4 w-4" /> Create Events
+                </button>
+                <button onClick={() => handleNavigate("/my-tickets")} className={`w-full text-left ${mobileNavLinkClass(location.pathname === "/my-tickets")}`}>
+                  <Ticket className="h-4 w-4" /> My Tickets
+                </button>
+
+                {isHost && (
+                  <>
+                    <div className="pt-3 pb-1 px-3 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Host</div>
+                    <button onClick={() => handleNavigate("/dashboard?tab=wallet")} className={`w-full text-left ${mobileNavLinkClass(false)}`}>
+                      <Wallet className="h-4 w-4" /> Wallet
+                    </button>
+                    <button onClick={() => handleNavigate("/dashboard?tab=promotions")} className={`w-full text-left ${mobileNavLinkClass(false)}`}>
+                      <Megaphone className="h-4 w-4" /> Promotions
+                    </button>
+                  </>
+                )}
+              </nav>
+
+              {/* Footer auth action */}
+              <div className="border-t border-border p-3">
+                {user ? (
+                  <button
+                    onClick={handleSignOut}
+                    className="flex items-center gap-3 w-full min-h-[44px] px-3 rounded-lg text-[15px] font-medium text-destructive hover:bg-destructive/10 transition-colors"
+                  >
+                    <LogOut className="h-4 w-4" /> Sign out
+                  </button>
+                ) : (
+                  <Button className="w-full rounded-full font-semibold h-11" onClick={() => handleNavigate("/signin")}>
+                    Sign in
+                  </Button>
+                )}
               </div>
             </SheetContent>
           </Sheet>
