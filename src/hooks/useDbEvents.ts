@@ -14,6 +14,9 @@ function mapDbToEventItem(db: any): EventItem & {
   end_date?: string | null;
   date_iso?: string;
   host_id?: string;
+  open_to_sponsorship?: boolean;
+  donate_flexit_url?: string | null;
+  donate_flexit_qr_url?: string | null;
 } {
   const eventDate = new Date(db.date);
   const monthNames = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
