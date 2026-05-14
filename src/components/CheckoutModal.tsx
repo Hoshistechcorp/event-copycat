@@ -12,7 +12,7 @@ import { toast } from "@/hooks/use-toast";
 interface CheckoutModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  event: EventItem & { id: any; currency?: string };
+  event: EventItem & { id: any; currency?: string; refund_policy?: string | null };
   selectedTicketIndex: number;
 }
 
