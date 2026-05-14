@@ -1,11 +1,12 @@
+import { useSearchParams } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Mail, MapPin, Phone, MessageCircle, Clock, Globe } from "lucide-react";
-import { useState } from "react";
+import { Mail, MapPin, Phone, MessageCircle, Clock, Globe, Calendar, Tag, Handshake } from "lucide-react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 
