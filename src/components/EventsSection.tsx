@@ -30,7 +30,7 @@ interface EventItem {
 const events: EventItem[] = [
   { id: 1, title: "Vibes & Grills 3.0", organizer: "The Grill Master", date: "OCT 12", price: "₦5,000", image: event1, vibing: "120+", verified: true, category: "Parties", location: "Lagos" },
   { id: 2, title: "Tech Mixer Lagos", organizer: "Lagos Tech Hub", date: "OCT 15", price: "Free", image: event2, vibing: "85+", verified: false, category: "Workshops", location: "Lagos" },
-  { id: 3, title: "Sip & Paint Night", organizer: "Art Studio X", date: "OCT 18", price: "₦7,500", image: event3, vibing: "45+", verified: false, category: "Workshops", location: "Abuja" },
+  { id: 3, title: "Sip & Paint Night", organizer: "Birthday Studio X", date: "OCT 18", price: "₦7,500", image: event3, vibing: "45+", verified: false, category: "Workshops", location: "Abuja" },
   { id: 4, title: "Outdoor Cinema: Classics", organizer: "Park View Screens", date: "OCT 20", price: "₦3,000", image: event4, vibing: "200+", verified: true, category: "Parties", location: "Port Harcourt" },
   { id: 5, title: "Comedy Roast Night", organizer: "Lagos Laughs", date: "OCT 22", price: "₦10,000", image: event5, vibing: "150+", verified: false, category: "Music", location: "Ibadan" },
   { id: 6, title: "Morning Yoga Session", organizer: "Flow with Tola", date: "OCT 23", price: "Free", image: event6, vibing: "30+", verified: false, category: "Workshops", location: "Accra" },
