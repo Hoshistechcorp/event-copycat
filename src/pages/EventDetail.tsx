@@ -294,6 +294,39 @@ const EventDetail = () => {
                   ) : (
                     <Button className="w-full rounded-xl h-12 font-bold" onClick={() => setRsvpOpen(true)}>RSVP Now</Button>
                   )}
+                  {isTestRun && event.tickets?.length > 0 && (
+                    <div className="mt-5 pt-5 border-t border-border">
+                      <div className="flex items-center gap-2 mb-3">
+                        <FlaskConical className="h-4 w-4 text-amber-600" />
+                        <h3 className="text-sm font-bold">Test Run contribution tiers</h3>
+                      </div>
+                      <p className="text-[11px] text-muted-foreground mb-3">RSVP is required, and you also back the tier you'd buy at full price. You only pay a fraction now — refundable if the event doesn't go live.</p>
+                      <div className="space-y-2">
+                        {event.tickets.map((ticket: any, i: number) => {
+                          const pct = Number(ticket.test_fee_percent) || 0;
+                          const raw = Number(ticket.rawPrice) || 0;
+                          const due = pct > 0 ? (raw * pct) / 100 : raw;
+                          const cur = event.currency || "NGN";
+                          const fmt = (n: number) => n === 0 ? "Free" : `${cur} ${n.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
+                          return (
+                            <div key={i} className="p-3 rounded-xl border border-border bg-secondary/40">
+                              <div className="flex items-center justify-between mb-1">
+                                <span className="text-xs font-bold">{ticket.name}</span>
+                                <span className="text-xs font-extrabold text-primary">{fmt(due)}</span>
+                              </div>
+                              <div className="flex items-center justify-between text-[10px] text-muted-foreground">
+                                <span>Full price: <span className="line-through">{ticket.price}</span></span>
+                                {pct > 0 && <span className="font-semibold text-amber-700">Pay {pct}% now</span>}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                      <button onClick={() => setRefundOpen(true)} className="text-[11px] text-primary font-semibold mt-3 hover:underline">
+                        Read full refund policy →
+                      </button>
+                    </div>
+                  )}
                 </>
               ) : (
                 <>
