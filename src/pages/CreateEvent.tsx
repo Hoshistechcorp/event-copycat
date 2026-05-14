@@ -496,6 +496,26 @@ const CreateEvent = () => {
               </div>
             </div>
 
+            <div className="p-4 rounded-2xl border border-border bg-card space-y-2">
+              <div className="flex items-start gap-3">
+                <div className="h-9 w-9 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center shrink-0">
+                  <ShieldCheck className="h-4 w-4" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-sm font-semibold">Refund policy</h3>
+                  <p className="text-xs text-muted-foreground">Set your own refund terms for Test Runs and ticket purchases. This appears in checkout.</p>
+                </div>
+              </div>
+              <Textarea
+                value={refundPolicy}
+                onChange={(e) => setRefundPolicy(e.target.value)}
+                placeholder="e.g. Full refund if cancelled 48h before the event. No refunds within 24h of start time."
+                className="rounded-xl bg-secondary border-border text-sm min-h-[80px]"
+                maxLength={1000}
+              />
+              <p className="text-[10px] text-muted-foreground text-right">{refundPolicy.length}/1000</p>
+            </div>
+
             <div className="p-4 rounded-2xl border border-border bg-card flex items-start gap-3">
               <input
                 id="sponsorship-toggle"
