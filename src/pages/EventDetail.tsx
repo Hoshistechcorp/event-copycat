@@ -36,6 +36,7 @@ const EventDetail = () => {
   const [hasRsvp, setHasRsvp] = useState(false);
   const [refundOpen, setRefundOpen] = useState(false);
   const [sponsorOpen, setSponsorOpen] = useState(false);
+  const [sponsorMessage, setSponsorMessage] = useState("");
 
   useEffect(() => {
     if (!user || !isDbId) return;
