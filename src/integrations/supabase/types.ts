@@ -420,6 +420,7 @@ export type Database = {
           online_url: string | null
           open_to_sponsorship: boolean
           qr_secret: string
+          refund_policy: string | null
           requires_rsvp: boolean
           reveal_hours_before: number
           slug: string | null
@@ -448,6 +449,7 @@ export type Database = {
           online_url?: string | null
           open_to_sponsorship?: boolean
           qr_secret?: string
+          refund_policy?: string | null
           requires_rsvp?: boolean
           reveal_hours_before?: number
           slug?: string | null
@@ -476,6 +478,7 @@ export type Database = {
           online_url?: string | null
           open_to_sponsorship?: boolean
           qr_secret?: string
+          refund_policy?: string | null
           requires_rsvp?: boolean
           reveal_hours_before?: number
           slug?: string | null
