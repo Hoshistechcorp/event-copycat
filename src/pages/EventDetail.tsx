@@ -19,6 +19,7 @@ const isUuid = (str: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4
 const EventDetail = () => {
   const { id } = useParams();
   const { user } = useAuth();
+  const { toast } = useToast();
   const isDbId = id ? isUuid(id) : false;
   const { data: dbEvent, isLoading } = useDbEvent(isDbId ? id! : "");
 
