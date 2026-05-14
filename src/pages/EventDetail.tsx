@@ -118,6 +118,13 @@ const EventDetail = () => {
                       <ShieldCheck className="h-3.5 w-3.5 text-emerald-600 mt-0.5 shrink-0" />
                       <span>Your contribution is <span className="font-semibold text-foreground">100% refundable</span> if the event is cancelled or doesn't reach its threshold. You're helping decide if this happens for real.</span>
                     </p>
+                    <button
+                      type="button"
+                      onClick={() => setRefundOpen(true)}
+                      className="text-xs font-semibold text-amber-700 underline underline-offset-2 mt-2 hover:text-amber-800"
+                    >
+                      Read full refund policy
+                    </button>
                   </div>
                   <Button size="sm" variant="outline" className="rounded-xl shrink-0 hidden sm:inline-flex" onClick={copyShare}>
                     <Copy className="h-3.5 w-3.5 mr-1" /> Share
