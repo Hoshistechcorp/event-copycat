@@ -1,8 +1,9 @@
 import { useState, useMemo } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useState, useMemo } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Check, Minus, Plus, Loader2, Tag, X, ShieldCheck, Sparkles } from "lucide-react";
+import { Check, Minus, Plus, Loader2, Tag, X, ShieldCheck, Sparkles, FlaskConical } from "lucide-react";
 import type { EventItem } from "@/data/events";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
