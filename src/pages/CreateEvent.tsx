@@ -501,6 +501,38 @@ const CreateEvent = () => {
               </label>
             </div>
 
+            <div className="p-4 rounded-2xl border border-border bg-card space-y-3">
+              <div className="flex items-start gap-3">
+                <div className="h-9 w-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0 font-extrabold text-sm">$</div>
+                <div className="flex-1">
+                  <h3 className="text-sm font-semibold">Donations via iBloov FlexIt</h3>
+                  <p className="text-xs text-muted-foreground">Let attendees chip in. Paste your FlexIt link or upload a QR — both show on the event page.</p>
+                </div>
+                <a href="/flexit" target="_blank" rel="noreferrer" className="text-[11px] font-semibold text-primary underline shrink-0 mt-1">Create one</a>
+              </div>
+              <Input
+                value={donateUrl}
+                onChange={(e) => setDonateUrl(e.target.value)}
+                placeholder="https://ibloov.com/flexit/your-link"
+                className="rounded-xl h-10 bg-secondary border-border text-sm"
+              />
+              <div className="flex items-center gap-3">
+                <label htmlFor="donate-qr" className="cursor-pointer shrink-0">
+                  {donateQrPreview ? (
+                    <img src={donateQrPreview} alt="QR" className="w-16 h-16 rounded-xl object-cover border border-border" />
+                  ) : (
+                    <div className="w-16 h-16 rounded-xl border-2 border-dashed border-border bg-secondary flex items-center justify-center">
+                      <ImagePlus className="h-5 w-5 text-muted-foreground" />
+                    </div>
+                  )}
+                  <input id="donate-qr" type="file" accept="image/*" className="hidden" onChange={(e) => {
+                    const f = e.target.files?.[0]; if (f) { setDonateQrFile(f); setDonateQrPreview(URL.createObjectURL(f)); }
+                  }} />
+                </label>
+                <p className="text-xs text-muted-foreground">Optional QR image — guests can scan straight from the event page.</p>
+              </div>
+            </div>
+
             <PromoInvitesStep
               promoCodes={promoCodes}
               onPromoChange={setPromoCodes}
