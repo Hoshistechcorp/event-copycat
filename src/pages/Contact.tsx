@@ -1,17 +1,34 @@
+import { useSearchParams } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Mail, MapPin, Phone, MessageCircle, Clock, Globe } from "lucide-react";
-import { useState } from "react";
+import { Mail, MapPin, Phone, MessageCircle, Clock, Globe, Calendar, Tag, Handshake } from "lucide-react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 
 const Contact = () => {
+  const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+
+  const topic = searchParams.get("topic");
+  const eventTitle = searchParams.get("eventTitle");
+  const eventDate = searchParams.get("eventDate");
+  const prefilledSubject = searchParams.get("subject") || "";
+  const prefilledMessage = searchParams.get("message") || "";
+  const isSponsorship = topic === "sponsorship";
+
+  const [subject, setSubject] = useState(prefilledSubject);
+  const [message, setMessage] = useState(prefilledMessage);
+
+  useEffect(() => {
+    setSubject(prefilledSubject);
+    setMessage(prefilledMessage);
+  }, [prefilledSubject, prefilledMessage]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -20,6 +37,8 @@ const Contact = () => {
       setLoading(false);
       toast({ title: "Message sent!", description: "We'll get back to you soon." });
       (e.target as HTMLFormElement).reset();
+      setSubject("");
+      setMessage("");
     }, 1000);
   };
 
@@ -88,6 +107,36 @@ const Contact = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
           >
+            {isSponsorship && eventTitle && (
+              <motion.div
+                className="mb-6 p-4 rounded-2xl border border-border bg-card shadow-sm"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4 }}
+              >
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+                    <Handshake className="w-4 h-4 text-emerald-600" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-emerald-700 uppercase tracking-wide">Sponsorship Enquiry</p>
+                    <p className="text-sm font-semibold text-foreground">{eventTitle}</p>
+                  </div>
+                </div>
+                <div className="grid sm:grid-cols-2 gap-2 text-xs text-muted-foreground">
+                  {eventDate && (
+                    <div className="flex items-center gap-1.5">
+                      <Calendar className="w-3.5 h-3.5" />
+                      <span>{eventDate}</span>
+                    </div>
+                  )}
+                  <div className="flex items-center gap-1.5">
+                    <Tag className="w-3.5 h-3.5" />
+                    <span className="capitalize">{topic}</span>
+                  </div>
+                </div>
+              </motion.div>
+            )}
             <h2 className="text-2xl font-bold text-foreground mb-1">Send us a message</h2>
             <p className="text-muted-foreground mb-6 text-sm">Fill in the form and we'll respond as soon as possible.</p>
             <form onSubmit={handleSubmit} className="space-y-5">
@@ -103,11 +152,26 @@ const Contact = () => {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="subject">Subject</Label>
-                <Input id="subject" placeholder="How can we help?" required className="rounded-xl" />
+                <Input
+                  id="subject"
+                  value={subject}
+                  onChange={(e) => setSubject(e.target.value)}
+                  placeholder="How can we help?"
+                  required
+                  className="rounded-xl"
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="message">Message</Label>
-                <Textarea id="message" placeholder="Tell us more..." rows={5} required className="rounded-xl" />
+                <Textarea
+                  id="message"
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  placeholder="Tell us more..."
+                  rows={5}
+                  required
+                  className="rounded-xl"
+                />
               </div>
               <Button type="submit" className="rounded-full px-8" disabled={loading}>
                 {loading ? "Sending..." : "Send Message"}
