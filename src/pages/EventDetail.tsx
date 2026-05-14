@@ -342,6 +342,56 @@ const EventDetail = () => {
       <CheckoutModal open={checkoutOpen} onOpenChange={setCheckoutOpen} event={event} selectedTicketIndex={selectedTicket} />
       {isDbId && <RsvpDialog open={rsvpOpen} onOpenChange={setRsvpOpen} eventId={id!} eventTitle={event.title} onRsvped={() => setHasRsvp(true)} />}
 
+      <Dialog open={refundOpen} onOpenChange={setRefundOpen}>
+        <DialogContent className="rounded-2xl max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <ShieldCheck className="h-5 w-5 text-emerald-600" aria-hidden="true" /> Test Run refund policy
+            </DialogTitle>
+            <DialogDescription>
+              Test Runs let hosts gauge real interest before committing. Your money is protected the whole time.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3 text-sm">
+            <div className="p-3 rounded-xl bg-emerald-500/5 border border-emerald-500/20">
+              <p className="font-semibold mb-1">100% refund — automatic</p>
+              <p className="text-xs text-muted-foreground">If the host cancels, doesn't reach the interest threshold, or doesn't promote the Test Run to a live event before the scheduled date, every contribution is refunded in full to the original payment method within 5–10 business days.</p>
+            </div>
+            <div className="p-3 rounded-xl bg-secondary/60 border border-border">
+              <p className="font-semibold mb-1">If the event goes live</p>
+              <p className="text-xs text-muted-foreground">Your Test Run contribution is converted into a real ticket at the tier you backed. You'll receive a QR ticket by email.</p>
+            </div>
+            <div className="p-3 rounded-xl bg-secondary/60 border border-border">
+              <p className="font-semibold mb-1">Donations via FlexIt</p>
+              <p className="text-xs text-muted-foreground">FlexIt donations are voluntary and processed by the host's iBloov FlexIt wallet. They're <span className="font-semibold">not refundable</span> through the Test Run guarantee — only ticket contributions are.</p>
+            </div>
+            <p className="text-[11px] text-muted-foreground">Need help with a specific refund? Contact iBloov Support from the help center.</p>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={sponsorOpen} onOpenChange={setSponsorOpen}>
+        <DialogContent className="rounded-2xl max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Handshake className="h-5 w-5 text-emerald-600" aria-hidden="true" /> Pitch this host
+            </DialogTitle>
+            <DialogDescription>
+              The host receives sponsorship enquiries through iBloov. Choose the easiest channel for your brand.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2">
+            <Button asChild className="w-full rounded-xl justify-start" variant="outline">
+              <Link to="/sponsorships"><Handshake className="h-4 w-4 mr-2" aria-hidden="true" /> Submit an offer via Sponsorship Hub</Link>
+            </Button>
+            <Button asChild className="w-full rounded-xl justify-start" variant="outline">
+              <Link to="/contact"><Mail className="h-4 w-4 mr-2" aria-hidden="true" /> Message iBloov to introduce you</Link>
+            </Button>
+            <p className="text-[11px] text-muted-foreground pt-2">For privacy, host emails aren't published. iBloov forwards verified brand requests directly to the host.</p>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <Footer />
     </div>
   );
