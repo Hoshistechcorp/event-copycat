@@ -194,6 +194,34 @@ const EventDetail = () => {
                 </div>
               </div>
             )}
+
+            {(event.donate_flexit_url || event.donate_flexit_qr_url) && (
+              <div className="bg-card rounded-2xl border border-border p-6 md:p-8 shadow-sm">
+                <div className="flex items-center gap-2 mb-1">
+                  <HeartIcon className="w-5 h-5 text-rose-500 fill-rose-500/30" />
+                  <h2 className="text-lg font-bold">Support this event</h2>
+                </div>
+                <p className="text-xs text-muted-foreground mb-4">Chip in via the host's iBloov FlexIt — every bit helps make it happen.</p>
+                <div className="flex flex-col sm:flex-row gap-4 items-start">
+                  {event.donate_flexit_qr_url && (
+                    <img src={event.donate_flexit_qr_url} alt="Donate QR" className="w-32 h-32 rounded-xl object-cover border border-border bg-white" />
+                  )}
+                  <div className="flex-1 w-full space-y-2">
+                    {event.donate_flexit_url && (
+                      <a href={event.donate_flexit_url} target="_blank" rel="noreferrer"
+                        className="flex items-center justify-between gap-2 p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 hover:bg-rose-500/15 transition-colors">
+                        <span className="text-sm font-bold text-rose-700 truncate">Donate via FlexIt</span>
+                        <ExternalLink className="h-4 w-4 text-rose-700 shrink-0" />
+                      </a>
+                    )}
+                    {event.donate_flexit_url && (
+                      <p className="text-[11px] text-muted-foreground break-all">{event.donate_flexit_url}</p>
+                    )}
+                    <p className="text-[10px] text-muted-foreground">Donations go directly to the host's iBloov FlexIt wallet.</p>
+                  </div>
+                </div>
+              </div>
+            )}
           </motion.div>
 
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.1 }}>
