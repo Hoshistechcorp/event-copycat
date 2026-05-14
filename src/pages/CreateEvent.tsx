@@ -207,6 +207,14 @@ const CreateEvent = () => {
       imageUrl = supabase.storage.from("event-images").getPublicUrl(path).data.publicUrl;
     }
 
+    let donateQrUrl: string | null = null;
+    if (donateQrFile) {
+      const ext = donateQrFile.name.split(".").pop();
+      const path = `${user.id}/donate-qr-${crypto.randomUUID()}.${ext}`;
+      const { error: upErr } = await supabase.storage.from("event-images").upload(path, donateQrFile);
+      if (!upErr) donateQrUrl = supabase.storage.from("event-images").getPublicUrl(path).data.publicUrl;
+    }
+
     const isTest = mode === "test";
     const status = mode === "draft" ? "draft" : "published";
     // Test runs publish unlisted (only people with the link see it) so creators can validate demand.
@@ -236,6 +244,8 @@ const CreateEvent = () => {
       is_paid: isTest ? testHasPaidTiers : settings.is_paid,
       currency: settings.currency,
       open_to_sponsorship: openToSponsorship,
+      donate_flexit_url: donateUrl.trim() || null,
+      donate_flexit_qr_url: donateQrUrl,
     } as any).select("id").single();
 
     if (evErr || !eventData) { setError(evErr?.message || "Failed to create event."); setSubmitting(false); setSubmitMode(null); return; }
