@@ -75,6 +75,9 @@ function mapDbToEventItem(db: any): EventItem & {
     end_date: db.end_date,
     date_iso: db.date,
     host_id: db.host_id,
+    open_to_sponsorship: db.open_to_sponsorship,
+    donate_flexit_url: db.donate_flexit_url,
+    donate_flexit_qr_url: db.donate_flexit_qr_url,
   };
 }
 
