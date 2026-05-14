@@ -75,6 +75,11 @@ const EventDetail = () => {
 
   const isOnline = event.event_format === "online";
   const isHybrid = event.event_format === "hybrid";
+  const isTestRun = typeof event.title === "string" && /^\[Test Run\]/i.test(event.title);
+  const cleanTitle = isTestRun ? event.title.replace(/^\[Test Run\]\s*/i, "") : event.title;
+  const copyShare = async () => {
+    try { await navigator.clipboard.writeText(window.location.href); toast({ title: "Link copied" }); } catch {}
+  };
 
   return (
     <div className="min-h-screen bg-background">
