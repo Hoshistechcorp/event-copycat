@@ -36,7 +36,7 @@ interface Performer {
   imagePreview: string | null;
 }
 
-const CATEGORIES = ["Music", "Art", "Tech", "Sports", "Food & Drink", "Comedy", "Fashion", "Business", "Wedding", "Dinner", "Conference", "Other"];
+const CATEGORIES = ["Music", "Birthday", "Tech", "Sports", "Food & Drink", "Comedy", "Fashion", "Business", "Wedding", "Dinner", "Conference", "Other"];
 
 const STEPS = [
   { label: "Basics", icon: Type },
