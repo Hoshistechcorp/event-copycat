@@ -144,7 +144,22 @@ const CheckoutModal = ({ open, onOpenChange, event, selectedTicketIndex }: Check
                 </div>
               </div>
               {isTestRun && testFeePct > 0 && (
-                <p className="text-[10px] font-semibold text-amber-700 mt-2">Test Run contribution · {testFeePct}% of full price · refundable if event is cancelled</p>
+                <div className="mt-3 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 space-y-1.5">
+                  <div className="flex items-start gap-2">
+                    <FlaskConical className="h-4 w-4 text-amber-600 mt-0.5 shrink-0" />
+                    <div className="flex-1">
+                      <p className="text-xs font-bold text-amber-700">Test Run contribution</p>
+                      <p className="text-[11px] text-amber-700/80">You pay {testFeePct}% of the full ticket price now. If the event is cancelled, your contribution is fully refundable.</p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setRefundOpen(true)}
+                    className="text-[11px] font-semibold text-amber-800 underline underline-offset-2 hover:text-amber-900"
+                  >
+                    Read full refund policy by the event creator →
+                  </button>
+                </div>
               )}
             </div>
 
