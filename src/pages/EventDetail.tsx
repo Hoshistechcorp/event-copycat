@@ -34,6 +34,8 @@ const EventDetail = () => {
   const [rsvpOpen, setRsvpOpen] = useState(false);
   const [hasTicket, setHasTicket] = useState(false);
   const [hasRsvp, setHasRsvp] = useState(false);
+  const [refundOpen, setRefundOpen] = useState(false);
+  const [sponsorOpen, setSponsorOpen] = useState(false);
 
   useEffect(() => {
     if (!user || !isDbId) return;
