@@ -309,7 +309,11 @@ const EventDetail = () => {
                           const cur = event.currency || "NGN";
                           const fmt = (n: number) => n === 0 ? "Free" : `${cur} ${n.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
                           return (
-                            <div key={i} className="p-3 rounded-xl border border-border bg-secondary/40">
+                            <button
+                              key={i}
+                              onClick={() => { setSelectedTicket(i); setCheckoutOpen(true); }}
+                              className="w-full text-left p-3 rounded-xl border border-border bg-secondary/40 hover:border-primary hover:bg-primary/5 transition-all"
+                            >
                               <div className="flex items-center justify-between mb-1">
                                 <span className="text-xs font-bold">{ticket.name}</span>
                                 <span className="text-xs font-extrabold text-primary">{fmt(due)}</span>
@@ -318,7 +322,8 @@ const EventDetail = () => {
                                 <span>Full price: <span className="line-through">{ticket.price}</span></span>
                                 {pct > 0 && <span className="font-semibold text-amber-700">Pay {pct}% now</span>}
                               </div>
-                            </div>
+                              <div className="mt-2 text-[10px] font-bold text-primary">Pay contribution →</div>
+                            </button>
                           );
                         })}
                       </div>
@@ -368,7 +373,11 @@ const EventDetail = () => {
                   )}
 
                   <Button className="w-full rounded-xl h-12 text-sm font-bold" onClick={() => setCheckoutOpen(true)}>
-                    {event.tickets[selectedTicket].rawPrice === 0 ? "Reserve" : "Get"} {event.tickets[selectedTicket].name}
+                    {event.tickets[selectedTicket].rawPrice === 0
+                      ? `Reserve ${event.tickets[selectedTicket].name}`
+                      : isTestRun && event.tickets[selectedTicket].test_fee_percent > 0
+                        ? `Pay ${event.tickets[selectedTicket].test_fee_percent}% Test Run contribution`
+                        : `Get ${event.tickets[selectedTicket].name}`}
                   </Button>
                   <p className="text-[10px] text-muted-foreground text-center mt-3">Secure checkout · Instant QR ticket</p>
                 </>

@@ -30,7 +30,10 @@ const CheckoutModal = ({ open, onOpenChange, event, selectedTicketIndex }: Check
   const navigate = useNavigate();
 
   const currency = event.currency || "NGN";
-  const unitPrice = Number(ticket.rawPrice ?? 0);
+  const isTestRun = typeof event.title === "string" && /^\[Test Run\]/i.test(event.title);
+  const testFeePct = Number(ticket.test_fee_percent) || 0;
+  const fullPrice = Number(ticket.rawPrice ?? 0);
+  const unitPrice = isTestRun && testFeePct > 0 ? Math.round((fullPrice * testFeePct) / 100) : fullPrice;
   const subtotal = unitPrice * quantity;
 
   const { discount, discountLabel } = useMemo(() => {
@@ -132,8 +135,16 @@ const CheckoutModal = ({ open, onOpenChange, event, selectedTicketIndex }: Check
               <p className="text-xs text-muted-foreground mb-2">{event.fullDate} · {event.time}</p>
               <div className="flex items-center justify-between">
                 <span className="text-sm font-semibold">{ticket.name}</span>
-                <span className="text-sm font-extrabold text-primary">{fmt(unitPrice)}</span>
+                <div className="text-right">
+                  {isTestRun && testFeePct > 0 && fullPrice > 0 && (
+                    <span className="text-[10px] text-muted-foreground line-through mr-2">{currency} {fullPrice.toLocaleString()}</span>
+                  )}
+                  <span className="text-sm font-extrabold text-primary">{fmt(unitPrice)}</span>
+                </div>
               </div>
+              {isTestRun && testFeePct > 0 && (
+                <p className="text-[10px] font-semibold text-amber-700 mt-2">Test Run contribution · {testFeePct}% of full price · refundable if event is cancelled</p>
+              )}
             </div>
 
             <div>
