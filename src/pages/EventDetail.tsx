@@ -208,27 +208,70 @@ const EventDetail = () => {
             {(event.donate_flexit_url || event.donate_flexit_qr_url) && (
               <div className="bg-card rounded-2xl border border-border p-6 md:p-8 shadow-sm">
                 <div className="flex items-center gap-2 mb-1">
-                  <HeartIcon className="w-5 h-5 text-rose-500 fill-rose-500/30" />
+                  <HeartIcon className="w-5 h-5 text-rose-500 fill-rose-500/30" aria-hidden="true" />
                   <h2 className="text-lg font-bold">Support this event</h2>
                 </div>
                 <p className="text-xs text-muted-foreground mb-4">Chip in via the host's iBloov FlexIt — every bit helps make it happen.</p>
                 <div className="flex flex-col sm:flex-row gap-4 items-start">
                   {event.donate_flexit_qr_url && (
-                    <img src={event.donate_flexit_qr_url} alt="Donate QR" className="w-32 h-32 rounded-xl object-cover border border-border bg-white" />
+                    <img
+                      src={event.donate_flexit_qr_url}
+                      alt={`Scan this QR code to donate to ${cleanTitle} via iBloov FlexIt`}
+                      className="w-32 h-32 rounded-xl object-cover border border-border bg-white"
+                    />
                   )}
                   <div className="flex-1 w-full space-y-2">
                     {event.donate_flexit_url && (
-                      <a href={event.donate_flexit_url} target="_blank" rel="noreferrer"
-                        className="flex items-center justify-between gap-2 p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 hover:bg-rose-500/15 transition-colors">
+                      <a
+                        href={event.donate_flexit_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={`Donate to ${cleanTitle} via iBloov FlexIt (opens in a new tab)`}
+                        className="flex items-center justify-between gap-2 p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 hover:bg-rose-500/15 transition-colors"
+                      >
                         <span className="text-sm font-bold text-rose-700 truncate">Donate via FlexIt</span>
-                        <ExternalLink className="h-4 w-4 text-rose-700 shrink-0" />
+                        <ExternalLink className="h-4 w-4 text-rose-700 shrink-0" aria-hidden="true" />
                       </a>
                     )}
                     {event.donate_flexit_url && (
                       <p className="text-[11px] text-muted-foreground break-all">{event.donate_flexit_url}</p>
                     )}
-                    <p className="text-[10px] text-muted-foreground">Donations go directly to the host's iBloov FlexIt wallet.</p>
+                    <p className="text-[10px] text-muted-foreground">Donations go directly to the host's iBloov FlexIt wallet. Opens in a new tab.</p>
                   </div>
+                </div>
+              </div>
+            )}
+
+            {event.open_to_sponsorship && (
+              <div className="bg-card rounded-2xl border border-border p-6 md:p-8 shadow-sm">
+                <div className="flex items-center gap-2 mb-1">
+                  <Handshake className="w-5 h-5 text-emerald-600" aria-hidden="true" />
+                  <h2 className="text-lg font-bold">Open to sponsorship & brand deals</h2>
+                </div>
+                <p className="text-xs text-muted-foreground mb-4">
+                  The host has flagged this {isTestRun ? "Test Run" : "event"} as open to brand partners. If your brand wants visibility, activations, or co-branded moments, here's how it works.
+                </p>
+                <div className="grid sm:grid-cols-3 gap-3 mb-5">
+                  <div className="p-3 rounded-xl bg-secondary/60 border border-border">
+                    <p className="text-xs font-bold mb-1">1. Get a feel</p>
+                    <p className="text-[11px] text-muted-foreground">Review the lineup, audience, and {isTestRun ? "Test-Run interest signal" : "expected attendance"}.</p>
+                  </div>
+                  <div className="p-3 rounded-xl bg-secondary/60 border border-border">
+                    <p className="text-xs font-bold mb-1">2. Pitch a fit</p>
+                    <p className="text-[11px] text-muted-foreground">Tell the host what your brand wants — stage time, samples, signage, content collab.</p>
+                  </div>
+                  <div className="p-3 rounded-xl bg-secondary/60 border border-border">
+                    <p className="text-xs font-bold mb-1">3. Lock the deal</p>
+                    <p className="text-[11px] text-muted-foreground">Agree on perks and budget directly with the host before the event goes live.</p>
+                  </div>
+                </div>
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <Button className="rounded-xl flex-1" onClick={() => setSponsorOpen(true)}>
+                    <Handshake className="h-4 w-4 mr-1.5" aria-hidden="true" /> Contact the host
+                  </Button>
+                  <Button variant="outline" className="rounded-xl flex-1" asChild>
+                    <Link to="/sponsorships"><ExternalLink className="h-4 w-4 mr-1.5" aria-hidden="true" /> Browse sponsorship hub</Link>
+                  </Button>
                 </div>
               </div>
             )}
