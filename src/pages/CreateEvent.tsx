@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import {
   CalendarDays, MapPin, Plus, Trash2, Loader2, ImagePlus, Save,
-  Ticket, Type, Music, ChevronLeft, ChevronRight, Check, Users, Clock, FlaskConical,
+  Ticket, Type, Music, ChevronLeft, ChevronRight, Check, Users, Clock, FlaskConical, ShieldCheck,
 } from "lucide-react";
 
 interface TicketTier {
