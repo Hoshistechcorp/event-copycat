@@ -11,8 +11,16 @@ import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 
 const Contact = () => {
+  const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+
+  const topic = searchParams.get("topic");
+  const eventTitle = searchParams.get("eventTitle");
+  const eventDate = searchParams.get("eventDate");
+  const prefilledSubject = searchParams.get("subject") || "";
+  const prefilledMessage = searchParams.get("message") || "";
+  const isSponsorship = topic === "sponsorship";
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
