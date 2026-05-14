@@ -523,32 +523,59 @@ const CreateEvent = () => {
                 className="rounded-xl h-10 bg-secondary border-border text-sm"
               />
               <div className="flex items-center gap-3">
-                <label htmlFor="donate-qr" className="cursor-pointer shrink-0">
-                  {donateQrPreview ? (
-                    <img src={donateQrPreview} alt="QR" className="w-16 h-16 rounded-xl object-cover border border-border" />
-                  ) : (
-                    <div className="w-16 h-16 rounded-xl border-2 border-dashed border-border bg-secondary flex items-center justify-center">
-                      <ImagePlus className="h-5 w-5 text-muted-foreground" />
-                    </div>
-                  )}
+                <div className="relative shrink-0">
+                  <label htmlFor="donate-qr" className="cursor-pointer block">
+                    {donateQrPreview ? (
+                      <img src={donateQrPreview} alt="QR code preview" className="w-16 h-16 rounded-xl object-cover border border-border" />
+                    ) : (
+                      <div className="w-16 h-16 rounded-xl border-2 border-dashed border-border bg-secondary flex items-center justify-center">
+                        <ImagePlus className="h-5 w-5 text-muted-foreground" />
+                      </div>
+                    )}
+                  </label>
                   <input id="donate-qr" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" className="hidden" onChange={(e) => {
                     const f = e.target.files?.[0];
-                    if (!f) return;
+                    if (!f) { return; }
+                    const reset = () => {
+                      setDonateQrFile(null);
+                      if (donateQrPreview?.startsWith("blob:")) URL.revokeObjectURL(donateQrPreview);
+                      setDonateQrPreview(null);
+                      e.target.value = "";
+                    };
                     if (!f.type.startsWith("image/")) {
                       toast({ title: "Image files only", description: "Upload a PNG, JPG, WEBP, or SVG of your QR code.", variant: "destructive" });
-                      e.target.value = "";
+                      reset();
                       return;
                     }
                     if (f.size > 5 * 1024 * 1024) {
                       toast({ title: "File too large", description: "QR image must be under 5MB.", variant: "destructive" });
-                      e.target.value = "";
+                      reset();
                       return;
                     }
+                    if (donateQrPreview?.startsWith("blob:")) URL.revokeObjectURL(donateQrPreview);
                     setDonateQrFile(f);
                     setDonateQrPreview(URL.createObjectURL(f));
                   }} />
-                </label>
-                <p className="text-xs text-muted-foreground">Optional QR image (PNG/JPG/WEBP/SVG, max 5MB) — guests can scan straight from the event page.</p>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs text-muted-foreground">Optional QR image (PNG/JPG/WEBP/SVG, max 5MB) — guests can scan straight from the event page.</p>
+                  {donateQrPreview && (
+                    <div className="flex gap-2 mt-2">
+                      <Button type="button" size="sm" variant="outline" className="rounded-lg h-7 text-xs" onClick={() => document.getElementById("donate-qr")?.click()}>
+                        Replace
+                      </Button>
+                      <Button type="button" size="sm" variant="ghost" className="rounded-lg h-7 text-xs text-destructive hover:text-destructive" onClick={() => {
+                        if (donateQrPreview?.startsWith("blob:")) URL.revokeObjectURL(donateQrPreview);
+                        setDonateQrFile(null);
+                        setDonateQrPreview(null);
+                        const input = document.getElementById("donate-qr") as HTMLInputElement | null;
+                        if (input) input.value = "";
+                      }}>
+                        Remove
+                      </Button>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 
