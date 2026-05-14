@@ -14,6 +14,9 @@ function mapDbToEventItem(db: any): EventItem & {
   end_date?: string | null;
   date_iso?: string;
   host_id?: string;
+  open_to_sponsorship?: boolean;
+  donate_flexit_url?: string | null;
+  donate_flexit_qr_url?: string | null;
 } {
   const eventDate = new Date(db.date);
   const monthNames = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
@@ -51,9 +54,10 @@ function mapDbToEventItem(db: any): EventItem & {
           tierId: t.id,
           price: t.price === 0 ? "Free" : `${currency} ${t.price.toLocaleString()}`,
           rawPrice: Number(t.price) || 0,
+          test_fee_percent: Number(t.test_fee_percent) || 0,
           perks: t.description ? t.description.split(",").map((s: string) => s.trim()) : ["General admission"],
         }))
-      : [{ name: "General Admission", price: "Free", rawPrice: 0, perks: ["General admission"] }],
+      : [{ name: "General Admission", price: "Free", rawPrice: 0, test_fee_percent: 0, perks: ["General admission"] }],
     performers: performers.map((p: any) => ({
       name: p.name,
       role: p.role || "Performer",
@@ -71,6 +75,9 @@ function mapDbToEventItem(db: any): EventItem & {
     end_date: db.end_date,
     date_iso: db.date,
     host_id: db.host_id,
+    open_to_sponsorship: db.open_to_sponsorship,
+    donate_flexit_url: db.donate_flexit_url,
+    donate_flexit_qr_url: db.donate_flexit_qr_url,
   };
 }
 

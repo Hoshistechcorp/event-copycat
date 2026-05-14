@@ -408,6 +408,8 @@ export type Database = {
           currency: string
           date: string
           description: string | null
+          donate_flexit_qr_url: string | null
+          donate_flexit_url: string | null
           end_date: string | null
           event_format: string
           host_id: string
@@ -434,6 +436,8 @@ export type Database = {
           currency?: string
           date: string
           description?: string | null
+          donate_flexit_qr_url?: string | null
+          donate_flexit_url?: string | null
           end_date?: string | null
           event_format?: string
           host_id: string
@@ -460,6 +464,8 @@ export type Database = {
           currency?: string
           date?: string
           description?: string | null
+          donate_flexit_qr_url?: string | null
+          donate_flexit_url?: string | null
           end_date?: string | null
           event_format?: string
           host_id?: string

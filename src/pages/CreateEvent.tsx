@@ -77,6 +77,9 @@ const CreateEvent = () => {
   ]);
   const [promoCodes, setPromoCodes] = useState<PromoCode[]>([]);
   const [openToSponsorship, setOpenToSponsorship] = useState(false);
+  const [donateUrl, setDonateUrl] = useState("");
+  const [donateQrFile, setDonateQrFile] = useState<File | null>(null);
+  const [donateQrPreview, setDonateQrPreview] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitMode, setSubmitMode] = useState<"draft" | "published" | "test" | null>(null);
   const [error, setError] = useState("");
@@ -100,12 +103,12 @@ const CreateEvent = () => {
       const snap = {
         step, title, description, category, imagePreview,
         date, endDate, location, settings, invites, performers: performers.map((p) => ({ name: p.name, role: p.role, imagePreview: p.imagePreview })),
-        tiers, promoCodes, openToSponsorship, savedAt: new Date().toISOString(),
+        tiers, promoCodes, openToSponsorship, donateUrl, donateQrPreview, savedAt: new Date().toISOString(),
       };
       try { localStorage.setItem(draftKey, JSON.stringify(snap)); } catch {}
     }, 600);
     return () => clearTimeout(t);
-  }, [draftKey, step, title, description, category, imagePreview, date, endDate, location, settings, invites, performers, tiers, promoCodes]);
+  }, [draftKey, step, title, description, category, imagePreview, date, endDate, location, settings, invites, performers, tiers, promoCodes, openToSponsorship, donateUrl, donateQrPreview]);
 
   const restoreDraft = () => {
     if (!draftKey) return;
@@ -124,6 +127,8 @@ const CreateEvent = () => {
       if (snap.tiers) setTiers(snap.tiers);
       if (snap.promoCodes) setPromoCodes(snap.promoCodes);
       if (typeof snap.openToSponsorship === "boolean") setOpenToSponsorship(snap.openToSponsorship);
+      if (typeof snap.donateUrl === "string") setDonateUrl(snap.donateUrl);
+      if (snap.donateQrPreview) setDonateQrPreview(snap.donateQrPreview);
       if (typeof snap.step === "number") setStep(snap.step);
       toast({ title: "Draft restored", description: "Picked up where you left off." });
     } catch {}
@@ -202,6 +207,14 @@ const CreateEvent = () => {
       imageUrl = supabase.storage.from("event-images").getPublicUrl(path).data.publicUrl;
     }
 
+    let donateQrUrl: string | null = null;
+    if (donateQrFile) {
+      const ext = donateQrFile.name.split(".").pop();
+      const path = `${user.id}/donate-qr-${crypto.randomUUID()}.${ext}`;
+      const { error: upErr } = await supabase.storage.from("event-images").upload(path, donateQrFile);
+      if (!upErr) donateQrUrl = supabase.storage.from("event-images").getPublicUrl(path).data.publicUrl;
+    }
+
     const isTest = mode === "test";
     const status = mode === "draft" ? "draft" : "published";
     // Test runs publish unlisted (only people with the link see it) so creators can validate demand.
@@ -231,6 +244,8 @@ const CreateEvent = () => {
       is_paid: isTest ? testHasPaidTiers : settings.is_paid,
       currency: settings.currency,
       open_to_sponsorship: openToSponsorship,
+      donate_flexit_url: donateUrl.trim() || null,
+      donate_flexit_qr_url: donateQrUrl,
     } as any).select("id").single();
 
     if (evErr || !eventData) { setError(evErr?.message || "Failed to create event."); setSubmitting(false); setSubmitMode(null); return; }
@@ -484,6 +499,38 @@ const CreateEvent = () => {
                 <span className="text-sm font-semibold block">Open to sponsorship & brand deals</span>
                 <span className="text-xs text-muted-foreground">List this event to brands looking to sponsor — works for Test Runs and live events.</span>
               </label>
+            </div>
+
+            <div className="p-4 rounded-2xl border border-border bg-card space-y-3">
+              <div className="flex items-start gap-3">
+                <div className="h-9 w-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0 font-extrabold text-sm">$</div>
+                <div className="flex-1">
+                  <h3 className="text-sm font-semibold">Donations via iBloov FlexIt</h3>
+                  <p className="text-xs text-muted-foreground">Let attendees chip in. Paste your FlexIt link or upload a QR — both show on the event page.</p>
+                </div>
+                <a href="/flexit" target="_blank" rel="noreferrer" className="text-[11px] font-semibold text-primary underline shrink-0 mt-1">Create one</a>
+              </div>
+              <Input
+                value={donateUrl}
+                onChange={(e) => setDonateUrl(e.target.value)}
+                placeholder="https://ibloov.com/flexit/your-link"
+                className="rounded-xl h-10 bg-secondary border-border text-sm"
+              />
+              <div className="flex items-center gap-3">
+                <label htmlFor="donate-qr" className="cursor-pointer shrink-0">
+                  {donateQrPreview ? (
+                    <img src={donateQrPreview} alt="QR" className="w-16 h-16 rounded-xl object-cover border border-border" />
+                  ) : (
+                    <div className="w-16 h-16 rounded-xl border-2 border-dashed border-border bg-secondary flex items-center justify-center">
+                      <ImagePlus className="h-5 w-5 text-muted-foreground" />
+                    </div>
+                  )}
+                  <input id="donate-qr" type="file" accept="image/*" className="hidden" onChange={(e) => {
+                    const f = e.target.files?.[0]; if (f) { setDonateQrFile(f); setDonateQrPreview(URL.createObjectURL(f)); }
+                  }} />
+                </label>
+                <p className="text-xs text-muted-foreground">Optional QR image — guests can scan straight from the event page.</p>
+              </div>
             </div>
 
             <PromoInvitesStep
