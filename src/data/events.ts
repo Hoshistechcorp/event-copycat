@@ -64,11 +64,11 @@ export const allEvents: EventItem[] = [
     coordinates: { lat: 6.5158, lng: 3.3902 },
   },
   {
-    id: 3, title: "Sip & Paint Night", organizer: "Art Studio X", date: "OCT 18", fullDate: "Friday, October 18, 2025", time: "6:00 PM", price: "₦7,500", image: event3, vibing: "45+", verified: false, category: "Arts", location: "Abuja", venue: "Wuse 2 Art Gallery",
-    description: "Unleash your inner artist! Join us for a relaxing evening of painting, fine wine, and great company. No experience needed — our instructors will guide you through creating your own masterpiece to take home.",
+    id: 3, title: "Sip & Paint Night", organizer: "Birthday Studio X", date: "OCT 18", fullDate: "Friday, October 18, 2025", time: "6:00 PM", price: "₦7,500", image: event3, vibing: "45+", verified: false, category: "Birthday", location: "Abuja", venue: "Wuse 2 Birthday Gallery",
+    description: "Celebrate your special day with creativity! Join us for a relaxing evening of painting, fine wine, and great company. No experience needed — our instructors will guide you through creating your own masterpiece to take home.",
     tickets: [
-      { name: "Single", price: "₦7,500", perks: ["All art supplies", "2 glasses of wine", "Take home your painting"] },
-      { name: "Couple", price: "₦12,000", perks: ["All art supplies for 2", "Bottle of wine", "Take home paintings"] },
+      { name: "Single", price: "₦7,500", perks: ["All birthday supplies", "2 glasses of wine", "Take home your painting"] },
+      { name: "Couple", price: "₦12,000", perks: ["All birthday supplies for 2", "Bottle of wine", "Take home paintings"] },
     ],
     performers: [
       { name: "Amara Eze", role: "Lead Instructor", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=amara" },
