@@ -19,7 +19,7 @@ const bannerEvents = [
   { image: eventHero, title: "Afrobeat Night Out", subtitle: "Eko Hotel · Dec 20", id: null as number | null },
   { image: event1, title: "Vibes & Grills 3.0", subtitle: "Lekki Phase 1 · Oct 12", id: 1 },
   { image: event2, title: "Tech Mixer Lagos", subtitle: "Civic Centre · Oct 15", id: 2 },
-  { image: event3, title: "Sip & Paint Night", subtitle: "Art Studio X · Oct 18", id: 3 },
+  { image: event3, title: "Sip & Paint Night", subtitle: "Birthday Studio X · Oct 18", id: 3 },
   { image: event4, title: "Outdoor Cinema", subtitle: "Park View · Oct 20", id: 4 },
   { image: event5, title: "Comedy Roast Night", subtitle: "The Vault · Oct 22", id: 5 },
 ];

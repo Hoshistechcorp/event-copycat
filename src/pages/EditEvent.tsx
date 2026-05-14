@@ -29,7 +29,7 @@ interface Performer {
 }
 
 const CATEGORIES = [
-  "Music", "Art", "Tech", "Sports", "Food & Drink", "Comedy", "Fashion", "Business", "Other",
+  "Music", "Birthday", "Tech", "Sports", "Food & Drink", "Comedy", "Fashion", "Business", "Other",
 ];
 
 const STEPS = [

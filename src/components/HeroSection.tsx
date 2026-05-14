@@ -15,7 +15,7 @@ const heroEvents = [
   { image: eventHero, title: "Afrobeat Night Out", venue: "Eko Hotel", date: "Dec 20, 2026", id: null },
   { image: event1, title: "Vibes & Grills 3.0", venue: "Lekki Phase 1", date: "Oct 12, 2026", id: 1 },
   { image: event2, title: "Tech Mixer Lagos", venue: "Civic Centre", date: "Oct 15, 2026", id: 2 },
-  { image: event3, title: "Sip & Paint Night", venue: "Art Studio X", date: "Oct 18, 2026", id: 3 },
+  { image: event3, title: "Sip & Paint Night", venue: "Birthday Studio X", date: "Oct 18, 2026", id: 3 },
   { image: event4, title: "Outdoor Cinema", venue: "Park View", date: "Oct 20, 2026", id: 4 },
   { image: event5, title: "Comedy Roast Night", venue: "The Vault", date: "Oct 22, 2026", id: 5 },
 ];
