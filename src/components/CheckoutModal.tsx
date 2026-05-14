@@ -1,8 +1,8 @@
 import { useState, useMemo } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Check, Minus, Plus, Loader2, Tag, X, ShieldCheck, Sparkles } from "lucide-react";
+import { Check, Minus, Plus, Loader2, Tag, X, ShieldCheck, Sparkles, FlaskConical } from "lucide-react";
 import type { EventItem } from "@/data/events";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -12,7 +12,7 @@ import { toast } from "@/hooks/use-toast";
 interface CheckoutModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  event: EventItem & { id: any; currency?: string };
+  event: EventItem & { id: any; currency?: string; refund_policy?: string | null };
   selectedTicketIndex: number;
 }
 
@@ -27,6 +27,7 @@ const CheckoutModal = ({ open, onOpenChange, event, selectedTicketIndex }: Check
   const [promoError, setPromoError] = useState("");
   const [promoLoading, setPromoLoading] = useState(false);
   const [step, setStep] = useState<"details" | "processing" | "success">("details");
+  const [refundOpen, setRefundOpen] = useState(false);
   const navigate = useNavigate();
 
   const currency = event.currency || "NGN";
@@ -116,10 +117,11 @@ const CheckoutModal = ({ open, onOpenChange, event, selectedTicketIndex }: Check
 
   const handleClose = () => {
     onOpenChange(false);
-    setTimeout(() => { setStep("details"); setQuantity(1); setName(""); setPromoApplied(null); setPromoInput(""); setPromoError(""); }, 300);
+    setTimeout(() => { setStep("details"); setQuantity(1); setName(""); setPromoApplied(null); setPromoInput(""); setPromoError(""); setRefundOpen(false); }, 300);
   };
 
   return (
+    <>
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-md rounded-2xl">
         <DialogHeader>
@@ -143,7 +145,22 @@ const CheckoutModal = ({ open, onOpenChange, event, selectedTicketIndex }: Check
                 </div>
               </div>
               {isTestRun && testFeePct > 0 && (
-                <p className="text-[10px] font-semibold text-amber-700 mt-2">Test Run contribution · {testFeePct}% of full price · refundable if event is cancelled</p>
+                <div className="mt-3 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 space-y-1.5">
+                  <div className="flex items-start gap-2">
+                    <FlaskConical className="h-4 w-4 text-amber-600 mt-0.5 shrink-0" />
+                    <div className="flex-1">
+                      <p className="text-xs font-bold text-amber-700">Test Run contribution</p>
+                      <p className="text-[11px] text-amber-700/80">You pay {testFeePct}% of the full ticket price now. If the event is cancelled, your contribution is fully refundable.</p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setRefundOpen(true)}
+                    className="text-[11px] font-semibold text-amber-800 underline underline-offset-2 hover:text-amber-900"
+                  >
+                    Read full refund policy by the event creator →
+                  </button>
+                </div>
               )}
             </div>
 
@@ -242,6 +259,43 @@ const CheckoutModal = ({ open, onOpenChange, event, selectedTicketIndex }: Check
         )}
       </DialogContent>
     </Dialog>
+
+    <Dialog open={refundOpen} onOpenChange={setRefundOpen}>
+      <DialogContent className="rounded-2xl max-w-md">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <ShieldCheck className="h-5 w-5 text-emerald-600" aria-hidden="true" /> Refund policy
+          </DialogTitle>
+          <DialogDescription>
+            Set by the event creator for this Test Run.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="space-y-3 text-sm">
+          {event.refund_policy ? (
+            <div className="p-3 rounded-xl bg-secondary/60 border border-border whitespace-pre-line text-sm leading-relaxed">
+              {event.refund_policy}
+            </div>
+          ) : (
+            <>
+              <div className="p-3 rounded-xl bg-emerald-500/5 border border-emerald-500/20">
+                <p className="font-semibold mb-1">100% refund — automatic</p>
+                <p className="text-xs text-muted-foreground">If the host cancels, doesn't reach the interest threshold, or doesn't promote the Test Run to a live event before the scheduled date, every contribution is refunded in full to the original payment method within 5–10 business days.</p>
+              </div>
+              <div className="p-3 rounded-xl bg-secondary/60 border border-border">
+                <p className="font-semibold mb-1">If the event goes live</p>
+                <p className="text-xs text-muted-foreground">Your Test Run contribution is converted into a real ticket at the tier you backed. You'll receive a QR ticket by email.</p>
+              </div>
+              <div className="p-3 rounded-xl bg-secondary/60 border border-border">
+                <p className="font-semibold mb-1">Donations via FlexIt</p>
+                <p className="text-xs text-muted-foreground">FlexIt donations are voluntary and processed by the host's iBloov FlexIt wallet. They're <span className="font-semibold">not refundable</span> through the Test Run guarantee — only ticket contributions are.</p>
+              </div>
+            </>
+          )}
+          <p className="text-[11px] text-muted-foreground">Need help with a specific refund? Contact iBloov Support from the help center.</p>
+        </div>
+      </DialogContent>
+    </Dialog>
+    </>
   );
 };
 

@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import {
   CalendarDays, MapPin, Plus, Trash2, Loader2, ImagePlus, Save,
-  Ticket, Type, Music, ChevronLeft, ChevronRight, Check, Users, Clock, FlaskConical,
+  Ticket, Type, Music, ChevronLeft, ChevronRight, Check, Users, Clock, FlaskConical, ShieldCheck,
 } from "lucide-react";
 
 interface TicketTier {
@@ -80,6 +80,7 @@ const CreateEvent = () => {
   const [donateUrl, setDonateUrl] = useState("");
   const [donateQrFile, setDonateQrFile] = useState<File | null>(null);
   const [donateQrPreview, setDonateQrPreview] = useState<string | null>(null);
+  const [refundPolicy, setRefundPolicy] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [submitMode, setSubmitMode] = useState<"draft" | "published" | "test" | null>(null);
   const [error, setError] = useState("");
@@ -103,12 +104,12 @@ const CreateEvent = () => {
       const snap = {
         step, title, description, category, imagePreview,
         date, endDate, location, settings, invites, performers: performers.map((p) => ({ name: p.name, role: p.role, imagePreview: p.imagePreview })),
-        tiers, promoCodes, openToSponsorship, donateUrl, donateQrPreview, savedAt: new Date().toISOString(),
+        tiers, promoCodes, openToSponsorship, donateUrl, donateQrPreview, refundPolicy, savedAt: new Date().toISOString(),
       };
       try { localStorage.setItem(draftKey, JSON.stringify(snap)); } catch {}
     }, 600);
     return () => clearTimeout(t);
-  }, [draftKey, step, title, description, category, imagePreview, date, endDate, location, settings, invites, performers, tiers, promoCodes, openToSponsorship, donateUrl, donateQrPreview]);
+  }, [draftKey, step, title, description, category, imagePreview, date, endDate, location, settings, invites, performers, tiers, promoCodes, openToSponsorship, donateUrl, donateQrPreview, refundPolicy]);
 
   const restoreDraft = () => {
     if (!draftKey) return;
@@ -129,6 +130,7 @@ const CreateEvent = () => {
       if (typeof snap.openToSponsorship === "boolean") setOpenToSponsorship(snap.openToSponsorship);
       if (typeof snap.donateUrl === "string") setDonateUrl(snap.donateUrl);
       if (snap.donateQrPreview) setDonateQrPreview(snap.donateQrPreview);
+      if (typeof snap.refundPolicy === "string") setRefundPolicy(snap.refundPolicy);
       if (typeof snap.step === "number") setStep(snap.step);
       toast({ title: "Draft restored", description: "Picked up where you left off." });
     } catch {}
@@ -187,7 +189,7 @@ const CreateEvent = () => {
       step, title, description, category, imagePreview,
       date, endDate, location, settings, invites,
       performers: performers.map((p) => ({ name: p.name, role: p.role, imagePreview: p.imagePreview })),
-      tiers, promoCodes, savedAt: new Date().toISOString(),
+      tiers, promoCodes, openToSponsorship, donateUrl, donateQrPreview, refundPolicy, savedAt: new Date().toISOString(),
     };
     try { localStorage.setItem(draftKey, JSON.stringify(snap)); } catch {}
     toast({ title: "Saved", description: "Your draft is safe — come back anytime to finish." });
@@ -252,6 +254,7 @@ const CreateEvent = () => {
       open_to_sponsorship: openToSponsorship,
       donate_flexit_url: donateUrl.trim() || null,
       donate_flexit_qr_url: donateQrUrl,
+      refund_policy: refundPolicy.trim() || null,
     } as any).select("id").single();
 
     if (evErr || !eventData) { setError(evErr?.message || "Failed to create event."); setSubmitting(false); setSubmitMode(null); return; }
@@ -491,6 +494,26 @@ const CreateEvent = () => {
                   </div>
                 ))}
               </div>
+            </div>
+
+            <div className="p-4 rounded-2xl border border-border bg-card space-y-2">
+              <div className="flex items-start gap-3">
+                <div className="h-9 w-9 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center shrink-0">
+                  <ShieldCheck className="h-4 w-4" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-sm font-semibold">Refund policy</h3>
+                  <p className="text-xs text-muted-foreground">Set your own refund terms for Test Runs and ticket purchases. This appears in checkout.</p>
+                </div>
+              </div>
+              <Textarea
+                value={refundPolicy}
+                onChange={(e) => setRefundPolicy(e.target.value)}
+                placeholder="e.g. Full refund if cancelled 48h before the event. No refunds within 24h of start time."
+                className="rounded-xl bg-secondary border-border text-sm min-h-[80px]"
+                maxLength={1000}
+              />
+              <p className="text-[10px] text-muted-foreground text-right">{refundPolicy.length}/1000</p>
             </div>
 
             <div className="p-4 rounded-2xl border border-border bg-card flex items-start gap-3">
