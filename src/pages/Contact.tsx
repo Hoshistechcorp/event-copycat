@@ -22,6 +22,14 @@ const Contact = () => {
   const prefilledMessage = searchParams.get("message") || "";
   const isSponsorship = topic === "sponsorship";
 
+  const [subject, setSubject] = useState(prefilledSubject);
+  const [message, setMessage] = useState(prefilledMessage);
+
+  useEffect(() => {
+    setSubject(prefilledSubject);
+    setMessage(prefilledMessage);
+  }, [prefilledSubject, prefilledMessage]);
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
@@ -29,6 +37,8 @@ const Contact = () => {
       setLoading(false);
       toast({ title: "Message sent!", description: "We'll get back to you soon." });
       (e.target as HTMLFormElement).reset();
+      setSubject("");
+      setMessage("");
     }, 1000);
   };
 
