@@ -54,9 +54,10 @@ function mapDbToEventItem(db: any): EventItem & {
           tierId: t.id,
           price: t.price === 0 ? "Free" : `${currency} ${t.price.toLocaleString()}`,
           rawPrice: Number(t.price) || 0,
+          test_fee_percent: Number(t.test_fee_percent) || 0,
           perks: t.description ? t.description.split(",").map((s: string) => s.trim()) : ["General admission"],
         }))
-      : [{ name: "General Admission", price: "Free", rawPrice: 0, perks: ["General admission"] }],
+      : [{ name: "General Admission", price: "Free", rawPrice: 0, test_fee_percent: 0, perks: ["General admission"] }],
     performers: performers.map((p: any) => ({
       name: p.name,
       role: p.role || "Performer",
