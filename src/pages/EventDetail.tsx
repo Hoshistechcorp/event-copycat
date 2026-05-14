@@ -373,7 +373,11 @@ const EventDetail = () => {
                   )}
 
                   <Button className="w-full rounded-xl h-12 text-sm font-bold" onClick={() => setCheckoutOpen(true)}>
-                    {event.tickets[selectedTicket].rawPrice === 0 ? "Reserve" : "Get"} {event.tickets[selectedTicket].name}
+                    {event.tickets[selectedTicket].rawPrice === 0
+                      ? `Reserve ${event.tickets[selectedTicket].name}`
+                      : isTestRun && event.tickets[selectedTicket].test_fee_percent > 0
+                        ? `Pay ${event.tickets[selectedTicket].test_fee_percent}% Test Run contribution`
+                        : `Get ${event.tickets[selectedTicket].name}`}
                   </Button>
                   <p className="text-[10px] text-muted-foreground text-center mt-3">Secure checkout · Instant QR ticket</p>
                 </>
