@@ -155,7 +155,7 @@ export const allEvents: EventItem[] = [
     coordinates: { lat: 6.4153, lng: 3.4109 },
   },
   {
-    id: 10, title: "Open Mic Poetry", organizer: "Verse Lagos", date: "OCT 30", fullDate: "Wednesday, October 30, 2025", time: "7:00 PM", price: "₦1,500", image: event4, vibing: "40+", verified: false, category: "Arts", location: "Ibadan", venue: "UI Conference Centre",
+    id: 10, title: "Open Mic Poetry", organizer: "Verse Lagos", date: "OCT 30", fullDate: "Wednesday, October 30, 2025", time: "7:00 PM", price: "₦1,500", image: event4, vibing: "40+", verified: false, category: "Birthday", location: "Ibadan", venue: "UI Conference Centre",
     description: "An intimate evening of spoken word and poetry. Whether you want to perform or simply listen, this is a safe space to experience raw, powerful storytelling through verse.",
     tickets: [
       { name: "Listener", price: "₦1,500", perks: ["Entry", "1 drink"] },
