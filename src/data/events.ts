@@ -195,6 +195,6 @@ export const allEvents: EventItem[] = [
   },
 ];
 
-export const categories: EventCategory[] = ["All", "Music", "Parties", "Workshops", "Tech", "Food & Drink", "Arts", "Sports"];
+export const categories: EventCategory[] = ["All", "Music", "Parties", "Workshops", "Tech", "Food & Drink", "Birthday", "Sports"];
 export const locations: Location[] = ["All Locations", "Lagos", "Abuja", "Port Harcourt", "Ibadan", "Accra"];
 export const dateFilters: DateFilter[] = ["Any Date", "Today", "This Weekend", "This Week", "This Month"];
