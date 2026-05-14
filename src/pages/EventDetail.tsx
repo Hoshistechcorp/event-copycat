@@ -347,8 +347,11 @@ const EventDetail = () => {
                           ))}
                         </ul>
                         {isTestRun && ticket.test_fee_percent > 0 && (
-                          <div className="mt-2 pt-2 border-t border-dashed border-border flex items-center gap-1.5 text-[10px] font-semibold text-amber-700">
-                            <FlaskConical className="h-3 w-3" /> Paying {ticket.test_fee_percent}% of full ticket price · refundable if cancelled
+                          <div className="mt-2 pt-2 border-t border-dashed border-border space-y-0.5">
+                            <div className="flex items-center gap-1.5 text-[10px] font-semibold text-amber-700">
+                              <FlaskConical className="h-3 w-3" /> Pay {ticket.test_fee_percent}% now · {(event.currency || "NGN")} {((Number(ticket.rawPrice) || 0) * ticket.test_fee_percent / 100).toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                            </div>
+                            <p className="text-[10px] text-muted-foreground">Refundable if the Test Run is cancelled</p>
                           </div>
                         )}
                       </button>
