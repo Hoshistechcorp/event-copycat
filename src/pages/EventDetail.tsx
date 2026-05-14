@@ -6,6 +6,8 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { BadgeCheck, MapPin, Calendar, Clock, Users, ArrowLeft, Share2, Heart, Check, Music, Loader2, Globe, Lock, EyeOff, FlaskConical, ShieldCheck, Handshake, Heart as HeartIcon, Copy, ExternalLink, Mail } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import CheckoutModal from "@/components/CheckoutModal";
@@ -36,6 +38,7 @@ const EventDetail = () => {
   const [hasRsvp, setHasRsvp] = useState(false);
   const [refundOpen, setRefundOpen] = useState(false);
   const [sponsorOpen, setSponsorOpen] = useState(false);
+  const [sponsorMessage, setSponsorMessage] = useState("");
 
   useEffect(() => {
     if (!user || !isDbId) return;
@@ -291,6 +294,39 @@ const EventDetail = () => {
                   ) : (
                     <Button className="w-full rounded-xl h-12 font-bold" onClick={() => setRsvpOpen(true)}>RSVP Now</Button>
                   )}
+                  {isTestRun && event.tickets?.length > 0 && (
+                    <div className="mt-5 pt-5 border-t border-border">
+                      <div className="flex items-center gap-2 mb-3">
+                        <FlaskConical className="h-4 w-4 text-amber-600" />
+                        <h3 className="text-sm font-bold">Test Run contribution tiers</h3>
+                      </div>
+                      <p className="text-[11px] text-muted-foreground mb-3">RSVP is required, and you also back the tier you'd buy at full price. You only pay a fraction now — refundable if the event doesn't go live.</p>
+                      <div className="space-y-2">
+                        {event.tickets.map((ticket: any, i: number) => {
+                          const pct = Number(ticket.test_fee_percent) || 0;
+                          const raw = Number(ticket.rawPrice) || 0;
+                          const due = pct > 0 ? (raw * pct) / 100 : raw;
+                          const cur = event.currency || "NGN";
+                          const fmt = (n: number) => n === 0 ? "Free" : `${cur} ${n.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
+                          return (
+                            <div key={i} className="p-3 rounded-xl border border-border bg-secondary/40">
+                              <div className="flex items-center justify-between mb-1">
+                                <span className="text-xs font-bold">{ticket.name}</span>
+                                <span className="text-xs font-extrabold text-primary">{fmt(due)}</span>
+                              </div>
+                              <div className="flex items-center justify-between text-[10px] text-muted-foreground">
+                                <span>Full price: <span className="line-through">{ticket.price}</span></span>
+                                {pct > 0 && <span className="font-semibold text-amber-700">Pay {pct}% now</span>}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                      <button onClick={() => setRefundOpen(true)} className="text-[11px] text-primary font-semibold mt-3 hover:underline">
+                        Read full refund policy →
+                      </button>
+                    </div>
+                  )}
                 </>
               ) : (
                 <>
@@ -311,8 +347,11 @@ const EventDetail = () => {
                           ))}
                         </ul>
                         {isTestRun && ticket.test_fee_percent > 0 && (
-                          <div className="mt-2 pt-2 border-t border-dashed border-border flex items-center gap-1.5 text-[10px] font-semibold text-amber-700">
-                            <FlaskConical className="h-3 w-3" /> Paying {ticket.test_fee_percent}% of full ticket price · refundable if cancelled
+                          <div className="mt-2 pt-2 border-t border-dashed border-border space-y-0.5">
+                            <div className="flex items-center gap-1.5 text-[10px] font-semibold text-amber-700">
+                              <FlaskConical className="h-3 w-3" /> Pay {ticket.test_fee_percent}% now · {(event.currency || "NGN")} {((Number(ticket.rawPrice) || 0) * ticket.test_fee_percent / 100).toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                            </div>
+                            <p className="text-[10px] text-muted-foreground">Refundable if the Test Run is cancelled</p>
                           </div>
                         )}
                       </button>
@@ -370,27 +409,45 @@ const EventDetail = () => {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={sponsorOpen} onOpenChange={setSponsorOpen}>
+      <Dialog open={sponsorOpen} onOpenChange={(o) => {
+        setSponsorOpen(o);
+        if (o) {
+          setSponsorMessage(
+            `Hi ${event.organizer || "there"},\n\nI'd like to discuss a sponsorship / brand partnership for "${cleanTitle}" on ${event.fullDate || "the event date"}.\n\nA bit about us:\n- Brand: \n- What we'd like to offer: \n- Budget range: \n\nLooking forward to your reply.`
+          );
+        }
+      }}>
         <DialogContent className="rounded-2xl max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Handshake className="h-5 w-5 text-emerald-600" aria-hidden="true" /> Pitch this host
             </DialogTitle>
             <DialogDescription>
-              The host receives sponsorship enquiries through iBloov. Choose the easiest channel for your brand.
+              Customize your enquiry below — it'll be prefilled into the host contact page.
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-2">
+          <div className="space-y-3">
+            <div className="space-y-1.5">
+              <Label htmlFor="sponsor-msg" className="text-xs font-semibold">Your message</Label>
+              <Textarea
+                id="sponsor-msg"
+                value={sponsorMessage}
+                onChange={(e) => setSponsorMessage(e.target.value)}
+                rows={8}
+                className="rounded-xl text-xs font-mono"
+              />
+              <p className="text-[10px] text-muted-foreground">{sponsorMessage.length} characters</p>
+            </div>
             {(() => {
               const params = new URLSearchParams({
                 topic: "sponsorship",
                 eventTitle: cleanTitle,
                 eventDate: event.fullDate || "",
                 subject: `Sponsorship enquiry — ${cleanTitle}`,
-                message: `Hi ${event.organizer || "there"},\n\nI'd like to discuss a sponsorship / brand partnership for "${cleanTitle}" on ${event.fullDate || "the event date"}.\n\nA bit about us:\n- Brand: \n- What we'd like to offer: \n- Budget range: \n\nLooking forward to your reply.`,
+                message: sponsorMessage,
               });
               return (
-                <Button asChild className="w-full rounded-xl justify-start">
+                <Button asChild className="w-full rounded-xl justify-start" disabled={!sponsorMessage.trim()}>
                   <Link to={`/contact?${params.toString()}`}>
                     <Mail className="h-4 w-4 mr-2" aria-hidden="true" /> Open host contact page (prefilled)
                   </Link>
