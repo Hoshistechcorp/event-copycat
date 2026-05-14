@@ -80,6 +80,7 @@ const CreateEvent = () => {
   const [donateUrl, setDonateUrl] = useState("");
   const [donateQrFile, setDonateQrFile] = useState<File | null>(null);
   const [donateQrPreview, setDonateQrPreview] = useState<string | null>(null);
+  const [refundPolicy, setRefundPolicy] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [submitMode, setSubmitMode] = useState<"draft" | "published" | "test" | null>(null);
   const [error, setError] = useState("");
