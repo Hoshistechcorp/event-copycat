@@ -153,6 +153,12 @@ const CreateEvent = () => {
     }
     if (s === 4 && tiers.some((t) => !t.name.trim())) return "Every ticket tier needs a name.";
     if (s === 4 && settings.is_paid && tiers.every((t) => parseFloat(t.price) === 0)) return "Add at least one paid tier or switch to a free event.";
+    if (s === 4 && donateUrl.trim()) {
+      try {
+        const u = new URL(donateUrl.trim());
+        if (!/^https?:$/.test(u.protocol)) return "FlexIt donation link must start with http:// or https://";
+      } catch { return "FlexIt donation link is not a valid URL."; }
+    }
     return null;
   };
 
@@ -525,11 +531,24 @@ const CreateEvent = () => {
                       <ImagePlus className="h-5 w-5 text-muted-foreground" />
                     </div>
                   )}
-                  <input id="donate-qr" type="file" accept="image/*" className="hidden" onChange={(e) => {
-                    const f = e.target.files?.[0]; if (f) { setDonateQrFile(f); setDonateQrPreview(URL.createObjectURL(f)); }
+                  <input id="donate-qr" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" className="hidden" onChange={(e) => {
+                    const f = e.target.files?.[0];
+                    if (!f) return;
+                    if (!f.type.startsWith("image/")) {
+                      toast({ title: "Image files only", description: "Upload a PNG, JPG, WEBP, or SVG of your QR code.", variant: "destructive" });
+                      e.target.value = "";
+                      return;
+                    }
+                    if (f.size > 5 * 1024 * 1024) {
+                      toast({ title: "File too large", description: "QR image must be under 5MB.", variant: "destructive" });
+                      e.target.value = "";
+                      return;
+                    }
+                    setDonateQrFile(f);
+                    setDonateQrPreview(URL.createObjectURL(f));
                   }} />
                 </label>
-                <p className="text-xs text-muted-foreground">Optional QR image — guests can scan straight from the event page.</p>
+                <p className="text-xs text-muted-foreground">Optional QR image (PNG/JPG/WEBP/SVG, max 5MB) — guests can scan straight from the event page.</p>
               </div>
             </div>
 

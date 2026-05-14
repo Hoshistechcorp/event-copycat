@@ -3,8 +3,9 @@ import { useState, useMemo, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { BadgeCheck, MapPin, Calendar, Clock, Users, ArrowLeft, Share2, Heart, Check, Music, Loader2, Globe, Lock, EyeOff, FlaskConical, ShieldCheck, Handshake, Heart as HeartIcon, Copy, ExternalLink } from "lucide-react";
+import { BadgeCheck, MapPin, Calendar, Clock, Users, ArrowLeft, Share2, Heart, Check, Music, Loader2, Globe, Lock, EyeOff, FlaskConical, ShieldCheck, Handshake, Heart as HeartIcon, Copy, ExternalLink, Mail } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import CheckoutModal from "@/components/CheckoutModal";
@@ -33,6 +34,8 @@ const EventDetail = () => {
   const [rsvpOpen, setRsvpOpen] = useState(false);
   const [hasTicket, setHasTicket] = useState(false);
   const [hasRsvp, setHasRsvp] = useState(false);
+  const [refundOpen, setRefundOpen] = useState(false);
+  const [sponsorOpen, setSponsorOpen] = useState(false);
 
   useEffect(() => {
     if (!user || !isDbId) return;
@@ -115,6 +118,13 @@ const EventDetail = () => {
                       <ShieldCheck className="h-3.5 w-3.5 text-emerald-600 mt-0.5 shrink-0" />
                       <span>Your contribution is <span className="font-semibold text-foreground">100% refundable</span> if the event is cancelled or doesn't reach its threshold. You're helping decide if this happens for real.</span>
                     </p>
+                    <button
+                      type="button"
+                      onClick={() => setRefundOpen(true)}
+                      className="text-xs font-semibold text-amber-700 underline underline-offset-2 mt-2 hover:text-amber-800"
+                    >
+                      Read full refund policy
+                    </button>
                   </div>
                   <Button size="sm" variant="outline" className="rounded-xl shrink-0 hidden sm:inline-flex" onClick={copyShare}>
                     <Copy className="h-3.5 w-3.5 mr-1" /> Share
@@ -198,27 +208,70 @@ const EventDetail = () => {
             {(event.donate_flexit_url || event.donate_flexit_qr_url) && (
               <div className="bg-card rounded-2xl border border-border p-6 md:p-8 shadow-sm">
                 <div className="flex items-center gap-2 mb-1">
-                  <HeartIcon className="w-5 h-5 text-rose-500 fill-rose-500/30" />
+                  <HeartIcon className="w-5 h-5 text-rose-500 fill-rose-500/30" aria-hidden="true" />
                   <h2 className="text-lg font-bold">Support this event</h2>
                 </div>
                 <p className="text-xs text-muted-foreground mb-4">Chip in via the host's iBloov FlexIt — every bit helps make it happen.</p>
                 <div className="flex flex-col sm:flex-row gap-4 items-start">
                   {event.donate_flexit_qr_url && (
-                    <img src={event.donate_flexit_qr_url} alt="Donate QR" className="w-32 h-32 rounded-xl object-cover border border-border bg-white" />
+                    <img
+                      src={event.donate_flexit_qr_url}
+                      alt={`Scan this QR code to donate to ${cleanTitle} via iBloov FlexIt`}
+                      className="w-32 h-32 rounded-xl object-cover border border-border bg-white"
+                    />
                   )}
                   <div className="flex-1 w-full space-y-2">
                     {event.donate_flexit_url && (
-                      <a href={event.donate_flexit_url} target="_blank" rel="noreferrer"
-                        className="flex items-center justify-between gap-2 p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 hover:bg-rose-500/15 transition-colors">
+                      <a
+                        href={event.donate_flexit_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={`Donate to ${cleanTitle} via iBloov FlexIt (opens in a new tab)`}
+                        className="flex items-center justify-between gap-2 p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 hover:bg-rose-500/15 transition-colors"
+                      >
                         <span className="text-sm font-bold text-rose-700 truncate">Donate via FlexIt</span>
-                        <ExternalLink className="h-4 w-4 text-rose-700 shrink-0" />
+                        <ExternalLink className="h-4 w-4 text-rose-700 shrink-0" aria-hidden="true" />
                       </a>
                     )}
                     {event.donate_flexit_url && (
                       <p className="text-[11px] text-muted-foreground break-all">{event.donate_flexit_url}</p>
                     )}
-                    <p className="text-[10px] text-muted-foreground">Donations go directly to the host's iBloov FlexIt wallet.</p>
+                    <p className="text-[10px] text-muted-foreground">Donations go directly to the host's iBloov FlexIt wallet. Opens in a new tab.</p>
                   </div>
+                </div>
+              </div>
+            )}
+
+            {event.open_to_sponsorship && (
+              <div className="bg-card rounded-2xl border border-border p-6 md:p-8 shadow-sm">
+                <div className="flex items-center gap-2 mb-1">
+                  <Handshake className="w-5 h-5 text-emerald-600" aria-hidden="true" />
+                  <h2 className="text-lg font-bold">Open to sponsorship & brand deals</h2>
+                </div>
+                <p className="text-xs text-muted-foreground mb-4">
+                  The host has flagged this {isTestRun ? "Test Run" : "event"} as open to brand partners. If your brand wants visibility, activations, or co-branded moments, here's how it works.
+                </p>
+                <div className="grid sm:grid-cols-3 gap-3 mb-5">
+                  <div className="p-3 rounded-xl bg-secondary/60 border border-border">
+                    <p className="text-xs font-bold mb-1">1. Get a feel</p>
+                    <p className="text-[11px] text-muted-foreground">Review the lineup, audience, and {isTestRun ? "Test-Run interest signal" : "expected attendance"}.</p>
+                  </div>
+                  <div className="p-3 rounded-xl bg-secondary/60 border border-border">
+                    <p className="text-xs font-bold mb-1">2. Pitch a fit</p>
+                    <p className="text-[11px] text-muted-foreground">Tell the host what your brand wants — stage time, samples, signage, content collab.</p>
+                  </div>
+                  <div className="p-3 rounded-xl bg-secondary/60 border border-border">
+                    <p className="text-xs font-bold mb-1">3. Lock the deal</p>
+                    <p className="text-[11px] text-muted-foreground">Agree on perks and budget directly with the host before the event goes live.</p>
+                  </div>
+                </div>
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <Button className="rounded-xl flex-1" onClick={() => setSponsorOpen(true)}>
+                    <Handshake className="h-4 w-4 mr-1.5" aria-hidden="true" /> Contact the host
+                  </Button>
+                  <Button variant="outline" className="rounded-xl flex-1" asChild>
+                    <Link to="/sponsorships"><ExternalLink className="h-4 w-4 mr-1.5" aria-hidden="true" /> Browse sponsorship hub</Link>
+                  </Button>
                 </div>
               </div>
             )}
@@ -288,6 +341,56 @@ const EventDetail = () => {
 
       <CheckoutModal open={checkoutOpen} onOpenChange={setCheckoutOpen} event={event} selectedTicketIndex={selectedTicket} />
       {isDbId && <RsvpDialog open={rsvpOpen} onOpenChange={setRsvpOpen} eventId={id!} eventTitle={event.title} onRsvped={() => setHasRsvp(true)} />}
+
+      <Dialog open={refundOpen} onOpenChange={setRefundOpen}>
+        <DialogContent className="rounded-2xl max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <ShieldCheck className="h-5 w-5 text-emerald-600" aria-hidden="true" /> Test Run refund policy
+            </DialogTitle>
+            <DialogDescription>
+              Test Runs let hosts gauge real interest before committing. Your money is protected the whole time.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3 text-sm">
+            <div className="p-3 rounded-xl bg-emerald-500/5 border border-emerald-500/20">
+              <p className="font-semibold mb-1">100% refund — automatic</p>
+              <p className="text-xs text-muted-foreground">If the host cancels, doesn't reach the interest threshold, or doesn't promote the Test Run to a live event before the scheduled date, every contribution is refunded in full to the original payment method within 5–10 business days.</p>
+            </div>
+            <div className="p-3 rounded-xl bg-secondary/60 border border-border">
+              <p className="font-semibold mb-1">If the event goes live</p>
+              <p className="text-xs text-muted-foreground">Your Test Run contribution is converted into a real ticket at the tier you backed. You'll receive a QR ticket by email.</p>
+            </div>
+            <div className="p-3 rounded-xl bg-secondary/60 border border-border">
+              <p className="font-semibold mb-1">Donations via FlexIt</p>
+              <p className="text-xs text-muted-foreground">FlexIt donations are voluntary and processed by the host's iBloov FlexIt wallet. They're <span className="font-semibold">not refundable</span> through the Test Run guarantee — only ticket contributions are.</p>
+            </div>
+            <p className="text-[11px] text-muted-foreground">Need help with a specific refund? Contact iBloov Support from the help center.</p>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={sponsorOpen} onOpenChange={setSponsorOpen}>
+        <DialogContent className="rounded-2xl max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Handshake className="h-5 w-5 text-emerald-600" aria-hidden="true" /> Pitch this host
+            </DialogTitle>
+            <DialogDescription>
+              The host receives sponsorship enquiries through iBloov. Choose the easiest channel for your brand.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2">
+            <Button asChild className="w-full rounded-xl justify-start" variant="outline">
+              <Link to="/sponsorships"><Handshake className="h-4 w-4 mr-2" aria-hidden="true" /> Submit an offer via Sponsorship Hub</Link>
+            </Button>
+            <Button asChild className="w-full rounded-xl justify-start" variant="outline">
+              <Link to="/contact"><Mail className="h-4 w-4 mr-2" aria-hidden="true" /> Message iBloov to introduce you</Link>
+            </Button>
+            <p className="text-[11px] text-muted-foreground pt-2">For privacy, host emails aren't published. iBloov forwards verified brand requests directly to the host.</p>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <Footer />
     </div>
