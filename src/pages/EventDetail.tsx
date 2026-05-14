@@ -381,11 +381,24 @@ const EventDetail = () => {
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-2">
+            {(() => {
+              const params = new URLSearchParams({
+                topic: "sponsorship",
+                eventTitle: cleanTitle,
+                eventDate: event.fullDate || "",
+                subject: `Sponsorship enquiry — ${cleanTitle}`,
+                message: `Hi ${event.organizer || "there"},\n\nI'd like to discuss a sponsorship / brand partnership for "${cleanTitle}" on ${event.fullDate || "the event date"}.\n\nA bit about us:\n- Brand: \n- What we'd like to offer: \n- Budget range: \n\nLooking forward to your reply.`,
+              });
+              return (
+                <Button asChild className="w-full rounded-xl justify-start">
+                  <Link to={`/contact?${params.toString()}`}>
+                    <Mail className="h-4 w-4 mr-2" aria-hidden="true" /> Open host contact page (prefilled)
+                  </Link>
+                </Button>
+              );
+            })()}
             <Button asChild className="w-full rounded-xl justify-start" variant="outline">
               <Link to="/sponsorships"><Handshake className="h-4 w-4 mr-2" aria-hidden="true" /> Submit an offer via Sponsorship Hub</Link>
-            </Button>
-            <Button asChild className="w-full rounded-xl justify-start" variant="outline">
-              <Link to="/contact"><Mail className="h-4 w-4 mr-2" aria-hidden="true" /> Message iBloov to introduce you</Link>
             </Button>
             <p className="text-[11px] text-muted-foreground pt-2">For privacy, host emails aren't published. iBloov forwards verified brand requests directly to the host.</p>
           </div>
