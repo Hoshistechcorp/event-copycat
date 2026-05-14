@@ -109,7 +109,7 @@ const CreateEvent = () => {
       try { localStorage.setItem(draftKey, JSON.stringify(snap)); } catch {}
     }, 600);
     return () => clearTimeout(t);
-  }, [draftKey, step, title, description, category, imagePreview, date, endDate, location, settings, invites, performers, tiers, promoCodes, openToSponsorship, donateUrl, donateQrPreview]);
+  }, [draftKey, step, title, description, category, imagePreview, date, endDate, location, settings, invites, performers, tiers, promoCodes, openToSponsorship, donateUrl, donateQrPreview, refundPolicy]);
 
   const restoreDraft = () => {
     if (!draftKey) return;
