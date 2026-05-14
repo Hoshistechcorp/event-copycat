@@ -153,6 +153,12 @@ const CreateEvent = () => {
     }
     if (s === 4 && tiers.some((t) => !t.name.trim())) return "Every ticket tier needs a name.";
     if (s === 4 && settings.is_paid && tiers.every((t) => parseFloat(t.price) === 0)) return "Add at least one paid tier or switch to a free event.";
+    if (s === 4 && donateUrl.trim()) {
+      try {
+        const u = new URL(donateUrl.trim());
+        if (!/^https?:$/.test(u.protocol)) return "FlexIt donation link must start with http:// or https://";
+      } catch { return "FlexIt donation link is not a valid URL."; }
+    }
     return null;
   };
 
