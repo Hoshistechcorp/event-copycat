@@ -257,9 +257,23 @@ const EventDetail = () => {
                             <li key={perk} className="text-xs text-muted-foreground flex items-center gap-1.5"><Check className="w-3 h-3 text-primary shrink-0" />{perk}</li>
                           ))}
                         </ul>
+                        {isTestRun && ticket.test_fee_percent > 0 && (
+                          <div className="mt-2 pt-2 border-t border-dashed border-border flex items-center gap-1.5 text-[10px] font-semibold text-amber-700">
+                            <FlaskConical className="h-3 w-3" /> Paying {ticket.test_fee_percent}% of full ticket price · refundable if cancelled
+                          </div>
+                        )}
                       </button>
                     ))}
                   </div>
+
+                  {isTestRun && (
+                    <div className="mb-3 p-3 rounded-xl bg-emerald-500/5 border border-emerald-500/20 flex items-start gap-2">
+                      <ShieldCheck className="h-4 w-4 text-emerald-600 mt-0.5 shrink-0" />
+                      <p className="text-[11px] text-muted-foreground leading-relaxed">
+                        <span className="font-semibold text-foreground">Refund guarantee:</span> if this Test Run doesn't go live, you'll be refunded in full automatically.
+                      </p>
+                    </div>
+                  )}
 
                   <Button className="w-full rounded-xl h-12 text-sm font-bold" onClick={() => setCheckoutOpen(true)}>
                     {event.tickets[selectedTicket].rawPrice === 0 ? "Reserve" : "Get"} {event.tickets[selectedTicket].name}
