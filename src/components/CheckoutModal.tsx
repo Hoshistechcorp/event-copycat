@@ -211,10 +211,27 @@ const CheckoutModal = ({ open, onOpenChange, event, selectedTicketIndex }: Check
             )}
 
             <div className="space-y-1.5 text-xs pt-3 border-t border-border">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">{ticket.name} × {quantity}</span>
-                <span className="font-medium">{fmt(subtotal)}</span>
-              </div>
+              {isTestRun && testFeePct > 0 && fullPrice > 0 ? (
+                <>
+                  <div className="flex justify-between text-muted-foreground">
+                    <span>Full ticket price × {quantity}</span>
+                    <span className="line-through">{currency} {(fullPrice * quantity).toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Test Run contribution ({testFeePct}%)</span>
+                    <span className="font-medium">{fmt(subtotal)}</span>
+                  </div>
+                  <div className="flex justify-between text-[10px] text-amber-700">
+                    <span>Remaining {100 - testFeePct}% only if event goes live</span>
+                    <span>{currency} {((fullPrice - unitPrice) * quantity).toLocaleString()}</span>
+                  </div>
+                </>
+              ) : (
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">{ticket.name} × {quantity}</span>
+                  <span className="font-medium">{fmt(subtotal)}</span>
+                </div>
+              )}
               {discount > 0 && (
                 <div className="flex justify-between text-primary">
                   <span>Promo {promoApplied?.code}</span>
@@ -226,13 +243,17 @@ const CheckoutModal = ({ open, onOpenChange, event, selectedTicketIndex }: Check
                 <span className="font-medium">Free</span>
               </div>
               <div className="flex justify-between text-base font-extrabold pt-2 border-t border-border mt-1">
-                <span>Total ({currency})</span>
+                <span>{isTestRun && testFeePct > 0 ? `Due now (${currency})` : `Total (${currency})`}</span>
                 <span>{fmt(total)}</span>
               </div>
             </div>
 
             <Button className="w-full rounded-xl h-12 text-sm font-bold" onClick={handlePurchase} disabled={!name.trim() || !email.trim()}>
-              {unitPrice === 0 ? `Reserve ${quantity} Ticket${quantity > 1 ? "s" : ""}` : `Pay ${fmt(total)}`}
+              {unitPrice === 0
+                ? `Reserve ${quantity} Ticket${quantity > 1 ? "s" : ""}`
+                : isTestRun && testFeePct > 0
+                  ? `Pay ${testFeePct}% contribution · ${fmt(total)}`
+                  : `Pay ${fmt(total)}`}
             </Button>
             <div className="flex items-center justify-center gap-1.5 text-[10px] text-muted-foreground">
               <ShieldCheck className="h-3 w-3" /> Secure checkout · Instant QR confirmation
