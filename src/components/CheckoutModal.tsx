@@ -295,6 +295,7 @@ const CheckoutModal = ({ open, onOpenChange, event, selectedTicketIndex }: Check
         </div>
       </DialogContent>
     </Dialog>
+    </>
   );
 };
 
