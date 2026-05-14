@@ -117,7 +117,7 @@ const CheckoutModal = ({ open, onOpenChange, event, selectedTicketIndex }: Check
 
   const handleClose = () => {
     onOpenChange(false);
-    setTimeout(() => { setStep("details"); setQuantity(1); setName(""); setPromoApplied(null); setPromoInput(""); setPromoError(""); }, 300);
+    setTimeout(() => { setStep("details"); setQuantity(1); setName(""); setPromoApplied(null); setPromoInput(""); setPromoError(""); setRefundOpen(false); }, 300);
   };
 
   return (
