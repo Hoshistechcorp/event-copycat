@@ -30,7 +30,10 @@ const CheckoutModal = ({ open, onOpenChange, event, selectedTicketIndex }: Check
   const navigate = useNavigate();
 
   const currency = event.currency || "NGN";
-  const unitPrice = Number(ticket.rawPrice ?? 0);
+  const isTestRun = typeof event.title === "string" && /^\[Test Run\]/i.test(event.title);
+  const testFeePct = Number(ticket.test_fee_percent) || 0;
+  const fullPrice = Number(ticket.rawPrice ?? 0);
+  const unitPrice = isTestRun && testFeePct > 0 ? Math.round((fullPrice * testFeePct) / 100) : fullPrice;
   const subtotal = unitPrice * quantity;
 
   const { discount, discountLabel } = useMemo(() => {
