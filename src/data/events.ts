@@ -5,7 +5,7 @@ import event4 from "@/assets/event-4.jpg";
 import event5 from "@/assets/event-5.jpg";
 import event6 from "@/assets/event-6.jpg";
 
-export type EventCategory = "All" | "Music" | "Parties" | "Workshops" | "Tech" | "Food & Drink" | "Arts" | "Sports";
+export type EventCategory = "All" | "Music" | "Parties" | "Workshops" | "Tech" | "Food & Drink" | "Birthday" | "Sports";
 export type Location = "All Locations" | "Lagos" | "Abuja" | "Port Harcourt" | "Ibadan" | "Accra";
 export type DateFilter = "Any Date" | "Today" | "This Weekend" | "This Week" | "This Month";
 
