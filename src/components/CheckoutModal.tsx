@@ -27,6 +27,7 @@ const CheckoutModal = ({ open, onOpenChange, event, selectedTicketIndex }: Check
   const [promoError, setPromoError] = useState("");
   const [promoLoading, setPromoLoading] = useState(false);
   const [step, setStep] = useState<"details" | "processing" | "success">("details");
+  const [refundOpen, setRefundOpen] = useState(false);
   const navigate = useNavigate();
 
   const currency = event.currency || "NGN";
