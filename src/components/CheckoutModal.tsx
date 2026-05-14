@@ -121,6 +121,7 @@ const CheckoutModal = ({ open, onOpenChange, event, selectedTicketIndex }: Check
   };
 
   return (
+    <>
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-md rounded-2xl">
         <DialogHeader>
