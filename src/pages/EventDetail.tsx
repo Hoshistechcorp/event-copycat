@@ -373,27 +373,45 @@ const EventDetail = () => {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={sponsorOpen} onOpenChange={setSponsorOpen}>
+      <Dialog open={sponsorOpen} onOpenChange={(o) => {
+        setSponsorOpen(o);
+        if (o) {
+          setSponsorMessage(
+            `Hi ${event.organizer || "there"},\n\nI'd like to discuss a sponsorship / brand partnership for "${cleanTitle}" on ${event.fullDate || "the event date"}.\n\nA bit about us:\n- Brand: \n- What we'd like to offer: \n- Budget range: \n\nLooking forward to your reply.`
+          );
+        }
+      }}>
         <DialogContent className="rounded-2xl max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Handshake className="h-5 w-5 text-emerald-600" aria-hidden="true" /> Pitch this host
             </DialogTitle>
             <DialogDescription>
-              The host receives sponsorship enquiries through iBloov. Choose the easiest channel for your brand.
+              Customize your enquiry below — it'll be prefilled into the host contact page.
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-2">
+          <div className="space-y-3">
+            <div className="space-y-1.5">
+              <Label htmlFor="sponsor-msg" className="text-xs font-semibold">Your message</Label>
+              <Textarea
+                id="sponsor-msg"
+                value={sponsorMessage}
+                onChange={(e) => setSponsorMessage(e.target.value)}
+                rows={8}
+                className="rounded-xl text-xs font-mono"
+              />
+              <p className="text-[10px] text-muted-foreground">{sponsorMessage.length} characters</p>
+            </div>
             {(() => {
               const params = new URLSearchParams({
                 topic: "sponsorship",
                 eventTitle: cleanTitle,
                 eventDate: event.fullDate || "",
                 subject: `Sponsorship enquiry — ${cleanTitle}`,
-                message: `Hi ${event.organizer || "there"},\n\nI'd like to discuss a sponsorship / brand partnership for "${cleanTitle}" on ${event.fullDate || "the event date"}.\n\nA bit about us:\n- Brand: \n- What we'd like to offer: \n- Budget range: \n\nLooking forward to your reply.`,
+                message: sponsorMessage,
               });
               return (
-                <Button asChild className="w-full rounded-xl justify-start">
+                <Button asChild className="w-full rounded-xl justify-start" disabled={!sponsorMessage.trim()}>
                   <Link to={`/contact?${params.toString()}`}>
                     <Mail className="h-4 w-4 mr-2" aria-hidden="true" /> Open host contact page (prefilled)
                   </Link>
