@@ -78,6 +78,7 @@ function mapDbToEventItem(db: any): EventItem & {
     open_to_sponsorship: db.open_to_sponsorship,
     donate_flexit_url: db.donate_flexit_url,
     donate_flexit_qr_url: db.donate_flexit_qr_url,
+    refund_policy: db.refund_policy,
   };
 }
 
