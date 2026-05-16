@@ -105,12 +105,12 @@ const CreateEvent = () => {
       const snap = {
         step, title, description, category, imagePreview,
         date, endDate, location, settings, invites, performers: performers.map((p) => ({ name: p.name, role: p.role, imagePreview: p.imagePreview })),
-        tiers, promoCodes, openToSponsorship, donateUrl, donateQrPreview, refundPolicy, savedAt: new Date().toISOString(),
+        tiers, promoCodes, openToSponsorship, donateUrl, donateQrPreview, refundPolicy, videoUrl, savedAt: new Date().toISOString(),
       };
       try { localStorage.setItem(draftKey, JSON.stringify(snap)); } catch {}
     }, 600);
     return () => clearTimeout(t);
-  }, [draftKey, step, title, description, category, imagePreview, date, endDate, location, settings, invites, performers, tiers, promoCodes, openToSponsorship, donateUrl, donateQrPreview, refundPolicy]);
+  }, [draftKey, step, title, description, category, imagePreview, date, endDate, location, settings, invites, performers, tiers, promoCodes, openToSponsorship, donateUrl, donateQrPreview, refundPolicy, videoUrl]);
 
   const restoreDraft = () => {
     if (!draftKey) return;
