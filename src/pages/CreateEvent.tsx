@@ -263,6 +263,7 @@ const CreateEvent = () => {
       donate_flexit_url: donateUrl.trim() || null,
       donate_flexit_qr_url: donateQrUrl,
       refund_policy: refundPolicy.trim() || null,
+      video_url: videoUrl.trim() || null,
     } as any).select("id").single();
 
     if (evErr || !eventData) { setError(evErr?.message || "Failed to create event."); setSubmitting(false); setSubmitMode(null); return; }
