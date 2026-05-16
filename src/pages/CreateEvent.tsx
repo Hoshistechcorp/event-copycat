@@ -81,6 +81,7 @@ const CreateEvent = () => {
   const [donateQrFile, setDonateQrFile] = useState<File | null>(null);
   const [donateQrPreview, setDonateQrPreview] = useState<string | null>(null);
   const [refundPolicy, setRefundPolicy] = useState("");
+  const [videoUrl, setVideoUrl] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [submitMode, setSubmitMode] = useState<"draft" | "published" | "test" | null>(null);
   const [error, setError] = useState("");
@@ -104,12 +105,12 @@ const CreateEvent = () => {
       const snap = {
         step, title, description, category, imagePreview,
         date, endDate, location, settings, invites, performers: performers.map((p) => ({ name: p.name, role: p.role, imagePreview: p.imagePreview })),
-        tiers, promoCodes, openToSponsorship, donateUrl, donateQrPreview, refundPolicy, savedAt: new Date().toISOString(),
+        tiers, promoCodes, openToSponsorship, donateUrl, donateQrPreview, refundPolicy, videoUrl, savedAt: new Date().toISOString(),
       };
       try { localStorage.setItem(draftKey, JSON.stringify(snap)); } catch {}
     }, 600);
     return () => clearTimeout(t);
-  }, [draftKey, step, title, description, category, imagePreview, date, endDate, location, settings, invites, performers, tiers, promoCodes, openToSponsorship, donateUrl, donateQrPreview, refundPolicy]);
+  }, [draftKey, step, title, description, category, imagePreview, date, endDate, location, settings, invites, performers, tiers, promoCodes, openToSponsorship, donateUrl, donateQrPreview, refundPolicy, videoUrl]);
 
   const restoreDraft = () => {
     if (!draftKey) return;
@@ -131,6 +132,7 @@ const CreateEvent = () => {
       if (typeof snap.donateUrl === "string") setDonateUrl(snap.donateUrl);
       if (snap.donateQrPreview) setDonateQrPreview(snap.donateQrPreview);
       if (typeof snap.refundPolicy === "string") setRefundPolicy(snap.refundPolicy);
+      if (typeof snap.videoUrl === "string") setVideoUrl(snap.videoUrl);
       if (typeof snap.step === "number") setStep(snap.step);
       toast({ title: "Draft restored", description: "Picked up where you left off." });
     } catch {}
@@ -160,6 +162,12 @@ const CreateEvent = () => {
         const u = new URL(donateUrl.trim());
         if (!/^https?:$/.test(u.protocol)) return "FlexIt donation link must start with http:// or https://";
       } catch { return "FlexIt donation link is not a valid URL."; }
+    }
+    if (s === 0 && videoUrl.trim()) {
+      try {
+        const u = new URL(videoUrl.trim());
+        if (!/^https?:$/.test(u.protocol)) return "Video link must start with http:// or https://";
+      } catch { return "Video link is not a valid URL."; }
     }
     return null;
   };
@@ -255,6 +263,7 @@ const CreateEvent = () => {
       donate_flexit_url: donateUrl.trim() || null,
       donate_flexit_qr_url: donateQrUrl,
       refund_policy: refundPolicy.trim() || null,
+      video_url: videoUrl.trim() || null,
     } as any).select("id").single();
 
     if (evErr || !eventData) { setError(evErr?.message || "Failed to create event."); setSubmitting(false); setSubmitMode(null); return; }
@@ -376,6 +385,18 @@ const CreateEvent = () => {
               <label className="text-sm font-semibold mb-1.5 block">Description</label>
               <Textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Describe what attendees can expect..." className="rounded-xl bg-secondary border-border min-h-[120px]" maxLength={2000} />
             </div>
+            <div>
+              <label className="text-sm font-semibold mb-1.5 block">Video link <span className="text-muted-foreground font-normal">(optional)</span></label>
+              <Input
+                type="url"
+                value={videoUrl}
+                onChange={(e) => setVideoUrl(e.target.value)}
+                placeholder="Paste a TikTok, YouTube, Instagram or Facebook video URL"
+                className="rounded-xl h-11 bg-secondary border-border text-sm"
+                maxLength={500}
+              />
+              <p className="text-[10px] text-muted-foreground mt-1">Adds a watch link/embed on your event page to hype attendees.</p>
+            </div>
           </div>
         );
       case 1:
@@ -478,19 +499,49 @@ const CreateEvent = () => {
                       <Input type="number" min="1" value={tier.quantity} onChange={(e) => updateTier(i, "quantity", e.target.value)} placeholder="Qty" className="rounded-xl h-10 bg-secondary border-border text-sm" />
                     </div>
                     <Input value={tier.description} onChange={(e) => updateTier(i, "description", e.target.value)} placeholder="What's included? (comma separated)" className="rounded-xl h-10 bg-secondary border-border text-sm" maxLength={300} />
-                    {settings.is_paid && parseFloat(tier.price) > 0 && (
-                      <div className="flex items-center gap-3 p-3 rounded-xl bg-amber-500/5 border border-amber-500/20">
-                        <FlaskConical className="h-4 w-4 text-amber-600 shrink-0" />
-                        <div className="flex-1">
-                          <label className="text-xs font-semibold text-amber-700 block">Test-run fee %</label>
-                          <p className="text-[10px] text-muted-foreground">Charged when you launch a Test Run. 0 = free RSVP.</p>
+                    {settings.is_paid && parseFloat(tier.price) > 0 && (() => {
+                      const fullPrice = parseFloat(tier.price) || 0;
+                      const pct = Math.min(100, Math.max(0, parseFloat(tier.test_fee_percent) || 0));
+                      const heldNow = +(fullPrice * (pct / 100)).toFixed(2);
+                      const balance = +(fullPrice - heldNow).toFixed(2);
+                      const fmt = (n: number) => `${symbol}${n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+                      return (
+                        <div className="p-3 rounded-xl bg-amber-500/5 border border-amber-500/20 space-y-2">
+                          <div className="flex items-center gap-3">
+                            <FlaskConical className="h-4 w-4 text-amber-600 shrink-0" />
+                            <div className="flex-1">
+                              <label className="text-xs font-semibold text-amber-700 block">Test-run fee %</label>
+                              <p className="text-[10px] text-muted-foreground">Charged when you launch a Test Run. 0 = free RSVP.</p>
+                            </div>
+                            <div className="relative w-24">
+                              <Input type="number" min="0" max="100" step="1" value={tier.test_fee_percent} onChange={(e) => updateTier(i, "test_fee_percent", e.target.value)} className="rounded-xl pr-7 h-9 bg-background border-border text-sm" />
+                              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-muted-foreground">%</span>
+                            </div>
+                          </div>
+                          {pct > 0 && (
+                            <div className="grid grid-cols-3 gap-2 pt-2 border-t border-amber-500/20 text-[11px]">
+                              <div>
+                                <p className="text-muted-foreground">Ticket cost</p>
+                                <p className="font-bold text-foreground">{fmt(fullPrice)}</p>
+                              </div>
+                              <div>
+                                <p className="text-muted-foreground">Held now ({pct}%)</p>
+                                <p className="font-bold text-amber-700">{fmt(heldNow)}</p>
+                              </div>
+                              <div>
+                                <p className="text-muted-foreground">Balance ({100 - pct}%)</p>
+                                <p className="font-bold text-foreground">{fmt(balance)}</p>
+                              </div>
+                            </div>
+                          )}
+                          {pct > 0 && (
+                            <p className="text-[10px] text-muted-foreground leading-relaxed">
+                              Buyers pay <span className="font-semibold text-amber-700">{fmt(heldNow)}</span> per ticket now — held in escrow & refundable if you cancel. The remaining <span className="font-semibold">{fmt(balance)}</span> is collected only when you launch the live event.
+                            </p>
+                          )}
                         </div>
-                        <div className="relative w-24">
-                          <Input type="number" min="0" max="100" step="1" value={tier.test_fee_percent} onChange={(e) => updateTier(i, "test_fee_percent", e.target.value)} className="rounded-xl pr-7 h-9 bg-background border-border text-sm" />
-                          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-muted-foreground">%</span>
-                        </div>
-                      </div>
-                    )}
+                      );
+                    })()}
                   </div>
                 ))}
               </div>

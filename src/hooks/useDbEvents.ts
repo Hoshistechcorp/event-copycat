@@ -18,6 +18,7 @@ function mapDbToEventItem(db: any): EventItem & {
   donate_flexit_url?: string | null;
   donate_flexit_qr_url?: string | null;
   refund_policy?: string | null;
+  video_url?: string | null;
 } {
   const eventDate = new Date(db.date);
   const monthNames = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
@@ -80,6 +81,7 @@ function mapDbToEventItem(db: any): EventItem & {
     donate_flexit_url: db.donate_flexit_url,
     donate_flexit_qr_url: db.donate_flexit_qr_url,
     refund_policy: db.refund_policy,
+    video_url: db.video_url,
   };
 }
 
