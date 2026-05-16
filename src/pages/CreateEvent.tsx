@@ -163,6 +163,12 @@ const CreateEvent = () => {
         if (!/^https?:$/.test(u.protocol)) return "FlexIt donation link must start with http:// or https://";
       } catch { return "FlexIt donation link is not a valid URL."; }
     }
+    if (s === 0 && videoUrl.trim()) {
+      try {
+        const u = new URL(videoUrl.trim());
+        if (!/^https?:$/.test(u.protocol)) return "Video link must start with http:// or https://";
+      } catch { return "Video link is not a valid URL."; }
+    }
     return null;
   };
 
