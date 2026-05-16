@@ -385,6 +385,18 @@ const CreateEvent = () => {
               <label className="text-sm font-semibold mb-1.5 block">Description</label>
               <Textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Describe what attendees can expect..." className="rounded-xl bg-secondary border-border min-h-[120px]" maxLength={2000} />
             </div>
+            <div>
+              <label className="text-sm font-semibold mb-1.5 block">Video link <span className="text-muted-foreground font-normal">(optional)</span></label>
+              <Input
+                type="url"
+                value={videoUrl}
+                onChange={(e) => setVideoUrl(e.target.value)}
+                placeholder="Paste a TikTok, YouTube, Instagram or Facebook video URL"
+                className="rounded-xl h-11 bg-secondary border-border text-sm"
+                maxLength={500}
+              />
+              <p className="text-[10px] text-muted-foreground mt-1">Adds a watch link/embed on your event page to hype attendees.</p>
+            </div>
           </div>
         );
       case 1:
