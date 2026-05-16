@@ -187,20 +187,24 @@ const EventDetail = () => {
               <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">{event.description}</p>
 
               {(event as any).video_url && (() => {
-                const url = (event as any).video_url as string;
-                const yt = url.match(/(?:youtube\.com\/(?:watch\?v=|shorts\/|embed\/)|youtu\.be\/)([\w-]{11})/);
-                const fb = /facebook\.com\//.test(url);
-                const tt = /tiktok\.com\//.test(url);
+                const parsed = parseVideoUrl((event as any).video_url);
+                if (!parsed) return null;
                 return (
                   <div className="mt-5">
                     <h3 className="text-sm font-bold mb-2">Watch</h3>
-                    {yt ? (
+                    {parsed.canEmbed && parsed.embedUrl ? (
                       <div className="relative w-full aspect-video rounded-xl overflow-hidden border border-border bg-black">
-                        <iframe src={`https://www.youtube.com/embed/${yt[1]}`} title="Event video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen className="absolute inset-0 w-full h-full" />
+                        <iframe
+                          src={parsed.embedUrl}
+                          title="Event video"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                          className="absolute inset-0 w-full h-full"
+                        />
                       </div>
                     ) : (
-                      <a href={url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary/10 border border-primary/30 text-sm font-bold text-primary hover:bg-primary/15">
-                        <Globe className="w-4 h-4" /> Watch on {tt ? "TikTok" : fb ? "Facebook" : "external link"}
+                      <a href={parsed.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary/10 border border-primary/30 text-sm font-bold text-primary hover:bg-primary/15">
+                        <Globe className="w-4 h-4" /> Watch on {parsed.label}
                       </a>
                     )}
                   </div>
