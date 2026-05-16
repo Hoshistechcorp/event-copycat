@@ -13,6 +13,7 @@ import Footer from "@/components/Footer";
 import EventSettingsStep, { type EventSettings, defaultSettings, type InviteRow } from "@/components/event-create/EventSettingsStep";
 import LocationStep, { type LocationFields, defaultLocation } from "@/components/event-create/LocationStep";
 import PromoInvitesStep, { type PromoCode } from "@/components/event-create/PromoInvitesStep";
+import { parseVideoUrl } from "@/lib/videoEmbed";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
