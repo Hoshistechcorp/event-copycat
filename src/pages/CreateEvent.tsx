@@ -132,6 +132,7 @@ const CreateEvent = () => {
       if (typeof snap.donateUrl === "string") setDonateUrl(snap.donateUrl);
       if (snap.donateQrPreview) setDonateQrPreview(snap.donateQrPreview);
       if (typeof snap.refundPolicy === "string") setRefundPolicy(snap.refundPolicy);
+      if (typeof snap.videoUrl === "string") setVideoUrl(snap.videoUrl);
       if (typeof snap.step === "number") setStep(snap.step);
       toast({ title: "Draft restored", description: "Picked up where you left off." });
     } catch {}
