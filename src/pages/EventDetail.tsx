@@ -16,6 +16,7 @@ import { allEvents } from "@/data/events";
 import { useDbEvent } from "@/hooks/useDbEvents";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { parseVideoUrl } from "@/lib/videoEmbed";
 
 const isUuid = (str: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
 
