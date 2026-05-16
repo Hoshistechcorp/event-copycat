@@ -144,8 +144,8 @@ const CheckoutModal = ({ open, onOpenChange, event, selectedTicketIndex }: Check
                   <span className="text-sm font-extrabold text-primary">{fmt(unitPrice)}</span>
                 </div>
               </div>
-              {isTestRun && testFeePct > 0 && (
-                <div className="mt-3 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 space-y-1.5">
+              {isTestRun && testFeePct > 0 && fullPrice > 0 && (
+                <div className="mt-3 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 space-y-2.5">
                   <div className="flex items-start gap-2">
                     <FlaskConical className="h-4 w-4 text-amber-600 mt-0.5 shrink-0" />
                     <div className="flex-1">
@@ -153,6 +153,22 @@ const CheckoutModal = ({ open, onOpenChange, event, selectedTicketIndex }: Check
                       <p className="text-[11px] text-amber-700/80">You pay {testFeePct}% of the full ticket price now. If the event is cancelled, your contribution is fully refundable.</p>
                     </div>
                   </div>
+
+                  <div className="grid grid-cols-3 gap-2 pt-2 border-t border-amber-500/20 text-[11px]">
+                    <div>
+                      <p className="text-amber-700/70">Ticket cost</p>
+                      <p className="font-bold text-foreground">{currency} {fullPrice.toLocaleString()}</p>
+                    </div>
+                    <div>
+                      <p className="text-amber-700/70">Held now ({testFeePct}%)</p>
+                      <p className="font-bold text-amber-700">{currency} {unitPrice.toLocaleString()}</p>
+                    </div>
+                    <div>
+                      <p className="text-amber-700/70">Balance ({100 - testFeePct}%)</p>
+                      <p className="font-bold text-foreground">{currency} {(fullPrice - unitPrice).toLocaleString()}</p>
+                    </div>
+                  </div>
+
                   <button
                     type="button"
                     onClick={() => setRefundOpen(true)}
